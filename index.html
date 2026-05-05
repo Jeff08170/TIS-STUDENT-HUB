@@ -1,0 +1,3519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClassRoom · TIS Eagles</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --air:#E8F4FD;--air-mid:#6DB8E8;--air-deep:#1A6FA8;--air-text:#0D4A72;
+  --earth:#EAF2E3;--earth-mid:#72B55A;--earth-deep:#2D7A1F;--earth-text:#1A4D10;
+  --water:#E3EEF8;--water-mid:#5A8FC8;--water-deep:#1E4F8C;--water-text:#0F2E5C;
+  --fire:#FDF0E3;--fire-mid:#E8874A;--fire-deep:#C04A10;--fire-text:#7A2A05;
+  --bg:#F7F5F2;--surface:#FFFFFF;--text:#1A1916;--muted:#7A7672;
+  --border:rgba(0,0,0,0.08);--radius:16px;--radius-sm:10px;
+  --ms:#0078D4;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── LOADING ── */
+#loading-screen{
+  position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:9999;gap:16px;
+}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13px;color:var(--muted);}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:var(--bg);overflow-y:auto;}
+#app{display:none;position:relative;z-index:1;}
+.login-wrap{width:100%;max-width:420px;padding:1.5rem;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:2.5rem 2.5rem;text-align:center;}
+.login-eagle{font-size:48px;margin-bottom:12px;}
+.login-title{font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.ms-signin-btn{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;padding:14px 20px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  color:var(--text);cursor:pointer;transition:all 0.15s;margin-bottom:12px;
+}
+.ms-signin-btn:hover{background:var(--ms);color:white;border-color:var(--ms);}
+.ms-signin-btn:hover .ms-logo span:nth-child(1){background:#fff;}
+.ms-signin-btn:hover .ms-logo span:nth-child(2){background:#fff;}
+.ms-signin-btn:hover .ms-logo span:nth-child(3){background:#fff;}
+.ms-signin-btn:hover .ms-logo span:nth-child(4){background:#fff;}
+.ms-logo{width:20px;height:20px;display:grid;grid-template-columns:1fr 1fr;gap:2px;flex-shrink:0;}
+.ms-logo span{display:block;border-radius:1px;transition:background 0.15s;}
+.login-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.login-tab{flex:1;padding:9px 12px;font-size:13px;font-weight:500;border:none;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all 0.15s;}
+.login-tab.active{background:var(--text);color:white;}
+.login-tab:first-child{border-right:1px solid var(--border);}
+.login-error{background:#FCEBEB;color:#791F1F;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-top:12px;display:none;text-align:left;}
+
+/* ── APP ── */
+.shell{display:flex;min-height:100vh;}
+
+/* Sidebar */
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.5rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;}
+.logo-row{display:flex;align-items:center;gap:10px;padding:0 0.5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem;}
+.logo-icon{width:32px;height:32px;border-radius:8px;background:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-icon svg{width:17px;height:17px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.logo-name{font-family:'DM Serif Display',serif;font-size:18px;}
+.role-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px;margin-left:auto;flex-shrink:0;}
+.role-badge.manager{background:var(--fire);color:var(--fire-text);}
+.role-badge.student{background:var(--air);color:var(--air-text);}
+
+.nav-label{font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;padding:0 0.5rem;margin-bottom:5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;color:var(--muted);font-weight:400;transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.nav-item:hover{background:var(--bg);color:var(--text);}
+.nav-item.active{background:var(--text);color:white;}
+.nav-section{margin-bottom:1.25rem;}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:600;padding:1px 7px;border-radius:99px;background:#1A6FA8;color:white;}
+.house-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+.sidebar-bottom{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);}
+.user-row{display:flex;align-items:center;gap:10px;padding:8px;}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:500;word-break:break-all;}
+.user-role{font-size:11px;color:var(--muted);}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;width:100%;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);cursor:pointer;border-radius:var(--radius-sm);margin-top:4px;transition:all 0.12s;}
+.logout-btn:hover{background:var(--bg);color:var(--text);}
+.logout-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+
+/* Main */
+.main{margin-left:230px;flex:1;padding:2rem 2.5rem;max-width:calc(100vw - 230px);overflow-y:auto;}
+.page{display:none;animation:fadeIn 0.2s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.75rem;}
+.page-title{font-family:'DM Serif Display',serif;font-size:28px;}
+.page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+.hdr-badge{font-size:12px;font-weight:500;padding:5px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+.card-hover{transition:transform 0.15s,box-shadow 0.15s;cursor:pointer;}
+.card-hover:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,0.07);}
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
+.g4-stat{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+
+.d-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.d-icon svg{width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.d-title{font-size:14px;font-weight:500;}
+.d-sub{font-size:12px;color:var(--muted);}
+
+.ann-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.ann-row:last-child{border-bottom:none;}
+.ann-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.ann-t{font-size:13px;font-weight:500;margin-bottom:2px;}
+.ann-m{font-size:11px;color:var(--muted);}
+
+.house-sm{border-radius:var(--radius);padding:1.25rem;border:1px solid transparent;cursor:pointer;transition:transform 0.15s;}
+.house-sm:hover{transform:translateY(-2px);}
+.h-emoji{font-size:26px;}
+.h-name{font-family:'DM Serif Display',serif;font-size:18px;margin:6px 0 2px;}
+.h-pts{font-size:26px;font-weight:300;letter-spacing:-1px;}
+.h-sub{font-size:11px;opacity:0.6;}
+
+.tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;display:inline-block;}
+.t-blue{background:var(--air);color:var(--air-text);}
+.t-green{background:var(--earth);color:var(--earth-text);}
+.t-red{background:var(--fire);color:var(--fire-text);}
+.t-amber{background:#FDF5E3;color:#7A5005;}
+
+.filter-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.fpill{font-size:12px;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.12s;font-family:'DM Sans',sans-serif;}
+.fpill.active{background:var(--text);color:white;border-color:var(--text);}
+.fpill:hover:not(.active){background:var(--bg);}
+
+.ann-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:10px;transition:border-color 0.15s,transform 0.12s;cursor:pointer;}
+.ann-card:hover{transform:translateY(-1px);border-color:rgba(0,0,0,0.15);}
+.ann-card.unread{border-left:3px solid var(--air-deep);border-radius:0 var(--radius) var(--radius) 0;}
+.ann-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.ann-card-title{font-size:14px;font-weight:500;}
+.ann-time{font-size:11px;color:var(--muted);white-space:nowrap;margin-top:2px;}
+.ann-body{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px;}
+
+.poll-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:14px;}
+.poll-status{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;}
+.poll-status.open{color:var(--earth-deep);}
+.poll-status.closed{color:var(--muted);}
+.poll-q{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:1rem;line-height:1.3;}
+.poll-opt{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all 0.12s;background:var(--bg);font-size:13px;}
+.poll-opt:hover{border-color:var(--air-mid);background:var(--air);}
+.poll-opt.voted{border-color:var(--air-deep);background:var(--air);color:var(--air-text);font-weight:500;}
+.p-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.poll-opt.voted .p-radio{border-color:var(--air-deep);background:var(--air-deep);}
+.p-dot{width:6px;height:6px;border-radius:50%;background:white;}
+.p-bar-wrap{margin-left:auto;height:4px;background:var(--border);border-radius:99px;width:100px;}
+.p-bar{height:100%;border-radius:99px;background:var(--air-mid);}
+.p-pct{font-size:11px;color:var(--muted);min-width:32px;text-align:right;}
+.poll-meta{font-size:12px;color:var(--muted);margin-top:12px;}
+
+.fb-label{font-size:12px;font-weight:500;margin-bottom:5px;display:block;color:var(--muted);}
+.fb-input{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.12s;margin-bottom:12px;}
+.fb-input:focus{border-color:var(--air-mid);}
+textarea.fb-input{resize:vertical;min-height:90px;}
+.g2-fb{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.star{font-size:22px;cursor:pointer;color:#DDD;transition:color 0.1s;}
+.star.on{color:#F5C747;}
+.star-row{display:flex;gap:5px;margin-bottom:12px;}
+
+.btn-primary{background:var(--text);color:white;border:none;border-radius:var(--radius-sm);padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.15s;}
+.btn-primary:hover{opacity:0.85;}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.12s;}
+.btn-outline:hover{background:var(--bg);}
+.btn-danger{background:#FCEBEB;color:#791F1F;border:none;border-radius:var(--radius-sm);padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
+
+.house-big{border-radius:var(--radius);padding:1.75rem;border:1px solid transparent;}
+.house-big-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.h-big-emoji{font-size:36px;}
+.h-rank{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;}
+.h-big-name{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:2px;}
+.h-big-pts{font-size:38px;font-weight:300;letter-spacing:-2px;}
+.h-big-sub{font-size:12px;opacity:0.6;}
+.h-progress{height:5px;background:rgba(0,0,0,0.1);border-radius:99px;margin-top:12px;}
+.h-bar{height:100%;border-radius:99px;}
+.h-members{font-size:12px;opacity:0.6;margin-top:6px;}
+
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{font-size:13px;font-weight:600;width:20px;color:var(--muted);}
+.lb-rank.gold{color:#C89A10;}
+.lb-rank.silver{color:#888;}
+.lb-rank.bronze{color:#A05A30;}
+.lb-hdot{width:9px;height:9px;border-radius:50%;}
+.lb-name{font-size:13px;font-weight:500;flex:1;}
+.lb-bar-wrap{width:110px;height:4px;background:var(--border);border-radius:99px;}
+.lb-bar{height:100%;border-radius:99px;}
+.lb-pts{font-size:13px;color:var(--muted);}
+
+/* Manager */
+.mgr-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:16px;}
+.mgr-section-title{font-size:15px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.mgr-section-title svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.mgr-table{width:100%;border-collapse:collapse;font-size:13px;}
+.mgr-table th{text-align:left;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--border);}
+.mgr-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.mgr-table tr:last-child td{border-bottom:none;}
+.mgr-table tr:hover td{background:var(--bg);}
+.house-select{font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);cursor:pointer;}
+.pts-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.12s;}
+.pts-btn:hover{background:var(--bg);}
+.stat-card{background:var(--bg);border-radius:var(--radius-sm);padding:1rem;text-align:center;}
+.stat-num{font-size:28px;font-weight:300;letter-spacing:-1px;}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.poll-opt-input-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.poll-opt-input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;}
+.poll-opt-input:focus{border-color:var(--air-mid);}
+.remove-opt{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:white;padding:12px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:9999;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.fb-rc-body{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.fb-rc-reply{background:var(--bg);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--text);border-left:3px solid var(--air-deep);margin-bottom:8px;}
+.fb-stars{color:#F5C747;font-size:12px;}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text">Signing you in...</div>
+</div>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-eagle">🦅</div>
+      <div class="login-title">ClassRoom</div>
+      <div class="login-sub" id="login-subtitle">TIS Eagles Student Portal</div>
+
+      <!-- Login method tabs -->
+      <div style="display:flex;gap:0;margin:1.2rem 0 1.4rem;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+        <button class="login-tab active" id="tab-microsoft" onclick="switchLoginTab('microsoft')">Microsoft</button>
+        <button class="login-tab" id="tab-email" onclick="switchLoginTab('email')">Email & Password</button>
+      </div>
+
+      <!-- Microsoft panel -->
+      <div id="panel-microsoft">
+        <button class="ms-signin-btn" onclick="signIn()">
+          <div class="ms-logo">
+            <span style="background:#F25022;"></span><span style="background:#7FBA00;"></span>
+            <span style="background:#00A4EF;"></span><span style="background:#FFB900;"></span>
+          </div>
+          Sign in with Microsoft
+        </button>
+        <div class="login-note" style="margin-top:12px;">Use your @outlook.com, @hotmail.com, @live.com or school account.</div>
+      </div>
+
+      <!-- Email/Password panel -->
+      <div id="panel-email" style="display:none;">
+        <!-- Sign In / Sign Up sub-tabs -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button class="fpill active" id="subtab-signin" onclick="switchEmailSubtab('signin')">Sign In</button>
+          <button class="fpill" id="subtab-signup" onclick="switchEmailSubtab('signup')">Create Account</button>
+        </div>
+
+        <!-- Sign In form -->
+        <div id="form-signin">
+          <input class="fb-input" id="signin-email" type="email" placeholder="Email address" style="margin-bottom:8px;" />
+          <div style="position:relative;margin-bottom:4px;">
+            <input class="fb-input" id="signin-password" type="password" placeholder="Password" style="margin-bottom:0;padding-right:40px;" />
+            <span onclick="togglePw('signin-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
+          </div>
+          <div style="text-align:right;margin-bottom:10px;">
+            <a href="#" onclick="forgotPassword();return false;" style="font-size:12px;color:var(--air-deep);">Forgot password?</a>
+          </div>
+          <button class="btn-primary" style="width:100%;padding:12px;" onclick="signInWithEmail()">Sign In</button>
+        </div>
+
+        <!-- Sign Up form -->
+        <div id="form-signup" style="display:none;">
+          <input class="fb-input" id="signup-name" type="text" placeholder="Full name" style="margin-bottom:8px;" />
+          <input class="fb-input" id="signup-email" type="email" placeholder="Email address" style="margin-bottom:8px;" />
+          <div style="position:relative;margin-bottom:8px;">
+            <input class="fb-input" id="signup-password" type="password" placeholder="Password (min 6 characters)" style="margin-bottom:0;padding-right:40px;" />
+            <span onclick="togglePw('signup-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
+          </div>
+          <div style="position:relative;margin-bottom:14px;">
+            <input class="fb-input" id="signup-confirm" type="password" placeholder="Confirm password" style="margin-bottom:0;padding-right:40px;" />
+            <span onclick="togglePw('signup-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
+          </div>
+          <button class="btn-primary" style="width:100%;padding:12px;" onclick="signUpWithEmail()">Create Account</button>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;">A verification email will be sent to confirm your address.</div>
+        </div>
+
+        <!-- Email verification pending -->
+        <div id="form-verify" style="display:none;text-align:center;">
+          <div style="font-size:32px;margin-bottom:12px;">📧</div>
+          <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Verify your email</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;" id="verify-email-hint">We sent a verification link to your email. Click the link then come back here.</div>
+          <button class="btn-primary" style="width:100%;padding:12px;margin-bottom:8px;" onclick="checkEmailVerified()">I verified my email ✓</button>
+          <button class="btn-outline" style="width:100%;padding:10px;" onclick="resendVerification()">Resend verification email</button>
+          <button class="btn-outline" style="width:100%;padding:10px;margin-top:6px;" onclick="backToSignIn()">Back to sign in</button>
+        </div>
+      </div>
+
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+<div class="shell">
+
+<nav class="sidebar">
+  <div class="logo-row">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+    <span class="logo-name">ClassRoom</span>
+    <span class="role-badge" id="role-badge">Student</span>
+  </div>
+
+  <div id="nav-student">
+    <div class="nav-section">
+      <div class="nav-label">Menu</div>
+      <button class="nav-item active" onclick="showPage('dashboard',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+      </button>
+      <button class="nav-item" onclick="showPage('announcements',this)">
+        <svg viewBox="0 0 24 24"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Announcements
+        <span class="nav-badge">3</span>
+      </button>
+      <button class="nav-item" onclick="showPage('voting',this)">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Voting
+      </button>
+      <button class="nav-item" onclick="showPage('feedbacks',this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">My House</div>
+      <button class="nav-item" onclick="showPage('houses',this)"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My House</button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Rewards</div>
+      <button class="nav-item" onclick="showPage('rewards',this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
+      </button>
+    </div>
+  </div>
+
+  <div id="nav-manager" style="display:none;">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item active" onclick="showPage('mgr-dashboard',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Manage</div>
+      <button class="nav-item" onclick="showPage('mgr-announcements',this)">
+        <svg viewBox="0 0 24 24"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Announcements
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-voting',this)">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Polls & Voting
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-houses',this)">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Houses & Points
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-students',this)">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Students
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-rewards',this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
+      </button>
+      <button class="nav-item" id="nav-admins-btn" onclick="showPage('mgr-admins',this)" style="display:none;">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Manage Roles
+      </button>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-row">
+      <div class="avatar" id="user-avatar" style="background:#1A6FA8;">?</div>
+      <div>
+        <div class="user-name" id="user-name">Loading...</div>
+        <div class="user-role" id="user-role">Signing in</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="signOut()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign out
+    </button>
+  </div>
+</nav>
+
+<main class="main">
+
+  <!-- Student: Dashboard -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-header">
+      <div><h1 class="page-title" id="dash-greeting">Good morning!</h1><p class="page-sub" id="dash-date"></p></div>
+      <span class="hdr-badge">Week 32</span>
+    </div>
+    <div class="g3">
+      <div class="card card-hover" onclick="showPage('announcements',null)" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="d-icon" style="background:var(--air);"><svg viewBox="0 0 24 24" style="stroke:var(--air-deep);width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div>
+        <div class="d-title">Announcements</div><div class="d-sub">3 new today</div>
+      </div>
+      <div class="card card-hover" onclick="showPage('voting',null)" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="d-icon" style="background:var(--earth);"><svg viewBox="0 0 24 24" style="stroke:var(--earth-deep);width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <div class="d-title">Voting</div><div class="d-sub">1 poll active</div>
+      </div>
+      <div class="card card-hover" onclick="showPage('feedbacks',null)" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="d-icon" style="background:var(--water);"><svg viewBox="0 0 24 24" style="stroke:var(--water-deep);width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <div class="d-title">Feedbacks</div><div class="d-sub">Share your thoughts</div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="section-label">Latest announcements</div>
+        <div id="dash-ann-preview"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
+      </div>
+      <div class="card">
+        <div class="section-label">Active poll</div>
+        <div id="dash-poll-preview"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
+      </div>
+    </div>
+    <div class="g4">
+      <div class="house-sm" style="background:var(--air);border-color:rgba(107,184,232,0.3);"><div class="h-emoji">💨</div><div class="h-name" style="color:var(--air-text);">Air</div><div class="h-pts" id="dash-pts-air" style="color:var(--air-deep);">—</div><div class="h-sub" style="color:var(--air-text);">points</div></div>
+      <div class="house-sm" style="background:var(--earth);border-color:rgba(114,181,90,0.3);"><div class="h-emoji">🌿</div><div class="h-name" style="color:var(--earth-text);">Earth</div><div class="h-pts" id="dash-pts-earth" style="color:var(--earth-deep);">—</div><div class="h-sub" style="color:var(--earth-text);">points</div></div>
+      <div class="house-sm" style="background:var(--water);border-color:rgba(90,143,200,0.3);"><div class="h-emoji">🌊</div><div class="h-name" style="color:var(--water-text);">Water</div><div class="h-pts" id="dash-pts-water" style="color:var(--water-deep);">—</div><div class="h-sub" style="color:var(--water-text);">points</div></div>
+      <div class="house-sm" style="background:var(--fire);border-color:rgba(232,135,74,0.3);"><div class="h-emoji">🔥</div><div class="h-name" style="color:var(--fire-text);">Fire</div><div class="h-pts" id="dash-pts-fire" style="color:var(--fire-deep);">—</div><div class="h-sub" style="color:var(--fire-text);">points</div></div>
+    </div>
+  </div>
+
+  <!-- Student: Announcements -->
+  <div id="page-announcements" class="page">
+    <div class="page-header"><div><h1 class="page-title">Announcements</h1><p class="page-sub">Stay up to date</p></div><span class="hdr-badge" id="ann-unread-badge">0 new</span></div>
+    <div class="filter-row">
+      <button class="fpill active" onclick="filterAnn('all',this)">All</button>
+      <button class="fpill" onclick="filterAnn('general',this)">General</button>
+      <button class="fpill" onclick="filterAnn('event',this)">Events</button>
+      <button class="fpill" onclick="filterAnn('urgent',this)">Urgent</button>
+    </div>
+    <div id="ann-list"><div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div></div>
+  </div>
+
+  <!-- Student: Voting -->
+  <div id="page-voting" class="page">
+    <div class="page-header"><div><h1 class="page-title">Voting</h1><p class="page-sub">Have your say</p></div><span class="hdr-badge">1 active</span></div>
+    <div class="poll-card">
+      <div class="poll-status open">● Active · Closes May 7</div>
+      <div class="poll-q">What should be the theme for the end-of-year party?</div>
+      <div id="v-opts">
+        <div class="poll-opt" onclick="castVote(0)"><div class="p-radio"></div>Space adventure</div>
+        <div class="poll-opt" onclick="castVote(1)"><div class="p-radio"></div>Underwater world</div>
+        <div class="poll-opt" onclick="castVote(2)"><div class="p-radio"></div>Jungle safari</div>
+        <div class="poll-opt" onclick="castVote(3)"><div class="p-radio"></div>Medieval kingdom</div>
+      </div>
+      <div class="poll-meta">47 votes so far</div>
+    </div>
+    <div class="poll-card">
+      <div class="poll-status closed">Closed · May 1</div>
+      <div class="poll-q">Which day works best for the school trip?</div>
+      <div class="poll-opt" style="cursor:default;"><div class="p-radio" style="border-color:var(--air-deep);background:var(--air-deep);"><div class="p-dot"></div></div>Friday, May 16<div class="p-bar-wrap" style="margin-left:auto;"><div class="p-bar" style="width:68%;"></div></div><span class="p-pct">68%</span></div>
+      <div class="poll-opt" style="cursor:default;"><div class="p-radio"></div>Thursday, May 15<div class="p-bar-wrap" style="margin-left:auto;"><div class="p-bar" style="width:32%;"></div></div><span class="p-pct">32%</span></div>
+      <div class="poll-meta">89 votes · Result: Friday, May 16</div>
+    </div>
+  </div>
+
+  <!-- Student: Feedbacks -->
+  <div id="page-feedbacks" class="page">
+    <div class="page-header"><div><h1 class="page-title">Feedbacks</h1><p class="page-sub">Share your thoughts</p></div></div>
+    <div class="card" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:500;margin-bottom:1rem;">Submit new feedback</div>
+      <div class="g2-fb">
+        <div><label class="fb-label">Category</label><select class="fb-input"><option>Class activity</option><option>Teacher feedback</option><option>School facilities</option><option>Suggestions</option></select></div>
+        <div><label class="fb-label">Your house</label><select class="fb-input"><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option></select></div>
+      </div>
+      <label class="fb-label">Your feedback</label>
+      <textarea class="fb-input" placeholder="Share what's on your mind..."></textarea>
+      <label class="fb-label">Rating</label>
+      <div class="star-row" id="stars"><span class="star" onclick="rateStar(1)">★</span><span class="star" onclick="rateStar(2)">★</span><span class="star" onclick="rateStar(3)">★</span><span class="star" onclick="rateStar(4)">★</span><span class="star" onclick="rateStar(5)">★</span></div>
+      <button class="btn-primary" onclick="submitFb(this)">Submit feedback</button>
+    </div>
+    <div class="card">
+      <div class="section-label" style="margin-bottom:4px;">Your past feedbacks</div>
+      <div id="student-fb-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Student: Houses -->
+  <div id="page-houses" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title" id="my-house-title">My House</h1><p class="page-sub" id="my-house-sub">Your house standings and announcements</p></div>
+      <span class="hdr-badge" id="my-house-badge">House</span>
+    </div>
+    <!-- My house big card -->
+    <div id="my-house-card" style="margin-bottom:16px;">
+      <div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div>
+    </div>
+    <!-- Post house announcement (house leaders + admins only) -->
+    <div class="mgr-section" id="house-post-section" style="display:none;">
+      <div class="mgr-section-title">📢 Post house announcement</div>
+      <input class="fb-input" id="house-ann-title" type="text" placeholder="Announcement title" />
+      <textarea class="fb-input" id="house-ann-body" placeholder="Write the announcement..." style="min-height:80px;"></textarea>
+      <button class="btn-primary" onclick="postHouseAnnouncement()">Post to my house</button>
+    </div>
+    <!-- House announcements feed -->
+    <div class="card">
+      <div class="section-label" style="margin-bottom:4px;">House announcements</div>
+      <div id="house-ann-list"><div style="color:var(--muted);font-size:13px;padding:1rem;">Loading...</div></div>
+    </div>
+    <!-- Student's personal points card -->
+    <div class="card" style="margin-top:14px;" id="my-points-card">
+      <div class="section-label" style="margin-bottom:8px;">My points</div>
+      <div id="my-points-display" style="font-size:32px;font-weight:300;color:var(--air-deep);">—</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Individual points awarded by admins</div>
+    </div>
+  </div>
+
+  <!-- Manager: Dashboard -->
+  <div id="page-mgr-dashboard" class="page">
+    <div class="page-header"><div><h1 class="page-title" id="mgr-greeting">Admin Dashboard</h1><p class="page-sub" id="mgr-date"></p></div><span class="hdr-badge" style="background:var(--fire);color:var(--fire-text);border-color:rgba(232,135,74,0.3);">Admin</span></div>
+    <div class="g4-stat">
+      <div class="stat-card" style="cursor:pointer;" onclick="showPage('mgr-students',document.querySelector('[onclick*=mgr-students]'))">
+        <div class="stat-num" id="dash-student-count">0</div><div class="stat-label">Total students</div>
+      </div>
+      <div class="stat-card" style="cursor:pointer;" onclick="showPage('mgr-announcements',document.querySelector('[onclick*=mgr-announcements]'))">
+        <div class="stat-num" id="dash-ann-count">0</div><div class="stat-label">Announcements</div>
+      </div>
+      <div class="stat-card" style="cursor:pointer;" onclick="showPage('mgr-voting',document.querySelector('[onclick*=mgr-voting]'))">
+        <div class="stat-num" id="dash-poll-count">1</div><div class="stat-label">Active polls</div>
+      </div>
+      <div class="stat-card" style="cursor:pointer;" onclick="showPage('mgr-feedbacks',document.querySelector('[onclick*=mgr-feedbacks]'))">
+        <div class="stat-num" id="dash-fb-count">0</div><div class="stat-label">Feedbacks</div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <!-- House standings — live from housePts -->
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>House standings</span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-houses',document.querySelector('[onclick*=mgr-houses]'))">Manage →</button>
+        </div>
+        <div id="dash-house-standings"></div>
+      </div>
+
+      <!-- Recent feedbacks -->
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Recent feedbacks</span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-feedbacks',document.querySelector('[onclick*=mgr-feedbacks]'))">View all →</button>
+        </div>
+        <div id="dash-fb-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- Recent announcements -->
+    <div class="mgr-section">
+      <div class="mgr-section-title" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Recent announcements</span>
+        <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-announcements',document.querySelector('[onclick*=mgr-announcements]'))">Manage →</button>
+      </div>
+      <div id="dash-ann-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+    </div>
+
+    <!-- Active polls -->
+    <div class="mgr-section">
+      <div class="mgr-section-title" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Active polls</span>
+        <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-voting',document.querySelector('[onclick*=mgr-voting]'))">Manage →</button>
+      </div>
+      <div id="dash-polls-preview"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+    </div>
+
+    <!-- Students overview -->
+    <div class="mgr-section">
+      <div class="mgr-section-title" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Recent students</span>
+        <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-students',document.querySelector('[onclick*=mgr-students]'))">View all →</button>
+      </div>
+      <div id="dash-students-list"><div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:13px;">No students yet.</div></div>
+    </div>
+  </div>
+
+  <!-- Manager: Announcements -->
+  <div id="page-mgr-announcements" class="page">
+    <div class="page-header"><div><h1 class="page-title">Announcements</h1><p class="page-sub">Post and manage announcements</p></div></div>
+    <div class="mgr-section">
+      <div class="mgr-section-title">Post new announcement</div>
+      <label class="fb-label">Title</label><input class="fb-input" id="ann-title-input" type="text" placeholder="Announcement title..." />
+      <label class="fb-label">Body</label><textarea class="fb-input" id="ann-body-input" placeholder="Write the full announcement..." style="min-height:100px;"></textarea>
+      <div class="g2-fb">
+        <div><label class="fb-label">Category</label><select class="fb-input" id="ann-cat"><option value="general">General</option><option value="event">Event</option><option value="urgent">Urgent</option></select></div>
+        <div><label class="fb-label">Visible to</label><select class="fb-input"><option>All students</option><option>Air house</option><option>Earth house</option><option>Water house</option><option>Fire house</option></select></div>
+      </div>
+      <button class="btn-primary" onclick="postAnnouncement()">Post announcement</button>
+    </div>
+    <div class="mgr-section">
+      <div class="mgr-section-title">Posted announcements</div>
+      <div id="mgr-ann-list">
+        <div style="padding:1rem;color:var(--muted);font-size:13px;">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manager: Voting -->
+  <div id="page-mgr-voting" class="page">
+    <div class="page-header"><div><h1 class="page-title">Polls & Voting</h1><p class="page-sub">Create, manage and vote on polls</p></div></div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <button class="fpill active" id="vote-tab-manage" onclick="switchVoteTab('manage',this)">Manage Polls</button>
+      <button class="fpill" id="vote-tab-vote" onclick="switchVoteTab('vote',this)">Vote as Admin</button>
+    </div>
+
+    <!-- Manage tab -->
+    <div id="vote-panel-manage">
+      <div class="mgr-section">
+        <div class="mgr-section-title">Create new poll</div>
+        <label class="fb-label">Poll question</label><input class="fb-input" id="poll-q-input" type="text" placeholder="What is your question?" />
+        <label class="fb-label">Options</label>
+        <div id="poll-options-wrap">
+          <div class="poll-opt-input-row"><input class="poll-opt-input" placeholder="Option 1" /><button class="remove-opt" onclick="removeOpt(this)">×</button></div>
+          <div class="poll-opt-input-row"><input class="poll-opt-input" placeholder="Option 2" /><button class="remove-opt" onclick="removeOpt(this)">×</button></div>
+        </div>
+        <button class="btn-outline" style="margin-top:4px;margin-bottom:12px;" onclick="addOpt()">+ Add option</button>
+        <div class="g2-fb">
+          <div><label class="fb-label">Closing date</label><input class="fb-input" id="poll-close-date" type="date" /></div>
+          <div><label class="fb-label">Visible to</label><select class="fb-input" id="poll-visible"><option>All students</option><option>Air house</option><option>Earth house</option><option>Water house</option><option>Fire house</option></select></div>
+        </div>
+        <label class="fb-label" style="margin-top:4px;">Show results to</label>
+        <div style="display:flex;gap:12px;margin-bottom:14px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="radio" name="poll-results" id="results-everyone" value="everyone" checked style="accent-color:var(--air-deep);" />
+            Everyone (students see live results)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="radio" name="poll-results" id="results-manager" value="manager" style="accent-color:var(--air-deep);" />
+            Admins only (students see only options)
+          </label>
+        </div>
+        <button class="btn-primary" onclick="createPoll()">Create poll</button>
+      </div>
+      <div class="mgr-section">
+        <div class="mgr-section-title">All polls</div>
+        <div class="polls-list"><div style="padding:1rem;color:var(--muted);font-size:13px;">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- Vote as Admin tab -->
+    <div id="vote-panel-vote" style="display:none;">
+      <div id="admin-vote-list"><div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading polls...</div></div>
+    </div>
+  </div>
+
+  <!-- Manager: Feedbacks -->
+  <div id="page-mgr-feedbacks" class="page">
+    <div class="page-header"><div><h1 class="page-title">Feedbacks</h1><p class="page-sub">View and respond to student feedback</p></div><span class="hdr-badge" id="fb-count-badge">0 pending</span></div>
+    <div id="mgr-fb-list"><div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading feedbacks...</div></div>
+  </div>
+
+  <!-- Manager: Houses & Points -->
+  <div id="page-mgr-houses" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Houses & Points</h1><p class="page-sub">Manage house points for Term 2</p></div>
+      <button class="btn-primary" id="save-pts-btn" onclick="saveAllHousePoints()" style="background:var(--earth-deep);">
+        💾 Save to Firebase
+      </button>
+    </div>
+    <div id="pts-unsaved-banner" style="display:none;background:#FDF5E3;border:1px solid #E8C97A;border-radius:var(--radius-sm);padding:10px 16px;margin-bottom:14px;font-size:13px;color:#7A5005;display:flex;align-items:center;justify-content:space-between;">
+      <span>⚠️ You have unsaved changes — press "Save to Firebase" to apply.</span>
+      <button class="btn-primary" onclick="saveAllHousePoints()" style="padding:6px 14px;font-size:12px;">Save now</button>
+    </div>
+    <div class="g4" style="margin-bottom:14px;">
+      <div class="card" style="text-align:center;background:var(--earth);border-color:rgba(114,181,90,0.3);">
+        <div style="font-size:24px;margin-bottom:4px;">🌿</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--earth-text);">Earth</div>
+        <div style="font-size:28px;font-weight:300;color:var(--earth-deep);" id="pts-earth">—</div>
+        <input type="number" id="pts-input-earth" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('earth',this.value)" />
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:4px;">
+          <button class="pts-btn" onclick="adjustPts('earth',-10)">−10</button>
+          <button class="pts-btn" onclick="adjustPts('earth',-1)">−1</button>
+          <button class="pts-btn" onclick="adjustPts('earth',1)">+1</button>
+          <button class="pts-btn" onclick="adjustPts('earth',10)">+10</button>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;background:var(--water);border-color:rgba(90,143,200,0.3);">
+        <div style="font-size:24px;margin-bottom:4px;">🌊</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--water-text);">Water</div>
+        <div style="font-size:28px;font-weight:300;color:var(--water-deep);" id="pts-water">—</div>
+        <input type="number" id="pts-input-water" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('water',this.value)" />
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:4px;">
+          <button class="pts-btn" onclick="adjustPts('water',-10)">−10</button>
+          <button class="pts-btn" onclick="adjustPts('water',-1)">−1</button>
+          <button class="pts-btn" onclick="adjustPts('water',1)">+1</button>
+          <button class="pts-btn" onclick="adjustPts('water',10)">+10</button>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;background:var(--air);border-color:rgba(107,184,232,0.3);">
+        <div style="font-size:24px;margin-bottom:4px;">💨</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--air-text);">Air</div>
+        <div style="font-size:28px;font-weight:300;color:var(--air-deep);" id="pts-air">—</div>
+        <input type="number" id="pts-input-air" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('air',this.value)" />
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:4px;">
+          <button class="pts-btn" onclick="adjustPts('air',-10)">−10</button>
+          <button class="pts-btn" onclick="adjustPts('air',-1)">−1</button>
+          <button class="pts-btn" onclick="adjustPts('air',1)">+1</button>
+          <button class="pts-btn" onclick="adjustPts('air',10)">+10</button>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;background:var(--fire);border-color:rgba(232,135,74,0.3);">
+        <div style="font-size:24px;margin-bottom:4px;">🔥</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--fire-text);">Fire</div>
+        <div style="font-size:28px;font-weight:300;color:var(--fire-deep);" id="pts-fire">—</div>
+        <input type="number" id="pts-input-fire" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('fire',this.value)" />
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:4px;">
+          <button class="pts-btn" onclick="adjustPts('fire',-10)">−10</button>
+          <button class="pts-btn" onclick="adjustPts('fire',-1)">−1</button>
+          <button class="pts-btn" onclick="adjustPts('fire',1)">+1</button>
+          <button class="pts-btn" onclick="adjustPts('fire',10)">+10</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save button -->
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:16px;">
+      <div>
+        <div style="font-size:14px;font-weight:500;">Save house points</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Changes are local until you save to Firebase</div>
+      </div>
+      <button class="btn-primary" id="save-pts-btn" onclick="saveAllHousePoints()" style="padding:10px 24px;">
+        💾 Save to Firebase
+      </button>
+    </div>
+    <div class="mgr-section">
+      <div class="mgr-section-title">Award custom points</div>
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
+        <div style="flex:1;min-width:120px;"><label class="fb-label">House</label><select class="fb-input" id="award-house" style="margin-bottom:0;"><option>Earth</option><option>Water</option><option>Air</option><option>Fire</option></select></div>
+        <div style="width:110px;"><label class="fb-label">Points (± ok)</label><input class="fb-input" id="award-pts" type="number" value="10" style="margin-bottom:0;" /></div>
+        <div style="flex:1;min-width:150px;"><label class="fb-label">Given to (student name)</label><input class="fb-input" id="award-to" type="text" placeholder="e.g. Jamie S." style="margin-bottom:0;" /></div>
+        <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="award-reason" type="text" placeholder="e.g. Won quiz" style="margin-bottom:0;" /></div>
+        <button class="btn-primary" style="flex-shrink:0;" onclick="awardPoints()">Award & Save</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);">💡 Use negative numbers (e.g. -10) to deduct points. Points can go below zero.</div>
+    </div>
+
+  </div>
+
+  <!-- Manager: Rewards -->
+  <div id="page-mgr-rewards" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Rewards</h1><p class="page-sub">Manage prizes, spin price, student points and draw history</p></div>
+      <span class="hdr-badge" style="background:var(--earth);color:var(--earth-text);border-color:rgba(114,181,90,0.3);">Admin</span>
+    </div>
+
+    <!-- Reward tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+      <button class="fpill active" id="rwd-tab-prizes" onclick="switchRewardTab('prizes',this)">🎁 Prize Settings</button>
+      <button class="fpill" id="rwd-tab-points" onclick="switchRewardTab('points',this)">⭐ Student Points</button>
+      <button class="fpill" id="rwd-tab-log" onclick="switchRewardTab('log',this)">📋 Points Log</button>
+      <button class="fpill" id="rwd-tab-draws" onclick="switchRewardTab('draws',this)">🎰 Draw History</button>
+    </div>
+
+    <!-- ── Prize Settings tab ── -->
+    <div id="rwd-panel-prizes">
+
+      <!-- Global spin price setting -->
+      <div class="mgr-section" style="background:linear-gradient(135deg,var(--earth) 0%,var(--air) 100%);border-color:rgba(114,181,90,0.4);">
+        <div class="mgr-section-title" style="color:var(--earth-text);">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--earth-deep);fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          🎰 Draw price (global)
+        </div>
+        <p style="font-size:13px;color:var(--earth-text);margin-bottom:14px;line-height:1.6;">This is the <strong>point cost per spin</strong> — applies to all prizes. Students pay this amount each time they draw.</p>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+          <div>
+            <label class="fb-label" style="color:var(--earth-text);">Points per spin</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input class="fb-input" id="spin-price-input" type="number" min="1" placeholder="e.g. 100"
+                style="width:130px;margin-bottom:0;font-size:20px;font-weight:600;text-align:center;color:var(--earth-deep);" />
+              <span style="font-size:14px;font-weight:500;color:var(--earth-text);">pts / spin</span>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="saveSpinPrice()" style="background:var(--earth-deep);padding:10px 24px;">
+            💾 Save price
+          </button>
+          <div id="spin-price-status" style="font-size:12px;color:var(--earth-deep);font-weight:500;align-self:flex-end;padding-bottom:2px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--earth-text);opacity:0.7;margin-top:10px;">Current saved price: <strong id="current-spin-price-display">Loading...</strong></div>
+      </div>
+
+      <!-- Add new prize -->
+      <div class="mgr-section">
+        <div class="mgr-section-title">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add new prize
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:12px;margin-bottom:12px;align-items:end;">
+          <div>
+            <label class="fb-label">Prize name</label>
+            <input class="fb-input" id="prize-name-input" type="text" placeholder="e.g. Starbucks Gift Card" style="margin-bottom:0;" />
+          </div>
+          <div>
+            <label class="fb-label">Probability</label>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <input class="fb-input" id="prize-prob-input" type="number" placeholder="30" min="1"
+                style="margin-bottom:0;text-align:center;font-size:16px;font-weight:600;" />
+            </div>
+          </div>
+          <div>
+            <label class="fb-label">Description (optional)</label>
+            <input class="fb-input" id="prize-desc-input" type="text" placeholder="e.g. 10,000 KRW gift card" style="margin-bottom:0;" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="addPrize()" style="padding:10px 28px;">+ Add Prize</button>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+            💡 <strong>Probability is a weight, not a percentage.</strong> e.g. Prize A = 30, Prize B = 70 → B is 2× more likely to appear.
+            No need to total to 100.
+          </div>
+        </div>
+      </div>
+
+      <!-- Current prizes list -->
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span>Current prize pool <span id="prize-count-badge" style="font-size:11px;font-weight:400;color:var(--muted);"></span></span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPrizesToAdmin()">↻ Refresh</button>
+        </div>
+        <div id="admin-prize-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading prizes...</div></div>
+      </div>
+    </div>
+
+    <!-- ── Student Points tab ── -->
+    <div id="rwd-panel-points" style="display:none;">
+      <div class="mgr-section">
+        <div class="mgr-section-title">Award student points</div>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
+          <div style="flex:2;min-width:180px;">
+            <label class="fb-label">Student</label>
+            <select class="fb-input" id="sp-student" style="margin-bottom:0;"><option value="">— Select student —</option></select>
+          </div>
+          <div style="width:110px;"><label class="fb-label">Points (± ok)</label><input class="fb-input" id="sp-pts" type="number" value="10" style="margin-bottom:0;" /></div>
+          <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="sp-reason" type="text" placeholder="e.g. Best quiz score" style="margin-bottom:0;" /></div>
+          <button class="btn-primary" style="flex-shrink:0;" onclick="awardStudentPoints()">Award & Save</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);">💡 Negative values deduct points from the student.</div>
+      </div>
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span>🏆 Student leaderboard</span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadStudentLeaderboard()">↻ Refresh</button>
+        </div>
+        <div id="student-leaderboard"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── Points Log tab ── -->
+    <div id="rwd-panel-log" style="display:none;">
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span>📋 House points log</span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPointsLog()">↻ Refresh</button>
+        </div>
+        <div id="pts-log-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading log...</div></div>
+      </div>
+    </div>
+
+    <!-- ── Draw History tab ── -->
+    <div id="rwd-panel-draws" style="display:none;">
+      <div class="mgr-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div class="mgr-section-title" style="margin-bottom:2px;">🎰 All student draw records</div>
+            <div style="font-size:12px;color:var(--muted);">Verify serial codes and mark prizes as redeemed</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input class="fb-input" id="draw-search" type="text" placeholder="Search by name, email or serial..." style="width:240px;margin-bottom:0;font-size:12px;" oninput="filterDrawHistory(this.value)" />
+            <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadAdminDrawHistory()">↻ Refresh</button>
+          </div>
+        </div>
+        <div id="admin-draw-history"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading draw history...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student: Rewards -->
+  <div id="page-rewards" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Rewards</h1><p class="page-sub">Spend your points on prize draws</p></div>
+      <span class="hdr-badge" id="my-pts-badge" style="background:var(--earth);color:var(--earth-text);border-color:rgba(114,181,90,0.3);">— pts</span>
+    </div>
+
+    <!-- Top row: My points + Spin price -->
+    <div class="g2" style="margin-bottom:14px;">
+      <div class="card" style="background:linear-gradient(135deg,var(--earth) 0%,#d4edda 100%);border-color:rgba(114,181,90,0.35);">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--earth-text);opacity:0.7;margin-bottom:6px;">MY POINTS</div>
+        <div style="font-size:48px;font-weight:300;letter-spacing:-2px;color:var(--earth-deep);line-height:1;" id="student-my-pts">—</div>
+        <div style="font-size:12px;color:var(--earth-text);opacity:0.65;margin-top:6px;">Available to spend</div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,var(--air) 0%,#dbeeff 100%);border-color:rgba(107,184,232,0.35);display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--air-text);opacity:0.7;margin-bottom:6px;">COST PER SPIN</div>
+        <div style="font-size:48px;font-weight:300;letter-spacing:-2px;color:var(--air-deep);line-height:1;" id="spin-price-display">—</div>
+        <div style="font-size:12px;color:var(--air-text);opacity:0.65;margin-top:6px;">points per draw</div>
+      </div>
+    </div>
+
+    <!-- Prize list + Spin panel -->
+    <div class="g2" style="margin-bottom:14px;align-items:start;">
+      <!-- Prize pool -->
+      <div class="card">
+        <div class="section-label" style="margin-bottom:12px;">Prize pool</div>
+        <div id="student-prize-list"><div style="color:var(--muted);font-size:13px;">Loading prizes...</div></div>
+      </div>
+
+      <!-- Spin panel -->
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:2rem;">
+        <!-- Result area -->
+        <div id="spin-result-area" style="width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;">
+          <div style="font-size:56px;margin-bottom:10px;">🎰</div>
+          <div style="font-size:15px;font-weight:500;color:var(--muted);">Ready to draw?</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Spend points for a random prize</div>
+        </div>
+
+        <!-- Spin cost indicator -->
+        <div id="spin-afford-info" style="width:100%;padding:10px 14px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--muted);" id="spin-cost-info">Loading...</div>
+          <div style="margin-top:6px;height:4px;background:var(--border);border-radius:99px;">
+            <div id="pts-progress-bar" style="height:100%;border-radius:99px;background:var(--earth-mid);width:0%;transition:width 0.4s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <div style="font-size:10px;color:var(--muted);">0</div>
+            <div style="font-size:10px;color:var(--muted);" id="pts-bar-max">—</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="spin-btn" onclick="doSpin()"
+          style="width:100%;padding:14px;font-size:16px;font-weight:700;background:var(--earth-deep);letter-spacing:0.02em;border-radius:var(--radius-sm);">
+          🎰 &nbsp;Draw!
+        </button>
+        <div id="spin-status" style="font-size:12px;color:var(--muted);min-height:16px;"></div>
+      </div>
+    </div>
+
+    <!-- My draw history -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="section-label" style="margin-bottom:0;">My draw history</div>
+        <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadMyDrawHistory(window.currentUserEmail)">↻ Refresh</button>
+      </div>
+      <div id="student-draw-history"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">No draws yet. Try your luck!</div></div>
+    </div>
+  </div>
+
+  <!-- Manager: Students -->
+  <div id="page-mgr-students" class="page">
+    <div class="page-header"><div><h1 class="page-title">Students</h1><p class="page-sub">Assign students to houses</p></div><span class="hdr-badge">103 students</span></div>
+    <div class="mgr-section">
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <input class="fb-input" style="flex:1;margin-bottom:0;min-width:200px;" placeholder="Search by name or email..." oninput="filterStudents(this.value)" />
+        <select class="fb-input" style="width:140px;margin-bottom:0;" onchange="filterByHouse(this.value)"><option value="">All houses</option><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option><option>Unassigned</option></select>
+      </div>
+      <table class="mgr-table">
+        <thead><tr><th>Student</th><th>Email</th><th>House</th><th>Assign</th><th>Action</th></tr></thead>
+        <tbody id="student-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Manager: Admins -->
+  <div id="page-mgr-admins" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Manage Roles</h1><p class="page-sub">Add or remove manager accounts</p></div>
+      <span class="hdr-badge" style="background:var(--fire);color:var(--fire-text);border-color:rgba(232,135,74,0.3);">Head Admin only</span>
+    </div>
+
+    <div class="mgr-section">
+      <div class="mgr-section-title">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Add new admin
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Enter the Microsoft account email of the person you want to grant manager access. They will see the full manager dashboard when they sign in.</p>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:220px;">
+          <label class="fb-label">Microsoft account email</label>
+          <input class="fb-input" id="new-admin-email" type="email" placeholder="e.g. teacher@outlook.com" style="margin-bottom:0;" />
+        </div>
+        <div style="flex:1;min-width:150px;">
+          <label class="fb-label">Name (optional)</label>
+          <input class="fb-input" id="new-admin-name" type="text" placeholder="e.g. Mr. Kim" style="margin-bottom:0;" />
+        </div>
+        <button class="btn-primary" style="flex-shrink:0;" onclick="addAdmin()">Add admin</button>
+      </div>
+      <div id="add-admin-error" style="font-size:12px;color:#791F1F;margin-top:8px;display:none;">Please enter a valid email address.</div>
+    </div>
+
+    <div class="mgr-section">
+      <div class="mgr-section-title">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Current admins
+      </div>
+      <div id="admin-list"></div>
+    </div>
+
+    <div class="mgr-section">
+      <div class="mgr-section-title">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        House leaders
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Designate one student per house as a House Leader. They can post announcements to their house.</p>
+      <div id="house-leaders-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+    </div>
+  </div>
+
+</main>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── FIREBASE CONFIG ──
+const firebaseConfig = {
+  apiKey: "AIzaSyB5nu9X3QR_aGNYb3DLMvh9SdjTcjVsHd4",
+  authDomain: "tis-student-hub.firebaseapp.com",
+  projectId: "tis-student-hub",
+  storageBucket: "tis-student-hub.firebasestorage.app",
+  messagingSenderId: "577180254211",
+  appId: "1:577180254211:web:8437f21e1823ba13528e36"
+};
+let db = null;
+let auth = null;
+function initFirebase() {
+  if (typeof firebase === 'undefined') { console.warn('Firebase not loaded'); return false; }
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  auth = firebase.auth();
+  // Listen for Firebase Auth state — ONLY for email/password users
+  // Guard flag prevents double-call when MSAL also calls handleLogin
+  auth.onAuthStateChanged(async fbUser => {
+    if (window._loginHandled) return; // MSAL already handled login
+    if (!fbUser) return;
+    if (fbUser.providerData[0]?.providerId !== 'password') return; // only email/pass
+    if (!fbUser.emailVerified) {
+      showVerifyScreen(fbUser.email);
+      return;
+    }
+    // Email/password verified user — load managers/leaders then login
+    const fbManagers = await loadManagerEmails().catch(() => []);
+    fbManagers.forEach(e => {
+      if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
+    });
+    const leaders = await loadHouseLeaders().catch(() => null);
+    if (leaders) Object.assign(HOUSE_LEADERS, leaders);
+    window._loginHandled = true;
+    handleLogin({ username: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
+  });
+  return true;
+}
+
+// ── FIRESTORE HELPERS ──
+// Students
+async function loadStudents() {
+  try {
+    const snap = await db.collection('students').orderBy('joinedAt','desc').get();
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { console.error('loadStudents:', e); return JSON.parse(localStorage.getItem('classroom_students')||'[]'); }
+}
+async function saveStudent(student) {
+  try {
+    await db.collection('students').doc(student.email.toLowerCase()).set(student, {merge:true});
+  } catch(e) { console.error('saveStudent:', e); }
+}
+async function deleteStudent(email) {
+  try {
+    await db.collection('students').doc(email.toLowerCase()).delete();
+  } catch(e) { console.error('deleteStudent:', e); }
+}
+
+// House points
+async function loadHousePoints() {
+  try {
+    const doc = await db.collection('settings').doc('housePoints').get();
+    if (doc.exists) return doc.data();
+    return {earth:2210, water:1950, air:1840, fire:1620};
+  } catch(e) { return {earth:2210, water:1950, air:1840, fire:1620}; }
+}
+async function saveHousePoints() {
+  try {
+    await db.collection('settings').doc('housePoints').set(housePts);
+  } catch(e) { console.error('saveHousePoints:', e); }
+}
+
+// Announcements
+async function loadAnnouncements() {
+  try {
+    const snap = await db.collection('announcements').orderBy('createdAt','desc').get();
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { return []; }
+}
+async function saveAnnouncement(ann) {
+  try {
+    await db.collection('announcements').add({...ann, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+  } catch(e) { console.error('saveAnnouncement:', e); }
+}
+async function deleteAnnouncement(id) {
+  try {
+    await db.collection('announcements').doc(id).delete();
+  } catch(e) { console.error('deleteAnnouncement:', e); }
+}
+
+// Polls
+async function loadPolls() {
+  try {
+    const snap = await db.collection('polls').orderBy('createdAt','desc').get();
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { return []; }
+}
+async function savePoll(poll) {
+  try {
+    const ref = await db.collection('polls').add({...poll, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+    return ref.id;
+  } catch(e) { console.error('savePoll:', e); }
+}
+async function castVoteFirestore(pollId, optionIndex, userEmail) {
+  try {
+    const voteRef = db.collection('polls').doc(pollId).collection('votes').doc(userEmail.toLowerCase());
+    const existing = await voteRef.get();
+    if (existing.exists) return false; // already voted
+    await voteRef.set({optionIndex, votedAt: firebase.firestore.FieldValue.serverTimestamp()});
+    await db.collection('polls').doc(pollId).update({[`votes.${optionIndex}`]: firebase.firestore.FieldValue.increment(1), totalVotes: firebase.firestore.FieldValue.increment(1)});
+    return true;
+  } catch(e) { console.error('castVote:', e); return false; }
+}
+
+// Feedbacks
+async function loadFeedbacks() {
+  try {
+    const snap = await db.collection('feedbacks').orderBy('createdAt','desc').get();
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { return []; }
+}
+async function saveFeedback(fb) {
+  try {
+    await db.collection('feedbacks').add({...fb, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+  } catch(e) { console.error('saveFeedback:', e); }
+}
+async function saveFeedbackReply(fbId, reply, replyBy) {
+  try {
+    await db.collection('feedbacks').doc(fbId).update({
+      reply,
+      replyBy,
+      replyAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.error('saveFeedbackReply:', e); }
+}
+async function deleteFeedbackFirestore(id) {
+  try {
+    await db.collection('feedbacks').doc(id).delete();
+  } catch(e) { console.error('deleteFeedback:', e); }
+}
+
+// Managers list
+async function loadManagerEmails() {
+  try {
+    const doc = await db.collection('settings').doc('managers').get();
+    if (doc.exists) return doc.data().emails || [];
+    return [];
+  } catch(e) { return []; }
+}
+async function saveManagerEmailsToFirestore() {
+  try {
+    await db.collection('settings').doc('managers').set({emails: MANAGER_EMAILS});
+  } catch(e) { console.error('saveManagers:', e); }
+}
+
+// House announcements
+async function loadHouseAnnouncements(house) {
+  if (!house) return [];
+  try {
+    const snap = await db.collection('houseAnnouncements')
+      .where('house','==',house.toLowerCase())
+      .orderBy('createdAt','desc').get();
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { console.warn('loadHouseAnnouncements:', e); return []; }
+}
+async function saveHouseAnnouncement(ann) {
+  try {
+    await db.collection('houseAnnouncements').add({
+      ...ann,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.error('saveHouseAnnouncement:', e); }
+}
+async function deleteHouseAnnouncement(id) {
+  try {
+    await db.collection('houseAnnouncements').doc(id).delete();
+  } catch(e) { console.error('deleteHouseAnnouncement:', e); }
+}
+
+// House leaders (one per house)
+async function loadHouseLeaders() {
+  try {
+    const doc = await db.collection('settings').doc('houseLeaders').get();
+    if (doc.exists) return doc.data();
+    return { earth:'', water:'', air:'', fire:'' };
+  } catch(e) { return { earth:'', water:'', air:'', fire:'' }; }
+}
+async function saveHouseLeader(house, email) {
+  try {
+    await db.collection('settings').doc('houseLeaders').set({ [house]: (email||'').toLowerCase() }, { merge:true });
+  } catch(e) { console.error('saveHouseLeader:', e); }
+}
+
+// ── MSAL CONFIG ──
+const SUPER_ADMIN = 'TisStudentHub@outlook.com';
+let MANAGER_EMAILS = JSON.parse(localStorage.getItem('manager_emails') || '[]');
+if (!MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(SUPER_ADMIN.toLowerCase())) { MANAGER_EMAILS = [SUPER_ADMIN, ...MANAGER_EMAILS]; }
+function isManager(email) { return MANAGER_EMAILS.map(e=>e.toLowerCase()).includes((email||'').toLowerCase()); }
+
+// House leaders state
+let HOUSE_LEADERS = { earth:'', water:'', air:'', fire:'' };
+function isHouseLeader(email) {
+  if (!email) return false;
+  const e = email.toLowerCase();
+  return Object.values(HOUSE_LEADERS).some(v => (v||'').toLowerCase() === e);
+}
+function getLeaderHouse(email) {
+  if (!email) return null;
+  const e = email.toLowerCase();
+  for (const h of ['earth','water','air','fire']) {
+    if ((HOUSE_LEADERS[h]||'').toLowerCase() === e) return h;
+  }
+  return null;
+}
+function saveManagers() {
+  localStorage.setItem('manager_emails', JSON.stringify(MANAGER_EMAILS.filter(e=>e.toLowerCase()!==SUPER_ADMIN.toLowerCase())));
+  saveManagerEmailsToFirestore();
+}
+const CLIENT_ID = 'b59528a6-1eab-4d13-ad23-bd8bf5c23c17';
+
+let msalInstance = null;
+
+function msalLoadError() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-error').textContent = 'Failed to load Microsoft library. Please refresh.';
+  document.getElementById('login-error').style.display = 'block';
+}
+
+function initMsal() {
+  const msalConfig = {
+    auth: {
+      clientId: CLIENT_ID,
+      authority: 'https://login.microsoftonline.com/common',
+      redirectUri: 'https://steady-crisp-435945.netlify.app',
+      navigateToLoginRequestUrl: true,
+    },
+    cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: true }
+  };
+  window._loginRequest = { scopes: ['openid', 'profile', 'email'] };
+  msalInstance = new msal.PublicClientApplication(msalConfig);
+  init();
+}
+
+let signingIn = false;
+
+async function signIn() {
+  if (!msalInstance) {
+    document.getElementById('login-error').textContent = 'Still loading... please wait and try again.';
+    document.getElementById('login-error').style.display = 'block';
+    return;
+  }
+  if (signingIn) return;
+  signingIn = true;
+  try {
+    // Clear any stuck state before redirect
+    Object.keys(sessionStorage).forEach(k => {
+      if (k.startsWith('msal.')) sessionStorage.removeItem(k);
+    });
+    document.getElementById('login-error').style.display = 'none';
+    // Use redirect — more reliable across tabs, no popup blocker issues
+    await msalInstance.loginRedirect(window._loginRequest);
+  } catch (e) {
+    console.error('Login error:', e);
+    document.getElementById('login-error').textContent = 'Sign-in failed: ' + (e.message || 'Please try again.');
+    document.getElementById('login-error').style.display = 'block';
+    signingIn = false;
+  }
+  // Note: signingIn stays true during redirect — page reloads on return
+}
+
+async function signOut() {
+  currentUserRole = null;
+  // Sign out Firebase (email/password users)
+  if (auth && auth.currentUser) {
+    await auth.signOut().catch(() => {});
+  }
+  // Sign out Microsoft (MSAL users)
+  if (msalInstance) {
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) {
+      await msalInstance.logoutRedirect({
+        account: accounts[0],
+        postLogoutRedirectUri: 'https://steady-crisp-435945.netlify.app'
+      });
+      return; // page will redirect
+    }
+  }
+  // Firebase-only signout — just show login screen
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  switchLoginTab('microsoft');
+}
+
+// ── INIT ── handles redirect return automatically
+async function init() {
+  window._loginHandled = false;
+  try {
+    const response = await msalInstance.handleRedirectPromise();
+    if (response && response.account) {
+      window._loginHandled = true;
+      const fbManagers = await loadManagerEmails().catch(() => []);
+      fbManagers.forEach(e => {
+        if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
+      });
+      const leaders = await loadHouseLeaders().catch(() => null);
+      if (leaders) Object.assign(HOUSE_LEADERS, leaders);
+      handleLogin(response.account);
+      return;
+    }
+    // Check existing MSAL session
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) {
+      window._loginHandled = true;
+      const fbManagers = await loadManagerEmails().catch(() => []);
+      fbManagers.forEach(e => {
+        if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
+      });
+      const leaders = await loadHouseLeaders().catch(() => null);
+      if (leaders) Object.assign(HOUSE_LEADERS, leaders);
+      handleLogin(accounts[0]);
+      return;
+    }
+    // No MSAL session — let Firebase onAuthStateChanged handle email/pass users
+    // If Firebase also has no user, show login screen after short delay
+    setTimeout(() => {
+      if (!window._loginHandled) showLoginScreen();
+    }, 1500);
+  } catch (e) {
+    console.error('Init error:', e);
+    if (!window._loginHandled) showLoginScreen();
+  }
+}
+
+// ── EMAIL AUTH UI ──
+function switchLoginTab(tab) {
+  ['microsoft','email'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('panel-'+t).style.display = t===tab ? '' : 'none';
+  });
+  hideLoginError();
+}
+
+function switchEmailSubtab(sub) {
+  ['signin','signup'].forEach(s => {
+    document.getElementById('subtab-'+s).classList.toggle('active', s===sub);
+    document.getElementById('form-'+s).style.display = s===sub ? '' : 'none';
+  });
+  document.getElementById('form-verify').style.display = 'none';
+  hideLoginError();
+}
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideLoginError() {
+  const el = document.getElementById('login-error');
+  if (el) el.style.display = 'none';
+}
+
+function showVerifyScreen(email) {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  switchLoginTab('email');
+  document.getElementById('form-signin').style.display = 'none';
+  document.getElementById('form-signup').style.display = 'none';
+  document.getElementById('form-verify').style.display = '';
+  document.getElementById('verify-email-hint').textContent =
+    `We sent a verification link to ${email}. Click the link then return here.`;
+}
+
+async function signUpWithEmail() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-confirm').value;
+  hideLoginError();
+  if (!name) { showLoginError('Please enter your full name.'); return; }
+  if (!email) { showLoginError('Please enter your email.'); return; }
+  if (pw.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
+  if (pw !== confirm) { showLoginError('Passwords do not match.'); return; }
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pw);
+    await cred.user.updateProfile({ displayName: name });
+    await cred.user.sendEmailVerification();
+    showVerifyScreen(email);
+  } catch(e) {
+    const msgs = {
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
+    };
+    showLoginError(msgs[e.code] || e.message);
+  }
+}
+
+async function signInWithEmail() {
+  const email = document.getElementById('signin-email').value.trim();
+  const pw = document.getElementById('signin-password').value;
+  hideLoginError();
+  if (!email || !pw) { showLoginError('Please enter your email and password.'); return; }
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, pw);
+    if (!cred.user.emailVerified) {
+      showVerifyScreen(email);
+      return;
+    }
+    // onAuthStateChanged will handle the rest
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/too-many-requests': 'Too many attempts. Please try again later.',
+      'auth/invalid-credential': 'Incorrect email or password.',
+    };
+    showLoginError(msgs[e.code] || e.message);
+  }
+}
+
+async function checkEmailVerified() {
+  try {
+    await auth.currentUser?.reload();
+    if (auth.currentUser?.emailVerified) {
+      // onAuthStateChanged will handle login automatically
+    } else {
+      showLoginError('Email not verified yet. Please check your inbox and click the link.');
+    }
+  } catch(e) {
+    showLoginError('Could not check verification. Please try again.');
+  }
+}
+
+async function resendVerification() {
+  try {
+    await auth.currentUser?.sendEmailVerification();
+    showLoginError('');
+    const el = document.getElementById('login-error');
+    el.style.background = '#EAF2E3';
+    el.style.color = '#1A4D10';
+    el.textContent = 'Verification email sent!';
+    el.style.display = 'block';
+    setTimeout(() => hideLoginError(), 3000);
+  } catch(e) {
+    showLoginError('Could not resend. Please wait a moment and try again.');
+  }
+}
+
+async function forgotPassword() {
+  const email = document.getElementById('signin-email').value.trim();
+  if (!email) { showLoginError('Enter your email above first, then click forgot password.'); return; }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    const el = document.getElementById('login-error');
+    el.style.background = '#EAF2E3'; el.style.color = '#1A4D10';
+    el.textContent = `Password reset email sent to ${email}`;
+    el.style.display = 'block';
+  } catch(e) {
+    showLoginError(e.code === 'auth/user-not-found'
+      ? 'No account found with this email.'
+      : 'Could not send reset email. Please try again.');
+  }
+}
+
+async function backToSignIn() {
+  if (auth.currentUser) await auth.signOut();
+  switchEmailSubtab('signin');
+  hideLoginError();
+}
+
+function showLoginScreen() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function handleLogin(account) {
+  // Force hide all overlapping screens
+  const loadingEl = document.getElementById('loading-screen');
+  const loginEl = document.getElementById('login-screen');
+  const appEl = document.getElementById('app');
+  if (loadingEl) { loadingEl.style.display = 'none'; loadingEl.style.visibility = 'hidden'; }
+  if (loginEl) { loginEl.style.display = 'none'; loginEl.style.visibility = 'hidden'; loginEl.style.pointerEvents = 'none'; loginEl.style.zIndex = '-1'; }
+  if (appEl) { appEl.style.display = 'block'; appEl.style.visibility = 'visible'; }
+
+  const email = account.username || '';
+  const fullName = (account.name || email.split('@')[0] || 'User').trim();
+  const parts = fullName.split(' ').filter(Boolean);
+  const initials = parts.map(p => p[0]).join('').toUpperCase().slice(0, 2) || '?';
+  const firstName = parts[0] || 'there';
+  const role = isManager(email) ? 'manager' : 'student';
+  currentUserRole = role;
+  window.currentUserEmail = email;
+  window.currentUserName = fullName;
+
+  document.getElementById('user-name').textContent = fullName;
+  document.getElementById('user-avatar').textContent = initials;
+
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dateStr = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  document.getElementById('dash-date').textContent = dateStr;
+
+  if (role === 'manager') {
+    const isHead = email.toLowerCase() === SUPER_ADMIN.toLowerCase();
+    document.getElementById('role-badge').textContent = isHead ? 'Head Admin' : 'Admin';
+    document.getElementById('role-badge').className = 'role-badge manager';
+    document.getElementById('nav-student').style.display = 'none';
+    document.getElementById('nav-manager').style.display = '';
+    document.getElementById('user-role').textContent = (isHead ? 'Head Admin' : 'Admin') + ' · TIS Eagles';
+    document.getElementById('user-avatar').style.background = '#C04A10';
+    document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
+    if (isHead) {
+      document.getElementById('nav-admins-btn').style.display = '';
+      renderAdminList();
+      renderHouseLeaders();
+    }
+    showPage('mgr-dashboard', null);
+    // Load all data fresh from Firebase on login
+    updateMgrDashboard();
+    renderStudents();
+    loadAnnouncementsToMgr();
+    loadPollsToMgr();
+    loadFeedbacksToMgr();
+  } else {
+    // Auto-register student
+    registerStudent(email, fullName);
+    document.getElementById('role-badge').textContent = 'Student';
+    document.getElementById('role-badge').className = 'role-badge student';
+    document.getElementById('nav-student').style.display = '';
+    document.getElementById('nav-manager').style.display = 'none';
+    document.getElementById('user-avatar').style.background = '#1A6FA8';
+    document.getElementById('dash-greeting').textContent = greeting + ', ' + firstName + '!';
+    showPage('dashboard', null);
+    loadAnnouncementsToStudent();
+    loadStudentHousePoints();
+    loadDashboardPollPreview(email);
+    // Load student's house from Firestore async
+    db.collection('students').doc(email.toLowerCase()).get().then(doc => {
+      const house = doc.exists ? (doc.data().house || 'Unassigned') : 'Unassigned';
+      window.currentUserHouse = house;
+      document.getElementById('user-role').textContent = 'House ' + house + ' · TIS Eagles';
+      // Re-render my house page once house is known
+      renderMyHousePage();
+    }).catch(() => {
+      document.getElementById('user-role').textContent = 'TIS Eagles';
+    });
+    // Load house leaders too
+    loadHouseLeaders().then(leaders => { Object.assign(HOUSE_LEADERS, leaders); });
+    loadStudentPolls(email);
+    // Load student points for display
+    getStudentPoints(email).then(pts => {
+      const mpd = document.getElementById('my-points-display');
+      if (mpd) mpd.textContent = pts.toLocaleString();
+      const badge = document.getElementById('my-pts-badge');
+      if (badge) badge.textContent = pts.toLocaleString() + ' pts';
+    });
+  }
+}
+
+// ── SECURITY ──
+const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
+const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards'];
+let currentUserRole = null; // set on login
+
+function isAuthorized(pageId) {
+  if (!currentUserRole) return false; // not logged in
+  if (MANAGER_PAGES.includes(pageId) && currentUserRole !== 'manager') {
+    showSecurityAlert();
+    return false;
+  }
+  if (STUDENT_PAGES.includes(pageId) && currentUserRole !== 'student') {
+    // managers can view student pages for reference — allow
+    return true;
+  }
+  return true;
+}
+
+function showSecurityAlert() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:2rem;max-width:360px;text-align:center;font-family:DM Sans,sans-serif;">
+      <div style="font-size:40px;margin-bottom:12px;">🚫</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:8px;">Access Denied</div>
+      <div style="font-size:13px;color:#7A7672;margin-bottom:1.5rem;line-height:1.6;">You don't have permission to access this page. This area is for managers only.</div>
+      <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#1A1916;color:white;border:none;border-radius:10px;padding:10px 24px;font-size:13px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;">Go back</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+// ── NAV ──
+function showPage(id, btn) {
+  if (!isAuthorized(id)) return;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  // Reload Firebase data when switching to each page
+  if (!db) return;
+  switch(id) {
+    case 'mgr-dashboard':
+      loadHousePoints().then(pts => {
+        Object.assign(housePts, pts);
+        ['earth','water','air','fire'].forEach(h => {
+          const el = document.getElementById('pts-'+h);
+          if (el) el.textContent = housePts[h].toLocaleString();
+        });
+        updateMgrDashboard();
+      });
+      break;
+    case 'mgr-announcements':
+      loadAnnouncementsToMgr();
+      break;
+    case 'mgr-voting':
+      loadPollsToMgr();
+      // Reset to manage tab
+      switchVoteTab('manage', document.getElementById('vote-tab-manage'));
+      break;
+    case 'mgr-feedbacks':
+      loadFeedbacksToMgr();
+      break;
+    case 'mgr-houses':
+      loadHousePoints().then(pts => {
+        Object.assign(housePts, pts);
+        ['earth','water','air','fire'].forEach(h => {
+          const el = document.getElementById('pts-'+h);
+          if (el) el.textContent = housePts[h].toLocaleString();
+          const inp = document.getElementById('pts-input-'+h);
+          if (inp) inp.value = housePts[h];
+        });
+      });
+      loadPointsLog();
+      populateStudentSelect();
+      loadStudentLeaderboard();
+      break;
+    case 'mgr-students':
+      renderStudents();
+      break;
+    case 'mgr-admins':
+      renderAdminList();
+      renderHouseLeaders();
+      break;
+    case 'mgr-rewards':
+      switchRewardTab('prizes', document.getElementById('rwd-tab-prizes'));
+      loadPrizesToAdmin();
+      populateStudentSelect();
+      break;
+    case 'rewards':
+      loadStudentRewardsPage();
+      break;
+    case 'announcements':
+      loadAnnouncementsToStudent();
+      break;
+    case 'voting':
+      if (window.currentUserEmail) loadStudentPolls(window.currentUserEmail);
+      break;
+    case 'feedbacks':
+      loadStudentPastFeedbacks();
+      break;
+    case 'houses':
+      // Refresh house leaders, then re-render
+      loadHouseLeaders().then(l => {
+        Object.assign(HOUSE_LEADERS, l);
+        loadStudentHousePoints();
+      });
+      break;
+    case 'dashboard':
+      loadAnnouncementsToStudent();
+      loadStudentHousePoints();
+      if (window.currentUserEmail) loadDashboardPollPreview(window.currentUserEmail);
+      break;
+  }
+}
+
+// ── STUDENT HOUSE POINTS LOADER ──
+function loadStudentHousePoints() {
+  loadHousePoints().then(pts => {
+    Object.assign(housePts, pts);
+    // Update dashboard preview pts
+    ['air','earth','water','fire'].forEach(h => {
+      const el = document.getElementById('dash-pts-'+h);
+      if (el) el.textContent = housePts[h].toLocaleString();
+    });
+    // Render the user's own house only on Houses page
+    renderMyHousePage();
+  });
+}
+
+const HOUSE_INFO = {
+  earth: {name:'Earth', emoji:'🌿', bg:'var(--earth)', border:'rgba(114,181,90,0.3)', text:'var(--earth-text)', deep:'var(--earth-deep)', mid:'var(--earth-mid)'},
+  water: {name:'Water', emoji:'🌊', bg:'var(--water)', border:'rgba(90,143,200,0.3)',  text:'var(--water-text)', deep:'var(--water-deep)', mid:'var(--water-mid)'},
+  air:   {name:'Air',   emoji:'💨', bg:'var(--air)',   border:'rgba(107,184,232,0.3)', text:'var(--air-text)',   deep:'var(--air-deep)',   mid:'var(--air-mid)'},
+  fire:  {name:'Fire',  emoji:'🔥', bg:'var(--fire)',  border:'rgba(232,135,74,0.3)',  text:'var(--fire-text)',  deep:'var(--fire-deep)',  mid:'var(--fire-mid)'},
+};
+
+function renderMyHousePage() {
+  const card = document.getElementById('my-house-card');
+  if (!card) return;
+  const myHouse = (window.currentUserHouse || '').toLowerCase();
+  if (!myHouse || myHouse === 'unassigned' || !HOUSE_INFO[myHouse]) {
+    card.innerHTML = `
+      <div class="card" style="text-align:center;padding:2rem;">
+        <div style="font-size:32px;margin-bottom:8px;">🏠</div>
+        <div style="font-size:15px;font-weight:500;margin-bottom:4px;">No house assigned yet</div>
+        <div style="font-size:13px;color:var(--muted);">Ask an admin to assign you to a house.</div>
+      </div>`;
+    document.getElementById('my-house-title').textContent = 'My House';
+    document.getElementById('my-house-sub').textContent = 'Waiting for assignment';
+    document.getElementById('my-house-badge').textContent = 'Unassigned';
+    document.getElementById('house-ann-list').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem;">No house announcements yet.</div>';
+    return;
+  }
+  const h = HOUSE_INFO[myHouse];
+  const pts = housePts[myHouse] || 0;
+  // Find rank
+  const allPts = [housePts.earth||0, housePts.water||0, housePts.air||0, housePts.fire||0].sort((a,b)=>b-a);
+  const rank = allPts.indexOf(pts) + 1;
+  const rankLabel = ['🥇 1st','🥈 2nd','🥉 3rd','4th'][rank-1] || `${rank}th`;
+
+  document.getElementById('my-house-title').textContent = `${h.emoji} ${h.name} House`;
+  document.getElementById('my-house-sub').textContent = 'Your house standings and announcements';
+  document.getElementById('my-house-badge').textContent = rankLabel;
+
+  card.innerHTML = `
+    <div class="house-big" style="background:${h.bg};border-color:${h.border};">
+      <div class="house-big-top">
+        <div class="h-big-emoji">${h.emoji}</div>
+        <span class="h-rank" style="background:${h.bg};color:${h.text};">${rankLabel} place</span>
+      </div>
+      <div class="h-big-name" style="color:${h.text};">${h.name}</div>
+      <div class="h-big-pts" style="color:${h.deep};">${pts.toLocaleString()}</div>
+      <div class="h-big-sub" style="color:${h.text};">points this term</div>
+      <div class="h-progress"><div class="h-bar" style="width:${Math.min(100, Math.max(0, Math.round(pts/Math.max(...allPts,1)*100)))}%;background:${h.mid};"></div></div>
+    </div>`;
+
+  // Show post section if user is admin or this house's leader
+  const myEmail = (window.currentUserEmail||'').toLowerCase();
+  const canPost = isManager(myEmail) || (HOUSE_LEADERS[myHouse]||'').toLowerCase() === myEmail;
+  document.getElementById('house-post-section').style.display = canPost ? '' : 'none';
+
+  // Load house announcements
+  loadHouseAnnouncementsForView(myHouse);
+
+  // Load student's personal points
+  const myEl = document.getElementById('my-points-display');
+  if (myEl && window.currentUserEmail) {
+    getStudentPoints(window.currentUserEmail).then(pts => {
+      myEl.textContent = (pts > 0 ? '+' : '') + pts;
+      myEl.style.color = pts >= 0 ? 'var(--earth-deep)' : 'var(--fire-deep)';
+    });
+  }
+}
+
+function loadHouseAnnouncementsForView(house) {
+  const list = document.getElementById('house-ann-list');
+  if (!list) return;
+  loadHouseAnnouncements(house).then(anns => {
+    if (anns.length === 0) {
+      list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem;">No announcements for your house yet.</div>';
+      return;
+    }
+    const myEmail = (window.currentUserEmail||'').toLowerCase();
+    const canDelete = isManager(myEmail) || (HOUSE_LEADERS[house]||'').toLowerCase() === myEmail;
+    list.innerHTML = anns.map(a => `
+      <div style="border-bottom:1px solid var(--border);padding:14px 0;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;">
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:500;">${a.title||''}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">By ${a.postedBy||'Admin'} · ${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
+          </div>
+          ${canDelete ? `<button class="btn-danger" data-del="${a.id}">Delete</button>` : ''}
+        </div>
+        <div style="font-size:13px;color:var(--text);">${a.body||''}</div>
+      </div>`).join('');
+    if (canDelete) {
+      list.querySelectorAll('[data-del]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!confirm('Delete this announcement?')) return;
+          deleteHouseAnnouncement(btn.dataset.del).then(() => {
+            loadHouseAnnouncementsForView(house);
+            toast('Announcement deleted.');
+          });
+        });
+      });
+    }
+  });
+}
+
+function postHouseAnnouncement() {
+  const title = document.getElementById('house-ann-title').value.trim();
+  const body = document.getElementById('house-ann-body').value.trim();
+  if (!title) { toast('Please enter a title!'); return; }
+  const myHouse = (window.currentUserHouse || '').toLowerCase();
+  if (!myHouse || !HOUSE_INFO[myHouse]) { toast('You must be in a house to post.'); return; }
+  saveHouseAnnouncement({
+    title, body,
+    house: myHouse,
+    postedBy: window.currentUserName || 'Anonymous',
+    postedByEmail: (window.currentUserEmail||'').toLowerCase()
+  }).then(() => {
+    document.getElementById('house-ann-title').value = '';
+    document.getElementById('house-ann-body').value = '';
+    loadHouseAnnouncementsForView(myHouse);
+    toast('Announcement posted to ' + HOUSE_INFO[myHouse].name + ' house ✓');
+  });
+}
+
+function loadStudentPastFeedbacks() {
+  const el = document.getElementById('student-fb-list');
+  if (!el || !window.currentUserEmail) return;
+  db.collection('feedbacks')
+    .where('studentEmail','==',window.currentUserEmail.toLowerCase())
+    .orderBy('createdAt','desc').get()
+    .then(snap => {
+      if (snap.empty) {
+        el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No feedbacks submitted yet.</div>';
+        return;
+      }
+      el.innerHTML = snap.docs.map(d => {
+        const fb = d.data();
+        const stars = '★'.repeat(fb.rating||0)+'☆'.repeat(5-(fb.rating||0));
+        const date = fb.createdAt?.toDate?.()?.toLocaleDateString()||'Recent';
+        const replyHtml = fb.reply
+          ? `<div style="margin-top:10px;padding:10px 12px;background:var(--air);border-radius:var(--radius-sm);border-left:3px solid var(--air-deep);">
+               <div style="font-size:11px;color:var(--air-deep);font-weight:500;margin-bottom:4px;">✓ Reply from ${fb.replyBy||'Manager'}</div>
+               <div style="font-size:13px;color:var(--air-text);">${fb.reply}</div>
+             </div>`
+          : `<div style="margin-top:6px;font-size:11px;color:var(--muted);font-style:italic;">⏳ Awaiting reply...</div>`;
+        return `<div style="border-bottom:1px solid var(--border);padding:14px 0;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;font-weight:500;">${fb.category||'General'}</span>
+            <span style="font-size:11px;color:var(--muted);">${date}</span>
+          </div>
+          <div class="fb-stars">${stars}</div>
+          <div style="font-size:13px;color:var(--text);margin-top:6px;">${fb.text||''}</div>
+          ${replyHtml}
+        </div>`;
+      }).join('');
+    }).catch((e) => { 
+      console.warn('loadStudentPastFeedbacks:', e);
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load.</div>'; 
+    });
+}
+
+function loadDashboardPollPreview(userEmail) {
+  const el = document.getElementById('dash-poll-preview');
+  if (!el) return;
+  loadPolls().then(polls => {
+    const active = polls.filter(p => p.status !== 'closed');
+    if (active.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No active polls right now.</div>';
+      return;
+    }
+    const poll = active[0];
+    const total = poll.totalVotes || 0;
+    el.innerHTML = `
+      <div style="font-family:'DM Serif Display',serif;font-size:15px;margin-bottom:10px;line-height:1.3;">${poll.question}</div>
+      ${(poll.options||[]).slice(0,2).map((opt,i) => {
+        const votes=(poll.votes||{})[i]||0;
+        const pct=total>0?Math.round(votes/total*100):0;
+        return `<div class="poll-opt" style="margin-bottom:6px;cursor:pointer;" onclick="showPage('voting',null)">
+          <div class="p-radio"></div>${opt}
+          <div class="p-bar-wrap" style="margin-left:auto;"><div class="p-bar" style="width:${pct}%;"></div></div>
+          <span class="p-pct">${pct}%</span></div>`;
+      }).join('')}
+      <div class="poll-meta">${total} votes · <a onclick="showPage('voting',null)" style="cursor:pointer;color:var(--air-deep);">Vote now</a></div>`;
+  });
+}
+function filterAnn(tag, btn) {
+  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#ann-list .ann-card').forEach(c => {
+    c.style.display = (tag === 'all' || c.dataset.tag === tag) ? '' : 'none';
+  });
+}
+
+const voteLabels = ['Space adventure','Underwater world','Jungle safari','Medieval kingdom'];
+const votePcts = [52, 30, 12, 6];
+// ── STUDENT POLLS ──
+function loadStudentPolls(userEmail) {
+  const container = document.getElementById('v-opts');
+  const pollCard = container?.closest('.poll-card');
+  if (!container) return;
+  loadPolls().then(polls => {
+    const active = polls.filter(p => p.status !== 'closed');
+    const votingPage = document.getElementById('page-voting');
+    if (!votingPage) return;
+    votingPage.innerHTML = `<div class="page-header"><div><h1 class="page-title">Voting</h1><p class="page-sub">Have your say</p></div><span class="hdr-badge">${active.length} active</span></div>`;
+    if (active.length === 0) {
+      votingPage.innerHTML += '<div class="card" style="text-align:center;padding:2rem;color:var(--muted);">No active polls right now.</div>';
+      return;
+    }
+    active.forEach(poll => {
+      const total = poll.totalVotes || 0;
+      const showResults = poll.showResults !== 'manager'; // true = show to everyone
+      const card = document.createElement('div');
+      card.className = 'poll-card';
+      card.innerHTML = `
+        <div class="poll-status open">● Active${poll.closesAt ? ' · Closes ' + poll.closesAt : ''}${!showResults ? ' · <span style="color:var(--muted);">Results hidden until closed</span>' : ''}</div>
+        <div class="poll-q">${poll.question}</div>
+        <div class="poll-opts-${poll.id}">
+          ${(poll.options||[]).map((opt, i) => `
+            <div class="poll-opt" onclick="castVoteDB('${poll.id}',${i},'${userEmail}',this)">
+              <div class="p-radio"></div>${opt}
+            </div>`).join('')}
+        </div>
+        <div class="poll-meta">${total} votes so far</div>`;
+      votingPage.appendChild(card);
+    });
+    // Check if user already voted on each poll
+    active.forEach(poll => {
+      const showResults = poll.showResults !== 'manager';
+      db.collection('polls').doc(poll.id).collection('votes').doc(userEmail.toLowerCase()).get().then(doc => {
+        if (doc.exists) {
+          const idx = doc.data().optionIndex;
+          const total = poll.totalVotes || 0;
+          const opts = document.querySelectorAll(`.poll-opts-${poll.id} .poll-opt`);
+          opts.forEach((o, i) => {
+            o.classList.toggle('voted', i === idx);
+            if (showResults) {
+              const votes = (poll.votes||{})[i] || 0;
+              const pct = total > 0 ? Math.round(votes/total*100) : 0;
+              o.innerHTML = `<div class="p-radio">${i===idx?'<div class="p-dot"></div>':''}</div>${poll.options[i]}<div class="p-bar-wrap" style="margin-left:auto;"><div class="p-bar" style="width:${pct}%;"></div></div><span class="p-pct">${pct}%</span>`;
+            } else {
+              o.innerHTML = `<div class="p-radio">${i===idx?'<div class="p-dot"></div>':''}</div>${poll.options[i]}${i===idx?' <span style="color:var(--air-deep);font-size:11px;">Your vote</span>':''}`;
+            }
+            o.onclick = () => {};
+          });
+          // Update meta text
+          const metaEl = opts[0]?.closest('.poll-card')?.querySelector('.poll-meta');
+          if (metaEl) metaEl.textContent = showResults
+            ? (total + ' votes so far')
+            : 'Vote recorded! Results visible to manager only.';
+        }
+      }).catch(() => {});
+    });
+  });
+}
+
+async function castVoteDB(pollId, optionIndex, userEmail, el) {
+  const card = el.closest('.poll-card');
+  const opts = card.querySelectorAll('.poll-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  const success = await castVoteFirestore(pollId, optionIndex, userEmail);
+  if (!success) {
+    toast('You have already voted on this poll!');
+    opts.forEach(o => o.style.pointerEvents = '');
+    return;
+  }
+  const doc = await db.collection('polls').doc(pollId).get();
+  const poll = doc.data();
+  const total = poll.totalVotes || 0;
+  const showResults = poll.showResults !== 'manager';
+  opts.forEach((o, i) => {
+    o.classList.toggle('voted', i === optionIndex);
+    if (showResults) {
+      const votes = (poll.votes||{})[i] || 0;
+      const pct = total > 0 ? Math.round(votes/total*100) : 0;
+      o.innerHTML = `<div class="p-radio">${i===optionIndex?'<div class="p-dot"></div>':''}</div>${poll.options[i]}<div class="p-bar-wrap" style="margin-left:auto;"><div class="p-bar" style="width:${pct}%;"></div></div><span class="p-pct">${pct}%</span>`;
+    } else {
+      o.innerHTML = `<div class="p-radio">${i===optionIndex?'<div class="p-dot"></div>':''}</div>${poll.options[i]}${i===optionIndex?' <span style="color:var(--air-deep);font-size:11px;">Your vote</span>':''}`;
+    }
+    o.onclick = () => {};
+  });
+  card.querySelector('.poll-meta').textContent = showResults
+    ? total + ' votes so far'
+    : 'Vote recorded! Results visible to manager only.';
+  toast('Vote submitted! ✓');
+}
+
+function rateStar(n) { document.querySelectorAll('#stars .star').forEach((s, i) => s.classList.toggle('on', i < n)); }
+
+// ── MANAGER FUNCTIONS ──
+function postAnnouncement() {
+  const t = document.getElementById('ann-title-input').value.trim();
+  const b = document.getElementById('ann-body-input').value.trim();
+  if (!t) return;
+  const cat = document.getElementById('ann-cat').value;
+  const tagMap = { general:'t-blue', event:'t-green', urgent:'t-red' };
+  const ann = { title: t, body: b, category: cat };
+  saveAnnouncement(ann).then(() => {
+    loadAnnouncementsToMgr();
+    loadAnnouncementsToStudent();
+    document.getElementById('ann-title-input').value = '';
+    document.getElementById('ann-body-input').value = '';
+    toast('Announcement posted!');
+    updateMgrDashboard();
+  });
+}
+
+function addOpt() {
+  const wrap = document.getElementById('poll-options-wrap');
+  const n = wrap.children.length + 1;
+  const row = document.createElement('div'); row.className = 'poll-opt-input-row';
+  row.innerHTML = `<input class="poll-opt-input" placeholder="Option ${n}" /><button class="remove-opt" onclick="removeOpt(this)">×</button>`;
+  wrap.appendChild(row);
+}
+function removeOpt(btn) {
+  const wrap = document.getElementById('poll-options-wrap');
+  if (wrap && wrap.children.length > 2) btn.parentElement.remove();
+}
+function createPoll() {
+  const q = document.getElementById('poll-q-input').value.trim();
+  if (!q) { toast('Please enter a question!'); return; }
+  const options = [...document.querySelectorAll('#poll-options-wrap .poll-opt-input')]
+    .map(i => i.value.trim()).filter(Boolean);
+  if (options.length < 2) { toast('Add at least 2 options!'); return; }
+  const closeDate = document.getElementById('poll-close-date')?.value || '';
+  const showResults = document.querySelector('input[name="poll-results"]:checked')?.value || 'everyone';
+  const poll = {
+    question: q,
+    options,
+    votes: Object.fromEntries(options.map((_,i) => [i, 0])),
+    totalVotes: 0,
+    status: 'active',
+    closesAt: closeDate,
+    showResults // 'everyone' or 'manager'
+  };
+  savePoll(poll).then(() => {
+    document.getElementById('poll-q-input').value = '';
+    document.querySelectorAll('#poll-options-wrap .poll-opt-input').forEach(i => i.value = '');
+    if (document.getElementById('results-everyone')) document.getElementById('results-everyone').checked = true;
+    loadPollsToMgr();
+    toast('Poll created! ✓');
+  });
+}
+
+const housePts = { earth:0, water:0, air:0, fire:0 };
+
+// Called when user types directly in the input field
+function previewPts(house, val) {
+  const num = parseInt(val);
+  if (isNaN(num)) return;
+  housePts[house] = num;
+  const el = document.getElementById('pts-' + house);
+  if (el) el.textContent = num.toLocaleString();
+  // Mark unsaved
+  const btn = document.getElementById('save-pts-btn');
+  if (btn) { btn.textContent = '💾 Save to Firebase'; btn.style.background = '#C04A10'; }
+}
+
+function adjustPts(house, delta) {
+  housePts[house] = housePts[house] + delta;
+  const el = document.getElementById('pts-' + house);
+  if (el) el.textContent = housePts[house].toLocaleString();
+  const input = document.getElementById('pts-input-' + house);
+  if (input) input.value = housePts[house];
+  const btn = document.getElementById('save-pts-btn');
+  if (btn) { btn.textContent = '💾 Save to Firebase'; btn.style.background = '#C04A10'; }
+}
+
+function saveAllHousePoints() {
+  const btn = document.getElementById('save-pts-btn');
+  if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+  saveHousePoints().then(() => {
+    if (btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#2D7A1F'; btn.disabled = false; }
+    setTimeout(() => {
+      if (btn) { btn.textContent = '💾 Save to Firebase'; btn.style.background = ''; }
+    }, 2000);
+    toast('House points saved to Firebase! ✓');
+    updateMgrDashboard();
+  }).catch(() => {
+    if (btn) { btn.textContent = '❌ Save failed'; btn.style.background = '#791F1F'; btn.disabled = false; }
+    toast('Failed to save. Check your connection.');
+  });
+}
+// Points log
+async function savePointsLog(entry) {
+  try {
+    await db.collection('pointsLog').add({
+      ...entry,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.warn('savePointsLog:', e); }
+}
+
+// Student individual points
+async function getStudentPoints(email) {
+  try {
+    const doc = await db.collection('studentPoints').doc(email.toLowerCase()).get();
+    return doc.exists ? (doc.data().points || 0) : 0;
+  } catch(e) { return 0; }
+}
+async function updateStudentPoints(email, delta, reason, by) {
+  const ref = db.collection('studentPoints').doc(email.toLowerCase());
+  try {
+    await db.runTransaction(async tx => {
+      const doc = await tx.get(ref);
+      const current = doc.exists ? (doc.data().points || 0) : 0;
+      const newTotal = current + delta;
+      tx.set(ref, { email: email.toLowerCase(), points: newTotal }, { merge: true });
+    });
+    // Log it
+    await db.collection('studentPointsLog').add({
+      email: email.toLowerCase(),
+      delta, reason,
+      by: by || 'Admin',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.error('updateStudentPoints:', e); throw e; }
+}
+async function loadAllStudentPoints() {
+  try {
+    const snap = await db.collection('studentPoints').orderBy('points','desc').get();
+    return snap.docs.map(d => d.data());
+  } catch(e) { return []; }
+}
+
+async function loadPointsLog() {
+  const el = document.getElementById('pts-log-list');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;">Loading...</div>';
+  try {
+    const snap = await db.collection('pointsLog').orderBy('createdAt','desc').limit(50).get();
+    if (snap.empty) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No point changes logged yet.</div>';
+      return;
+    }
+    const houseColors = { earth:'var(--earth-deep)', water:'var(--water-deep)', air:'var(--air-deep)', fire:'var(--fire-deep)' };
+    el.innerHTML = `
+      <table class="mgr-table">
+        <thead><tr><th>Time</th><th>House</th><th>Points</th><th>Given to</th><th>Reason</th><th>By</th></tr></thead>
+        <tbody>
+          ${snap.docs.map(d => {
+            const log = d.data();
+            const pts = log.delta;
+            const color = pts > 0 ? '#2D7A1F' : '#C04A10';
+            const sign = pts > 0 ? '+' : '';
+            const date = log.createdAt?.toDate?.()?.toLocaleString() || 'Recent';
+            return `<tr>
+              <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${date}</td>
+              <td><span style="font-weight:500;color:${houseColors[log.house]||'var(--muted)'};">${log.house?.charAt(0).toUpperCase()+log.house?.slice(1)||'?'}</span></td>
+              <td><span style="font-weight:600;color:${color};">${sign}${pts}</span></td>
+              <td style="font-size:13px;">${log.givenTo||'—'}</td>
+              <td style="font-size:13px;color:var(--muted);">${log.reason||'—'}</td>
+              <td style="font-size:11px;color:var(--muted);">${log.by||'Manager'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load log.</div>';
+  }
+}
+
+function awardPoints() {
+  const houseRaw = document.getElementById('award-house').value;
+  const house = houseRaw.toLowerCase();
+  const pts = parseInt(document.getElementById('award-pts').value);
+  if (isNaN(pts) || pts === 0) { toast('Please enter a valid number (can be negative).'); return; }
+  const reason = document.getElementById('award-reason').value.trim() || 'manual award';
+  const givenTo = document.getElementById('award-to')?.value.trim() || '';
+  housePts[house] = (housePts[house] || 0) + pts;
+  const el = document.getElementById('pts-' + house);
+  if (el) el.textContent = housePts[house].toLocaleString();
+  const input = document.getElementById('pts-input-' + house);
+  if (input) input.value = housePts[house];
+  saveHousePoints().then(() => {
+    savePointsLog({ house, delta: pts, givenTo, reason, by: window.currentUserEmail || 'Admin', totalAfter: housePts[house] });
+    loadPointsLog();
+    updateMgrDashboard();
+    const sign = pts > 0 ? '+' : '';
+    toast(`${sign}${pts} pts to ${houseRaw}${givenTo ? ' for ' + givenTo : ''} · Saved ✓`);
+  }).catch(() => toast('Save failed. Check connection.'));
+}
+
+// ── STUDENT POINTS SYSTEM ──
+function populateStudentSelect() {
+  const sel = document.getElementById('sp-student');
+  if (!sel) return;
+  loadStudents().then(students => {
+    sel.innerHTML = '<option value="">— Select student —</option>' +
+      students.map(s => `<option value="${s.email}">${s.name||s.email} (${s.house||'Unassigned'})</option>`).join('');
+  });
+}
+
+function awardStudentPoints() {
+  const sel = document.getElementById('sp-student');
+  const email = sel?.value;
+  if (!email) { toast('Please select a student!'); return; }
+  const pts = parseInt(document.getElementById('sp-pts').value);
+  if (isNaN(pts) || pts === 0) { toast('Please enter a valid number.'); return; }
+  const reason = document.getElementById('sp-reason').value.trim() || 'manual award';
+  const studentName = sel.options[sel.selectedIndex]?.text || email;
+  updateStudentPoints(email, pts, reason, window.currentUserName || 'Admin')
+    .then(() => {
+      loadStudentLeaderboard();
+      const sign = pts > 0 ? '+' : '';
+      toast(`${sign}${pts} pts to ${studentName} ✓`);
+      document.getElementById('sp-pts').value = 10;
+      document.getElementById('sp-reason').value = '';
+    }).catch(() => toast('Save failed. Check connection.'));
+}
+
+function loadStudentLeaderboard() {
+  const el = document.getElementById('student-leaderboard');
+  if (!el) return;
+  loadStudents().then(students => {
+    loadAllStudentPoints().then(pointsData => {
+      const ptMap = {};
+      pointsData.forEach(p => { ptMap[(p.email||'').toLowerCase()] = p.points || 0; });
+      const ranked = students
+        .map(s => ({ ...s, points: ptMap[(s.email||'').toLowerCase()] || 0 }))
+        .sort((a, b) => b.points - a.points);
+      if (ranked.length === 0) {
+        el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No students yet.</div>';
+        return;
+      }
+      const hc = { Air:'var(--air-mid)', Earth:'var(--earth-mid)', Water:'var(--water-mid)', Fire:'var(--fire-mid)', Unassigned:'var(--muted)' };
+      const medals = ['🥇','🥈','🥉'];
+      el.innerHTML = `
+        <table class="mgr-table">
+          <thead><tr><th>#</th><th>Student</th><th>House</th><th style="text-align:right;">Points</th></tr></thead>
+          <tbody>
+            ${ranked.map((s, i) => `
+              <tr>
+                <td style="font-size:14px;">${medals[i]||i+1}</td>
+                <td><div style="font-size:13px;font-weight:500;">${s.name||'Unknown'}</div><div style="font-size:11px;color:var(--muted);">${s.email||''}</div></td>
+                <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${s.house||'Unassigned'}</span></td>
+                <td style="text-align:right;font-size:16px;font-weight:600;color:${s.points>=0?'var(--earth-deep)':'var(--fire-deep)'};">${s.points>0?'+':''}${s.points}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    });
+  });
+}
+
+// ── STUDENT REGISTRY (localStorage) ──
+function registerStudent(email, name) {
+  if (!db) return;
+  const studentData = {
+    name: name || email.split('@')[0],
+    email: email.toLowerCase(),
+    house: 'Unassigned',
+    joinedAt: new Date().toLocaleDateString()
+  };
+  db.collection('students').doc(email.toLowerCase()).get()
+    .then(doc => {
+      if (!doc.exists) {
+        return db.collection('students').doc(email.toLowerCase()).set(studentData);
+      } else if (name && doc.data().name !== name) {
+        return db.collection('students').doc(email.toLowerCase()).update({ name });
+      }
+    })
+    .catch(err => {
+      // Non-fatal: Firestore rules may block — login still works
+      console.warn('registerStudent (non-fatal):', err.code || err.message);
+    });
+}
+
+function renderStudents() {
+  loadStudents().then(list => {
+    const tbody = document.getElementById('student-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (list.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No students yet. Students will appear here when they sign in.</td>`;
+      tbody.appendChild(row);
+      const badge = document.querySelector('#page-mgr-students .hdr-badge');
+      if (badge) badge.textContent = '0 students';
+      const sc = document.getElementById('dash-student-count');
+      if (sc) sc.textContent = '0';
+      return;
+    }
+    const hc = { Air:'var(--air-deep)', Earth:'var(--earth-deep)', Water:'var(--water-deep)', Fire:'var(--fire-deep)', Unassigned:'var(--muted)' };
+    list.forEach(s => {
+      const row = document.createElement('tr');
+      row.dataset.name = (s.name||'').toLowerCase();
+      row.dataset.email = (s.email||'').toLowerCase();
+      row.dataset.house = s.house||'Unassigned';
+      row.innerHTML = `
+        <td><div style="font-size:13px;font-weight:500;">${s.name||'Unknown'}</div><div style="font-size:11px;color:var(--muted);">Joined ${s.joinedAt||''}</div></td>
+        <td style="color:var(--muted);font-size:12px;">${s.email||''}</td>
+        <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${s.house||'Unassigned'}</span></td>
+        <td><select class="house-select" onchange="assignHouse(this,'${s.email}')">
+          <option ${s.house==='Air'?'selected':''}>Air</option>
+          <option ${s.house==='Earth'?'selected':''}>Earth</option>
+          <option ${s.house==='Water'?'selected':''}>Water</option>
+          <option ${s.house==='Fire'?'selected':''}>Fire</option>
+          <option ${s.house==='Unassigned'?'selected':''}>Unassigned</option>
+        </select></td>
+        <td><button class="btn-danger" data-email="${s.email}">Remove</button></td>`;
+      row.querySelector('.btn-danger').addEventListener('click', () => removeStudent(s.email));
+      tbody.appendChild(row);
+    });
+    // Sync count everywhere
+    const count = list.length;
+    const badge = document.querySelector('#page-mgr-students .hdr-badge');
+    if (badge) badge.textContent = count + ' students';
+    const sc = document.getElementById('dash-student-count');
+    if (sc) sc.textContent = count;
+  });
+}
+
+function assignHouse(sel, email) {
+  saveStudent({email: email.toLowerCase(), house: sel.value}).then(() => {
+    renderStudents();
+    toast(email.split('@')[0] + ' → ' + sel.value);
+  });
+}
+
+function removeStudent(email) {
+  deleteStudent(email).then(() => {
+    renderStudents();
+    toast('Student removed.');
+  });
+}
+
+function filterStudents(q) {
+  document.querySelectorAll('#student-tbody tr').forEach(row => {
+    if (!row.dataset.name) return;
+    row.style.display = (row.dataset.name.includes(q.toLowerCase()) || row.dataset.email.includes(q.toLowerCase())) ? '' : 'none';
+  });
+}
+function filterByHouse(house) {
+  document.querySelectorAll('#student-tbody tr').forEach(row => {
+    if (!row.dataset.house) return;
+    row.style.display = (!house || row.dataset.house === house) ? '' : 'none';
+  });
+}
+
+function updateMgrDashboard() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  const el = document.getElementById('mgr-date');
+  if (el) el.textContent = dateStr;
+  if (!db) return;
+
+  // Always load fresh from Firebase — never use stale in-memory values
+
+  // 1. House standings — reload from Firebase
+  loadHousePoints().then(pts => {
+    Object.assign(housePts, pts);
+    // Update house pts cards
+    ['earth','water','air','fire'].forEach(h => {
+      const e = document.getElementById('pts-'+h);
+      if (e) e.textContent = housePts[h].toLocaleString();
+      const inp = document.getElementById('pts-input-'+h);
+      if (inp && !inp.matches(':focus')) inp.value = housePts[h];
+    });
+    const houseData = [
+      { name:'Earth', mid:'var(--earth-mid)', pts: housePts.earth },
+      { name:'Water', mid:'var(--water-mid)', pts: housePts.water },
+      { name:'Air',   mid:'var(--air-mid)',   pts: housePts.air   },
+      { name:'Fire',  mid:'var(--fire-mid)',  pts: housePts.fire  },
+    ].sort((a,b) => b.pts - a.pts);
+    const maxPts = Math.max(...houseData.map(h => h.pts), 1);
+    const rankLabels = ['gold','silver','bronze',''];
+    const standingsEl = document.getElementById('dash-house-standings');
+    if (standingsEl) {
+      standingsEl.innerHTML = houseData.map((h, i) => `
+        <div class="lb-row">
+          <div class="lb-rank ${rankLabels[i]}">${i+1}</div>
+          <div class="lb-hdot" style="background:${h.mid};"></div>
+          <div class="lb-name">${h.name}</div>
+          <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(h.pts/maxPts*100)}%;background:${h.mid};"></div></div>
+          <div class="lb-pts">${h.pts.toLocaleString()}</div>
+        </div>`).join('');
+    }
+  });
+
+  // 2. Students count — fresh from Firebase
+  loadStudents().then(students => {
+    const sc = document.getElementById('dash-student-count');
+    if (sc) sc.textContent = students.length;
+    const badge = document.querySelector('#page-mgr-students .hdr-badge');
+    if (badge) badge.textContent = students.length + ' students';
+    const dsEl = document.getElementById('dash-students-list');
+    if (dsEl) {
+      if (students.length === 0) {
+        dsEl.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:13px;">No students yet.</div>';
+      } else {
+        const hc = { Air:'var(--air-deep)', Earth:'var(--earth-deep)', Water:'var(--water-deep)', Fire:'var(--fire-deep)', Unassigned:'var(--muted)' };
+        dsEl.innerHTML = students.slice(0,5).map(s => `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--air-deep);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0;">
+              ${(s.name||'?').split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2)||'?'}
+            </div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${s.name||'Unknown'}</div><div style="font-size:11px;color:var(--muted);">${s.email||''}</div></div>
+            <span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${s.house||'Unassigned'}</span>
+          </div>`).join('');
+      }
+    }
+  });
+
+  // 3. Announcements — fresh from Firebase
+  loadAnnouncements().then(anns => {
+    const ac = document.getElementById('dash-ann-count');
+    if (ac) ac.textContent = anns.length;
+    const annList = document.getElementById('dash-ann-list');
+    if (annList) {
+      annList.innerHTML = anns.length === 0
+        ? '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No announcements yet.</div>'
+        : anns.slice(0,3).map(a => `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:500;">${a.title||''}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
+            </div>
+            <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>
+          </div>`).join('');
+    }
+  });
+
+  // 4. Feedbacks — fresh from Firebase
+  loadFeedbacks().then(fbs => {
+    const fc = document.getElementById('dash-fb-count');
+    if (fc) fc.textContent = fbs.length;
+    const badge = document.getElementById('fb-count-badge');
+    if (badge) badge.textContent = fbs.length + ' pending';
+    const fbList = document.getElementById('dash-fb-list');
+    if (fbList) {
+      fbList.innerHTML = fbs.length === 0
+        ? '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No feedbacks yet.</div>'
+        : fbs.slice(0,3).map(fb => `
+          <div style="border-bottom:1px solid var(--border);padding:10px 0;">
+            <div style="font-size:13px;font-weight:500;margin-bottom:2px;">${fb.category||'General'} · ${fb.house||'?'}</div>
+            <div style="font-size:12px;color:var(--muted);">${(fb.text||'').slice(0,60)}${(fb.text||'').length>60?'...':''}</div>
+          </div>`).join('');
+    }
+  });
+
+  // 5. Polls — fresh from Firebase
+  loadPolls().then(polls => {
+    const active = polls.filter(p => p.status !== 'closed');
+    const pc = document.getElementById('dash-poll-count');
+    if (pc) pc.textContent = active.length;
+    const pollsEl = document.getElementById('dash-polls-preview');
+    if (pollsEl) {
+      pollsEl.innerHTML = active.length === 0
+        ? '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No active polls.</div>'
+        : active.slice(0,2).map(p => `
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:500;">${p.question||''}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">${p.totalVotes||0} votes</div>
+            </div>
+            <span class="tag t-green">Active</span>
+          </div>`).join('');
+    }
+  });
+}
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── FIRESTORE LOADERS ──
+const tagMap = { general:'t-blue', event:'t-green', urgent:'t-red' };
+const tagLabel = { general:'General', event:'Event', urgent:'Urgent' };
+
+function loadAnnouncementsToStudent() {
+  const list = document.getElementById('ann-list');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div>';
+  loadAnnouncements().then(anns => {
+    const badge = document.getElementById('ann-unread-badge');
+    if (badge) badge.textContent = anns.length + ' new';
+    // Also update nav badge
+    const navBadge = document.querySelector('.nav-badge');
+    if (navBadge) navBadge.textContent = anns.length;
+    if (anns.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No announcements yet.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    anns.forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'ann-card unread';
+      div.dataset.tag = a.category || 'general';
+      div.innerHTML = `
+        <div class="ann-card-top">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--air-deep);flex-shrink:0;"></div>
+            <div class="ann-card-title">${a.title}</div>
+          </div>
+          <span class="ann-time">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</span>
+        </div>
+        <p class="ann-body">${a.body||''}</p>
+        <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>`;
+      list.appendChild(div);
+    });
+    // Update dashboard preview
+    const preview = document.getElementById('dash-ann-preview');
+    if (preview) {
+      preview.innerHTML = anns.slice(0,4).map(a => `
+        <div class="ann-row">
+          <div class="ann-dot" style="background:var(--air-deep);"></div>
+          <div><div class="ann-t">${a.title}</div>
+          <div class="ann-m">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div></div>
+        </div>`).join('');
+    }
+  });
+}
+
+function loadAnnouncementsToMgr() {
+  const list = document.getElementById('mgr-ann-list');
+  if (!list) return;
+  loadAnnouncements().then(anns => {
+    list.innerHTML = '';
+    if (anns.length === 0) {
+      list.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:13px;">No announcements yet.</div>';
+      return;
+    }
+    anns.forEach(a => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);';
+      div.innerHTML = `
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;">${a.title}</div>
+          <div style="font-size:11px;color:var(--muted);margin:2px 0 6px;">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
+          <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>
+        </div>
+        <button class="btn-danger" data-id="${a.id}">Delete</button>`;
+      div.querySelector('.btn-danger').addEventListener('click', () => {
+        deleteAnnouncement(a.id).then(() => { loadAnnouncementsToMgr(); loadAnnouncementsToStudent(); updateMgrDashboard(); toast('Announcement deleted.'); });
+      });
+      list.appendChild(div);
+    });
+  });
+}
+
+function switchVoteTab(tab, btn) {
+  document.querySelectorAll('#page-mgr-voting .fpill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('vote-panel-manage').style.display = tab === 'manage' ? '' : 'none';
+  document.getElementById('vote-panel-vote').style.display = tab === 'vote' ? '' : 'none';
+  if (tab === 'vote') loadAdminVoteView();
+}
+
+function loadAdminVoteView() {
+  const container = document.getElementById('admin-vote-list');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div>';
+  const userEmail = (window.currentUserEmail||'').toLowerCase();
+  loadPolls().then(async polls => {
+    const active = polls.filter(p => p.status !== 'closed');
+    if (active.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No active polls to vote on.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    for (const poll of active) {
+      // Check if admin already voted
+      let alreadyVoted = false;
+      let votedIdx = -1;
+      try {
+        const voteDoc = await db.collection('polls').doc(poll.id).collection('votes').doc(userEmail).get();
+        if (voteDoc.exists) { alreadyVoted = true; votedIdx = voteDoc.data().optionIndex; }
+      } catch(e) {}
+
+      const total = poll.totalVotes || 0;
+      const card = document.createElement('div');
+      card.className = 'poll-card';
+      const optsHtml = (poll.options||[]).map((opt, i) => {
+        const votes = (poll.votes||{})[i] || 0;
+        const pct = total > 0 ? Math.round(votes/total*100) : 0;
+        const isVoted = alreadyVoted && i === votedIdx;
+        if (alreadyVoted) {
+          return `<div class="poll-opt${isVoted?' voted':''}">
+            <div class="p-radio">${isVoted?'<div class="p-dot"></div>':''}</div>${opt}
+            <div class="p-bar-wrap" style="margin-left:auto;"><div class="p-bar" style="width:${pct}%;"></div></div>
+            <span class="p-pct">${pct}%</span>
+          </div>`;
+        }
+        return `<div class="poll-opt" onclick="castVoteDB('${poll.id}',${i},'${userEmail}',this)">
+          <div class="p-radio"></div>${opt}
+        </div>`;
+      }).join('');
+      card.innerHTML = `
+        <div class="poll-status open">● Active${poll.closesAt?' · Closes '+poll.closesAt:''}</div>
+        <div class="poll-q">${poll.question}</div>
+        ${optsHtml}
+        <div class="poll-meta">${total} votes · ${alreadyVoted ? '<span style="color:var(--earth-deep);">✓ You voted</span>' : 'You have not voted yet'}</div>`;
+      container.appendChild(card);
+    }
+  });
+}
+
+function loadPollsToMgr() {
+  const section = document.querySelector('#page-mgr-voting .mgr-section:last-of-type');
+  if (!section) return;
+  loadPolls().then(polls => {
+    const listEl = section.querySelector('.polls-list') || (() => {
+      const d = document.createElement('div'); d.className = 'polls-list'; section.appendChild(d); return d;
+    })();
+    listEl.innerHTML = '';
+    const el = document.getElementById('dash-poll-count');
+    if (el) el.textContent = polls.filter(p => p.status !== 'closed').length;
+    if (polls.length === 0) {
+      listEl.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:13px;">No polls yet.</div>';
+      return;
+    }
+    polls.forEach(p => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;';
+      const isActive = p.status !== 'closed';
+      div.innerHTML = `
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;">${p.question}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${p.totalVotes||0} votes${p.closesAt?' · Closes '+p.closesAt:''}</div>
+        </div>
+        <span class="tag ${isActive?'t-green':'t-amber'}">${isActive?'Active':'Closed'}</span>
+        <span class="tag" style="background:${p.showResults==='manager'?'var(--fire)':'var(--earth)'}; color:${p.showResults==='manager'?'var(--fire-text)':'var(--earth-text)'};">${p.showResults==='manager'?'🔒 Admin only':'👁 Everyone'}</span>
+        ${isActive?`<button class="btn-outline" style="font-size:12px;" data-id="${p.id}">Close</button>`:''}
+        <button class="btn-danger" data-del="${p.id}">Delete</button>`;
+      if (isActive) {
+        div.querySelector('[data-id]').addEventListener('click', () => {
+          db.collection('polls').doc(p.id).update({status:'closed'}).then(() => { loadPollsToMgr(); toast('Poll closed.'); });
+        });
+      }
+      div.querySelector('[data-del]').addEventListener('click', () => {
+        db.collection('polls').doc(p.id).delete().then(() => { loadPollsToMgr(); toast('Poll deleted.'); });
+      });
+      listEl.appendChild(div);
+    });
+  });
+}
+
+function loadFeedbacksToMgr() {
+  const container = document.getElementById('mgr-fb-list');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div>';
+  loadFeedbacks().then(fbs => {
+    const badge = document.getElementById('fb-count-badge');
+    if (badge) badge.textContent = fbs.length + ' total';
+    if (fbs.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No feedbacks yet.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    fbs.forEach(fb => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.cssText = 'margin-bottom:10px;padding:1.25rem 1.5rem;';
+      const stars = '★'.repeat(fb.rating||0) + '☆'.repeat(5-(fb.rating||0));
+      const date = fb.createdAt?.toDate?.()?.toLocaleDateString()||'Recent';
+      const studentLabel = fb.studentName
+        ? `<span style="font-size:13px;font-weight:500;color:var(--air-deep);">${fb.studentName}</span> · <span style="font-size:11px;color:var(--muted);">${fb.studentEmail||''}</span>`
+        : `<span style="font-size:11px;color:var(--muted);">${fb.studentEmail||'Anonymous'}</span>`;
+      const replySection = fb.reply
+        ? `<div style="margin-top:10px;padding:10px 12px;background:var(--earth);border-radius:var(--radius-sm);border-left:3px solid var(--earth-deep);">
+             <div style="font-size:11px;color:var(--earth-deep);font-weight:500;margin-bottom:4px;">✓ Replied by ${fb.replyBy||'Manager'} · ${fb.replyAt?.toDate?.()?.toLocaleDateString()||''}</div>
+             <div style="font-size:13px;color:var(--earth-text);">${fb.reply}</div>
+             <button class="btn-outline" style="margin-top:8px;font-size:11px;padding:4px 10px;" data-edit="${fb.id}">Edit reply</button>
+           </div>`
+        : `<textarea class="fb-input" placeholder="Write a reply to ${fb.studentName||'student'}..." style="min-height:70px;margin:10px 0 8px;"></textarea>
+           <button class="btn-primary" data-reply="${fb.id}" style="font-size:13px;padding:8px 16px;">Send reply</button>`;
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--text);">${fb.category||'General'} · House ${fb.house||'?'}</div>
+            <div style="margin:4px 0;">${studentLabel}</div>
+            <div class="fb-stars">${stars}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:var(--muted);">${date}</span>
+            <button class="btn-danger" data-del="${fb.id}">Delete</button>
+          </div>
+        </div>
+        <div class="fb-rc-body" style="font-size:13px;color:var(--text);">${fb.text||''}</div>
+        ${replySection}`;
+      // Wire up buttons
+      card.querySelector('[data-del]').addEventListener('click', () => {
+        if (!confirm('Delete this feedback?')) return;
+        deleteFeedbackFirestore(fb.id).then(() => {
+          loadFeedbacksToMgr();
+          updateMgrDashboard();
+          toast('Feedback deleted.');
+        });
+      });
+      const replyBtn = card.querySelector('[data-reply]');
+      if (replyBtn) {
+        replyBtn.addEventListener('click', () => {
+          const ta = card.querySelector('textarea');
+          const reply = ta.value.trim();
+          if (!reply) { toast('Please write a reply first.'); return; }
+          replyBtn.textContent = 'Sending...';
+          replyBtn.disabled = true;
+          saveFeedbackReply(fb.id, reply, window.currentUserName||'Manager').then(() => {
+            loadFeedbacksToMgr();
+            toast('Reply sent! ✓');
+          });
+        });
+      }
+      const editBtn = card.querySelector('[data-edit]');
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          const newReply = prompt('Edit your reply:', fb.reply);
+          if (newReply && newReply.trim() && newReply !== fb.reply) {
+            saveFeedbackReply(fb.id, newReply.trim(), window.currentUserName||'Manager').then(() => {
+              loadFeedbacksToMgr();
+              toast('Reply updated.');
+            });
+          }
+        });
+      }
+      container.appendChild(card);
+    });
+  });
+}
+
+function submitFb(btn) {
+  const form = btn.closest('.card');
+  const selects = form.querySelectorAll('select');
+  const category = selects[0]?.value || 'General';
+  const house = selects[1]?.value || 'Unassigned';
+  const text = form.querySelector('textarea')?.value?.trim() || '';
+  const rating = form.querySelectorAll('.star.on').length;
+  if (!text) { toast('Please write your feedback first.'); return; }
+  const email = (window.currentUserEmail || '').toLowerCase();
+  const studentName = window.currentUserName || email.split('@')[0] || 'Student';
+  saveFeedback({
+    category, house, text, rating,
+    studentEmail: email,
+    studentName
+  }).then(() => {
+    btn.textContent = 'Submitted!';
+    setTimeout(() => btn.textContent = 'Submit feedback', 2000);
+    form.querySelector('textarea').value = '';
+    form.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
+    loadStudentPastFeedbacks();
+    toast('Feedback submitted! ✓');
+  });
+}
+
+// ── PRIZES & DRAWS FIREBASE ──
+async function loadPrizes() {
+  try {
+    const snap = await db.collection('prizes').orderBy('createdAt','asc').get();
+    return snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) { return []; }
+}
+async function savePrize(prize) {
+  try {
+    const ref = await db.collection('prizes').add({...prize, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+    return ref.id;
+  } catch(e) { console.error('savePrize:', e); }
+}
+async function updatePrize(id, data) {
+  try {
+    await db.collection('prizes').doc(id).update(data);
+  } catch(e) { console.error('updatePrize:', e); }
+}
+async function deletePrizeDoc(id) {
+  try {
+    await db.collection('prizes').doc(id).delete();
+  } catch(e) { console.error('deletePrize:', e); }
+}
+async function saveDrawResult(result) {
+  try {
+    const ref = await db.collection('drawResults').add({...result, drawnAt: firebase.firestore.FieldValue.serverTimestamp()});
+    return ref.id;
+  } catch(e) { console.error('saveDrawResult:', e); return null; }
+}
+
+// Global spin price stored in settings/rewardConfig
+async function loadSpinPrice() {
+  try {
+    const doc = await db.collection('settings').doc('rewardConfig').get();
+    return doc.exists ? (doc.data().spinPrice || 100) : 100;
+  } catch(e) { return 100; }
+}
+async function saveSpinPriceDB(price) {
+  try {
+    await db.collection('settings').doc('rewardConfig').set({ spinPrice: price }, { merge: true });
+  } catch(e) { console.error('saveSpinPriceDB:', e); throw e; }
+}
+
+// ── REWARDS UI ──
+function switchRewardTab(tab, btn) {
+  ['prizes','points','log','draws'].forEach(t => {
+    const panel = document.getElementById('rwd-panel-'+t);
+    const tabBtn = document.getElementById('rwd-tab-'+t);
+    if (panel) panel.style.display = t === tab ? '' : 'none';
+    if (tabBtn) tabBtn.classList.remove('active');
+  });
+  if (btn) btn.classList.add('active');
+  if (tab === 'log') loadPointsLog();
+  if (tab === 'draws') loadAdminDrawHistory();
+  if (tab === 'points') { populateStudentSelect(); loadStudentLeaderboard(); }
+  if (tab === 'prizes') { loadPrizesToAdmin(); loadCurrentSpinPrice(); }
+}
+
+async function loadCurrentSpinPrice() {
+  const price = await loadSpinPrice();
+  const inp = document.getElementById('spin-price-input');
+  const display = document.getElementById('current-spin-price-display');
+  if (inp) inp.value = price;
+  if (display) display.textContent = price + ' pts';
+}
+
+async function saveSpinPrice() {
+  const inp = document.getElementById('spin-price-input');
+  const statusEl = document.getElementById('spin-price-status');
+  const price = parseInt(inp?.value);
+  if (isNaN(price) || price < 1) {
+    toast('Please enter a valid price (at least 1 pt)!');
+    return;
+  }
+  if (statusEl) { statusEl.textContent = 'Saving...'; statusEl.style.color = 'var(--muted)'; }
+  try {
+    await saveSpinPriceDB(price);
+    const display = document.getElementById('current-spin-price-display');
+    if (display) display.textContent = price + ' pts';
+    if (statusEl) { statusEl.textContent = '✓ Saved!'; statusEl.style.color = 'var(--earth-deep)'; }
+    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 2500);
+    toast(`Draw price set to ${price} pts ✓`);
+  } catch(e) {
+    if (statusEl) { statusEl.textContent = '✗ Failed'; statusEl.style.color = 'var(--fire-deep)'; }
+    toast('Failed to save price.');
+  }
+}
+
+function addPrize() {
+  const name = document.getElementById('prize-name-input').value.trim();
+  const prob = parseFloat(document.getElementById('prize-prob-input').value);
+  const desc = document.getElementById('prize-desc-input').value.trim();
+  if (!name) { toast('Please enter a prize name!'); return; }
+  if (isNaN(prob) || prob <= 0) { toast('Please enter a valid probability weight (e.g. 30)'); return; }
+  savePrize({ name, probability: prob, description: desc, active: true })
+    .then(() => {
+      document.getElementById('prize-name-input').value = '';
+      document.getElementById('prize-prob-input').value = '';
+      document.getElementById('prize-desc-input').value = '';
+      loadPrizesToAdmin();
+      toast(`"${name}" added to prize pool! ✓`);
+    });
+}
+
+function loadPrizesToAdmin() {
+  const el = document.getElementById('admin-prize-list');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Loading...</div>';
+  loadPrizes().then(prizes => {
+    const badge = document.getElementById('prize-count-badge');
+    if (badge) badge.textContent = `(${prizes.length} prize${prizes.length !== 1 ? 's' : ''})`;
+
+    if (prizes.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1.5rem 0;text-align:center;">No prizes yet. Add one above to get started!</div>';
+      return;
+    }
+
+    const totalWeight = prizes.reduce((s, p) => s + (p.probability||0), 0);
+
+    // Table header
+    el.innerHTML = `
+      <table class="mgr-table">
+        <thead>
+          <tr>
+            <th style="width:36px;">#</th>
+            <th>Prize name</th>
+            <th>Description</th>
+            <th style="width:200px;">Probability (weight)</th>
+            <th style="width:120px;">Win chance</th>
+            <th style="width:120px;">Edit weight</th>
+            <th style="width:80px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="prize-tbody"></tbody>
+      </table>`;
+
+    const tbody = document.getElementById('prize-tbody');
+    prizes.forEach((p, i) => {
+      const pct = totalWeight > 0 ? ((p.probability / totalWeight) * 100).toFixed(1) : '0.0';
+      const barWidth = totalWeight > 0 ? Math.round((p.probability / totalWeight) * 100) : 0;
+      // Colour cycle for prizes
+      const colours = ['var(--air-mid)','var(--earth-mid)','var(--water-mid)','var(--fire-mid)'];
+      const col = colours[i % colours.length];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-size:13px;color:var(--muted);font-weight:500;">${i+1}</td>
+        <td>
+          <div style="font-size:13px;font-weight:600;">${p.name}</div>
+        </td>
+        <td style="font-size:12px;color:var(--muted);">${p.description||'—'}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;height:6px;background:var(--border);border-radius:99px;">
+              <div style="width:${barWidth}%;height:100%;border-radius:99px;background:${col};transition:width 0.3s;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:var(--text);min-width:28px;">${p.probability}</span>
+          </div>
+        </td>
+        <td>
+          <span style="font-size:13px;font-weight:600;color:${col};">${pct}%</span>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <input type="number" value="${p.probability}" min="1" id="prob-inp-${p.id}"
+              style="width:64px;padding:5px 7px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:DM Sans,sans-serif;text-align:center;" />
+            <button class="btn-outline" style="font-size:11px;padding:4px 8px;white-space:nowrap;" onclick="saveProbability('${p.id}')">Save</button>
+          </div>
+        </td>
+        <td>
+          <button class="btn-danger" style="font-size:12px;padding:6px 10px;" onclick="deletePrizeDoc('${p.id}').then(()=>{loadPrizesToAdmin();toast('Prize removed.')})">
+            Remove
+          </button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function saveProbability(id) {
+  const inp = document.getElementById('prob-inp-'+id);
+  const val = parseFloat(inp?.value);
+  if (isNaN(val) || val <= 0) { toast('Enter a valid weight (e.g. 30)!'); return; }
+  inp.disabled = true;
+  updatePrize(id, {probability: val}).then(() => {
+    loadPrizesToAdmin();
+    toast('Probability updated! ✓');
+  }).catch(() => {
+    inp.disabled = false;
+    toast('Update failed.');
+  });
+}
+
+// ── SERIAL CODE GENERATOR ──
+function generateSerial() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 12; i++) {
+    if (i > 0 && i % 4 === 0) code += '-';
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
+// ── STUDENT REWARDS PAGE ──
+async function loadStudentRewardsPage() {
+  if (!window.currentUserEmail || !db) return;
+  const email = window.currentUserEmail.toLowerCase();
+
+  const [pts, spinPrice, prizes] = await Promise.all([
+    getStudentPoints(email),
+    loadSpinPrice(),
+    loadPrizes()
+  ]);
+
+  // Update points displays
+  const ptsEl = document.getElementById('student-my-pts');
+  const badge = document.getElementById('my-pts-badge');
+  const spinPriceEl = document.getElementById('spin-price-display');
+  if (ptsEl) ptsEl.textContent = pts.toLocaleString();
+  if (badge) badge.textContent = pts.toLocaleString() + ' pts';
+  if (spinPriceEl) spinPriceEl.textContent = spinPrice.toLocaleString();
+
+  // Progress bar
+  const bar = document.getElementById('pts-progress-bar');
+  const barMax = document.getElementById('pts-bar-max');
+  if (bar && barMax) {
+    const needed = spinPrice;
+    const pct = Math.min(100, pts > 0 ? Math.round((pts / needed) * 100) : 0);
+    bar.style.width = pct + '%';
+    bar.style.background = pts >= needed ? 'var(--earth-deep)' : 'var(--fire-mid)';
+    barMax.textContent = needed + ' pts';
+  }
+
+  // Cost info
+  const costInfo = document.getElementById('spin-cost-info');
+  const spinBtn = document.getElementById('spin-btn');
+  if (costInfo) {
+    if (prizes.length === 0) {
+      costInfo.textContent = 'No prizes available yet.';
+      if (spinBtn) spinBtn.disabled = true;
+    } else if (pts < spinPrice) {
+      costInfo.innerHTML = `<span style="color:var(--fire-deep);font-weight:500;">Need ${spinPrice - pts} more pts to draw</span> · You have ${pts} / ${spinPrice} pts`;
+      if (spinBtn) { spinBtn.disabled = true; spinBtn.style.background = 'var(--muted)'; }
+    } else {
+      costInfo.innerHTML = `<span style="color:var(--earth-deep);font-weight:600;">✓ Ready!</span> Costs ${spinPrice} pts · You have ${pts} pts`;
+      if (spinBtn) { spinBtn.disabled = false; spinBtn.style.background = 'var(--earth-deep)'; }
+    }
+  }
+
+  // Prize pool list
+  const prizeList = document.getElementById('student-prize-list');
+  if (prizeList) {
+    if (prizes.length === 0) {
+      prizeList.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No prizes set up yet.<br>Check back later!</div>';
+    } else {
+      const totalWeight = prizes.reduce((s, p) => s + (p.probability||0), 0);
+      const colours = ['var(--air-mid)','var(--earth-mid)','var(--water-mid)','var(--fire-mid)'];
+      prizeList.innerHTML = prizes.map((p, i) => {
+        const pct = totalWeight > 0 ? ((p.probability / totalWeight) * 100).toFixed(1) : '0.0';
+        const barW = totalWeight > 0 ? Math.round((p.probability / totalWeight) * 100) : 0;
+        const col = colours[i % colours.length];
+        return `
+          <div style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+              <div>
+                <div style="font-size:13px;font-weight:600;">${p.name}</div>
+                ${p.description ? `<div style="font-size:11px;color:var(--muted);">${p.description}</div>` : ''}
+              </div>
+              <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+                <div style="font-size:13px;font-weight:700;color:${col};">${pct}%</div>
+                <div style="font-size:10px;color:var(--muted);">chance</div>
+              </div>
+            </div>
+            <div style="height:5px;background:var(--border);border-radius:99px;">
+              <div style="width:${barW}%;height:100%;border-radius:99px;background:${col};"></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  // Load draw history
+  loadMyDrawHistory(email);
+}
+
+async function loadMyDrawHistory(email) {
+  const el = document.getElementById('student-draw-history');
+  if (!el || !email) return;
+  try {
+    const snap = await db.collection('drawResults')
+      .where('studentEmail', '==', email.toLowerCase())
+      .orderBy('drawnAt', 'desc')
+      .limit(30)
+      .get();
+    if (snap.empty) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No draws yet. Try your luck!</div>';
+      return;
+    }
+    el.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      const date = r.drawnAt?.toDate?.()?.toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) || 'Recent';
+      return `
+        <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);">
+          <div style="font-size:30px;flex-shrink:0;">🎁</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:600;color:var(--earth-deep);">${r.prizeName}</div>
+            ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${r.prizeDescription}</div>` : ''}
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${date} · ${r.pointsSpent} pts spent</div>
+            <div style="margin-top:7px;">
+              <div style="font-size:10px;color:var(--air-text);font-weight:600;letter-spacing:0.05em;margin-bottom:3px;">SERIAL CODE</div>
+              <div style="font-family:monospace;font-size:15px;font-weight:700;letter-spacing:0.12em;color:var(--air-deep);padding:5px 10px;background:var(--air);border-radius:6px;display:inline-block;border:1px solid rgba(107,184,232,0.3);">${r.serialCode}</div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:5px;">📌 Show this code to a teacher to claim your prize</div>
+          </div>
+          <span style="flex-shrink:0;font-size:10px;font-weight:700;padding:4px 10px;border-radius:99px;background:${r.redeemed?'var(--earth)':'var(--fire)'};color:${r.redeemed?'var(--earth-text)':'var(--fire-text)'};">${r.redeemed?'✓ Redeemed':'Pending'}</span>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load history. Try refreshing.</div>';
+  }
+}
+
+async function doSpin() {
+  if (!window.currentUserEmail || !db) return;
+  const btn = document.getElementById('spin-btn');
+  const statusEl = document.getElementById('spin-status');
+  const email = window.currentUserEmail.toLowerCase();
+
+  btn.disabled = true;
+  btn.innerHTML = '⏳ &nbsp;Drawing...';
+  if (statusEl) statusEl.textContent = '';
+
+  try {
+    const [prizes, pts, spinPrice] = await Promise.all([
+      loadPrizes(),
+      getStudentPoints(email),
+      loadSpinPrice()
+    ]);
+
+    if (prizes.length === 0) {
+      toast('No prizes available yet!');
+      btn.disabled = false; btn.innerHTML = '🎰 &nbsp;Draw!';
+      return;
+    }
+    if (pts < spinPrice) {
+      toast(`Not enough points! Need ${spinPrice} pts, you have ${pts}.`);
+      btn.disabled = false; btn.innerHTML = '🎰 &nbsp;Draw!';
+      btn.style.background = 'var(--muted)';
+      return;
+    }
+
+    // Brief animation delay for excitement
+    await new Promise(r => setTimeout(r, 600));
+
+    // Weighted random selection
+    const totalWeight = prizes.reduce((s, p) => s + (p.probability||0), 0);
+    let rand = Math.random() * totalWeight;
+    let winner = prizes[prizes.length - 1];
+    for (const prize of prizes) {
+      rand -= (prize.probability || 0);
+      if (rand <= 0) { winner = prize; break; }
+    }
+
+    // Deduct global spin price
+    await updateStudentPoints(email, -spinPrice, `Prize draw: won "${winner.name}"`, 'System');
+
+    // Generate serial code
+    const serial = generateSerial();
+
+    // Save draw result to Firebase
+    await saveDrawResult({
+      studentEmail: email,
+      studentName: window.currentUserName || email.split('@')[0],
+      prizeName: winner.name,
+      prizeDescription: winner.description || '',
+      prizeId: winner.id,
+      serialCode: serial,
+      pointsSpent: spinPrice,
+      redeemed: false
+    });
+
+    // Refresh points
+    const newPts = await getStudentPoints(email);
+    const ptsEl = document.getElementById('student-my-pts');
+    const badge = document.getElementById('my-pts-badge');
+    if (ptsEl) ptsEl.textContent = newPts.toLocaleString();
+    if (badge) badge.textContent = newPts.toLocaleString() + ' pts';
+
+    // Update progress bar
+    const bar = document.getElementById('pts-progress-bar');
+    const costInfo = document.getElementById('spin-cost-info');
+    if (bar) {
+      const pct = Math.min(100, spinPrice > 0 ? Math.round((newPts / spinPrice) * 100) : 0);
+      bar.style.width = pct + '%';
+      bar.style.background = newPts >= spinPrice ? 'var(--earth-deep)' : 'var(--fire-mid)';
+    }
+    if (costInfo) {
+      if (newPts < spinPrice) {
+        costInfo.innerHTML = `<span style="color:var(--fire-deep);font-weight:500;">Need ${spinPrice - newPts} more pts to draw again</span>`;
+        btn.style.background = 'var(--muted)';
+      } else {
+        costInfo.innerHTML = `<span style="color:var(--earth-deep);font-weight:600;">✓ Ready for another draw!</span> · ${newPts} pts remaining`;
+        btn.style.background = 'var(--earth-deep)';
+      }
+    }
+
+    // Show result
+    showSpinResult(winner, serial, spinPrice);
+    loadMyDrawHistory(email);
+
+  } catch(e) {
+    console.error('doSpin:', e);
+    toast('Draw failed. Please try again.');
+    btn.disabled = false;
+    btn.innerHTML = '🎰 &nbsp;Draw!';
+  }
+}
+
+function showSpinResult(prize, serial, pointsSpent) {
+  const area = document.getElementById('spin-result-area');
+  const btn = document.getElementById('spin-btn');
+  const statusEl = document.getElementById('spin-status');
+
+  // Add animation style once
+  if (!document.getElementById('bounce-style')) {
+    const s = document.createElement('style');
+    s.id = 'bounce-style';
+    s.textContent = `
+      @keyframes bounceIn{0%{transform:scale(0.3);opacity:0;}50%{transform:scale(1.15);}70%{transform:scale(0.95);}100%{transform:scale(1);opacity:1;}}
+      @keyframes shimmer{0%,100%{opacity:1;}50%{opacity:0.6;}}
+      .serial-shine{animation:shimmer 2s infinite;}
+    `;
+    document.head.appendChild(s);
+  }
+
+  area.innerHTML = `
+    <div style="animation:bounceIn 0.55s cubic-bezier(0.36,0.07,0.19,0.97);width:100%;">
+      <div style="font-size:52px;margin-bottom:6px;">🎉</div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--earth-mid);margin-bottom:4px;">YOU WON!</div>
+      <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${prize.name}</div>
+      ${prize.description ? `<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${prize.description}</div>` : '<div style="margin-bottom:10px;"></div>'}
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--air-text);margin-bottom:5px;">SERIAL CODE</div>
+      <div class="serial-shine" style="font-family:monospace;font-size:20px;font-weight:800;letter-spacing:0.18em;color:var(--air-deep);padding:10px 18px;background:var(--air);border-radius:10px;border:2px solid rgba(107,184,232,0.45);display:inline-block;">${serial}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;">📌 Show this code to a teacher to redeem your prize</div>
+    </div>`;
+
+  btn.innerHTML = '🎰 &nbsp;Draw again!';
+  btn.disabled = false;
+  if (statusEl) statusEl.innerHTML = `<span style="color:var(--fire-deep);">−${pointsSpent} pts spent</span>`;
+}
+
+// ── ADMIN DRAW HISTORY ──
+let _allDrawRows = [];
+
+async function loadAdminDrawHistory() {
+  const el = document.getElementById('admin-draw-history');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div>';
+  _allDrawRows = [];
+  try {
+    const snap = await db.collection('drawResults').orderBy('drawnAt','desc').limit(200).get();
+    if (snap.empty) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1.5rem 0;text-align:center;">No draws yet.</div>';
+      return;
+    }
+    _allDrawRows = snap.docs.map(d => ({docId: d.id, ...d.data()}));
+    renderDrawTable(_allDrawRows);
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load history.</div>';
+  }
+}
+
+function renderDrawTable(rows) {
+  const el = document.getElementById('admin-draw-history');
+  if (!el) return;
+  if (rows.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No matching records.</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="mgr-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Student</th>
+          <th>Prize won</th>
+          <th>Serial code</th>
+          <th>Pts spent</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="draw-history-tbody"></tbody>
+    </table>`;
+  const tbody = document.getElementById('draw-history-tbody');
+  rows.forEach(r => {
+    const date = r.drawnAt?.toDate?.()?.toLocaleString('en-US',{dateStyle:'short',timeStyle:'short'}) || 'Recent';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${date}</td>
+      <td>
+        <div style="font-size:13px;font-weight:500;">${r.studentName||'Unknown'}</div>
+        <div style="font-size:11px;color:var(--muted);">${r.studentEmail||''}</div>
+      </td>
+      <td>
+        <div style="font-size:13px;font-weight:500;">${r.prizeName||'?'}</div>
+        ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${r.prizeDescription}</div>` : ''}
+      </td>
+      <td style="font-family:monospace;font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--air-deep);">${r.serialCode||'—'}</td>
+      <td style="font-size:13px;font-weight:600;color:var(--fire-deep);">−${r.pointsSpent||0}</td>
+      <td>
+        <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;
+          background:${r.redeemed?'var(--earth)':'var(--fire)'};
+          color:${r.redeemed?'var(--earth-text)':'var(--fire-text)'};">
+          ${r.redeemed?'✓ Redeemed':'Pending'}
+        </span>
+      </td>
+      <td>
+        <button class="btn-outline" style="font-size:11px;padding:4px 10px;white-space:nowrap;"
+          onclick="toggleRedeem(this,'${r.docId}',${!!r.redeemed})">
+          ${r.redeemed?'Unmark':'✓ Redeem'}
+        </button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterDrawHistory(q) {
+  if (!q) { renderDrawTable(_allDrawRows); return; }
+  const lower = q.toLowerCase();
+  const filtered = _allDrawRows.filter(r =>
+    (r.studentName||'').toLowerCase().includes(lower) ||
+    (r.studentEmail||'').toLowerCase().includes(lower) ||
+    (r.serialCode||'').toLowerCase().includes(lower) ||
+    (r.prizeName||'').toLowerCase().includes(lower)
+  );
+  renderDrawTable(filtered);
+}
+
+async function toggleRedeem(btn, docId, current) {
+  btn.disabled = true;
+  try {
+    await db.collection('drawResults').doc(docId).update({ redeemed: !current });
+    // Update in-memory cache too
+    const entry = _allDrawRows.find(r => r.docId === docId);
+    if (entry) entry.redeemed = !current;
+    renderDrawTable(_allDrawRows);
+    toast(current ? 'Marked as pending.' : '✓ Marked as redeemed!');
+  } catch(e) {
+    btn.disabled = false;
+    toast('Update failed.');
+  }
+}
+
+
+let adminNames = JSON.parse(localStorage.getItem('admin_names') || '{}');
+
+function renderHouseLeaders() {
+  const list = document.getElementById('house-leaders-list');
+  if (!list) return;
+  loadHouseLeaders().then(leaders => {
+    Object.assign(HOUSE_LEADERS, leaders);
+    loadStudents().then(students => {
+      const studentOpts = students
+        .filter(s => s.house && s.house !== 'Unassigned')
+        .map(s => `<option value="${s.email}">${s.name||s.email} (${s.house})</option>`)
+        .join('');
+      const houses = ['earth','water','air','fire'];
+      list.innerHTML = houses.map(h => {
+        const info = HOUSE_INFO[h];
+        const currentEmail = HOUSE_LEADERS[h] || '';
+        const currentStudent = students.find(s => s.email && s.email.toLowerCase() === currentEmail.toLowerCase());
+        const currentLabel = currentStudent ? `${currentStudent.name} (${currentStudent.email})` : (currentEmail || '— None —');
+        // Filter to only this house's students
+        const houseStudents = students.filter(s => s.house && s.house.toLowerCase() === h);
+        const houseOpts = houseStudents.map(s => `<option value="${s.email}" ${s.email.toLowerCase()===currentEmail.toLowerCase()?'selected':''}>${s.name||s.email}</option>`).join('');
+        return `
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${info.bg};border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid ${info.border};">
+            <div style="font-size:24px;">${info.emoji}</div>
+            <div style="flex:1;min-width:120px;">
+              <div style="font-size:13px;font-weight:500;color:${info.text};">${info.name} House</div>
+              <div style="font-size:11px;color:${info.text};opacity:0.7;">Current: ${currentLabel}</div>
+            </div>
+            <select class="fb-input" style="margin-bottom:0;flex:1;min-width:180px;" data-house="${h}">
+              <option value="">— None —</option>
+              ${houseOpts}
+            </select>
+            <button class="btn-primary" data-set="${h}" style="flex-shrink:0;">Set</button>
+          </div>`;
+      }).join('');
+      // Wire up
+      list.querySelectorAll('[data-set]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const h = btn.dataset.set;
+          const select = list.querySelector(`select[data-house="${h}"]`);
+          const email = select.value;
+          saveHouseLeader(h, email).then(() => {
+            HOUSE_LEADERS[h] = email.toLowerCase();
+            renderHouseLeaders();
+            toast(email
+              ? `${HOUSE_INFO[h].name} leader set ✓`
+              : `${HOUSE_INFO[h].name} leader cleared`);
+          });
+        });
+      });
+    });
+  });
+}
+
+function renderAdminList() {
+  const list = document.getElementById('admin-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  // Super admin row (cannot be removed)
+  const superRow = document.createElement('div');
+  superRow.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--fire);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid rgba(232,135,74,0.3);';
+  superRow.innerHTML = `
+    <div style="width:36px;height:36px;border-radius:50%;background:var(--fire-deep);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;">SA</div>
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:500;color:var(--fire-text);">TisStudentHub@outlook.com</div>
+      <div style="font-size:11px;color:var(--fire-text);opacity:0.7;">Head Admin · cannot be removed</div>
+    </div>
+    <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--fire-deep);color:white;">Owner</span>`;
+  list.appendChild(superRow);
+
+  // Other admins
+  const others = MANAGER_EMAILS.filter(e => e.toLowerCase() !== SUPER_ADMIN.toLowerCase());
+  if (others.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;padding:2rem;color:var(--muted);font-size:13px;';
+    empty.textContent = 'No other admins yet. Add one above.';
+    list.appendChild(empty);
+    return;
+  }
+  others.forEach(email => {
+    const name = adminNames[email.toLowerCase()] || email.split('@')[0];
+    const initials = name.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2) || '?';
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);';
+    row.innerHTML = `
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--air-deep);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;">${initials}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;">${name}</div>
+        <div style="font-size:11px;color:var(--muted);">${email}</div>
+      </div>
+      <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--fire);color:var(--fire-text);">Admin</span>
+      <button class="btn-danger" data-email="${email}">Remove</button>`;
+    row.querySelector('.btn-danger').addEventListener('click', () => removeAdmin(email));
+    list.appendChild(row);
+  });
+}
+
+function addAdmin() {
+  const emailInput = document.getElementById('new-admin-email');
+  const nameInput = document.getElementById('new-admin-name');
+  const errEl = document.getElementById('add-admin-error');
+  const email = emailInput.value.trim();
+  const name = nameInput.value.trim();
+
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  if (MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(email.toLowerCase())) {
+    toast('This email is already an admin!');
+    return;
+  }
+
+  MANAGER_EMAILS.push(email);
+  if (name) adminNames[email.toLowerCase()] = name;
+  saveManagers();
+  localStorage.setItem('admin_names', JSON.stringify(adminNames));
+
+  emailInput.value = '';
+  nameInput.value = '';
+  renderAdminList();
+  toast(`${name || email} added as admin ✓`);
+}
+
+function removeAdmin(email) {
+  MANAGER_EMAILS = MANAGER_EMAILS.filter(e => e.toLowerCase() !== email.toLowerCase());
+  delete adminNames[email.toLowerCase()];
+  saveManagers();
+  localStorage.setItem('admin_names', JSON.stringify(adminNames));
+  renderAdminList();
+  toast('Admin removed.');
+}
+
+// ── STARTUP ──
+const _msalTimeout = setTimeout(() => {
+  if (!msalInstance) {
+    console.warn('Load timeout — showing login screen');
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+}, 10000);
+
+if (document.readyState === 'complete') {
+  _tryInit();
+} else {
+  window.addEventListener('load', _tryInit);
+}
+
+function _tryInit() {
+  clearTimeout(_msalTimeout);
+
+  // Check all required libraries are loaded
+  const msalReady = typeof msal !== 'undefined';
+  const firebaseReady = typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' && typeof firebase.auth === 'function';
+
+  if (msalReady && firebaseReady) {
+    initFirebase();
+    initMsal();
+    return;
+  }
+
+  // If not ready yet, poll every 100ms up to 8s
+  let attempts = 0;
+  const poll = setInterval(() => {
+    attempts++;
+    const mReady = typeof msal !== 'undefined';
+    const fReady = typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' && typeof firebase.auth === 'function';
+    if (mReady && fReady) {
+      clearInterval(poll);
+      initFirebase();
+      initMsal();
+    } else if (attempts > 80) { // 8 seconds
+      clearInterval(poll);
+      if (fReady) initFirebase();
+      if (mReady) initMsal();
+      else msalLoadError();
+    }
+  }, 100);
+}
+
+// Start is triggered by _tryInit → initMsal() → init()
+</script>
+</body>
+</html>
