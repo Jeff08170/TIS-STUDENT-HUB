@@ -3223,26 +3223,17 @@ async function loadStudentRewardsPage() {
     if (prizes.length === 0) {
       prizeList.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No prizes set up yet.<br>Check back later!</div>';
     } else {
-      const totalWeight = prizes.reduce((s, p) => s + (p.probability||0), 0);
       const colours = ['var(--air-mid)','var(--earth-mid)','var(--water-mid)','var(--fire-mid)'];
       prizeList.innerHTML = prizes.map((p, i) => {
-        const pct = totalWeight > 0 ? ((p.probability / totalWeight) * 100).toFixed(1) : '0.0';
-        const barW = totalWeight > 0 ? Math.round((p.probability / totalWeight) * 100) : 0;
         const col = colours[i % colours.length];
         return `
           <div style="padding:10px 0;border-bottom:1px solid var(--border);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div>
               <div>
                 <div style="font-size:13px;font-weight:600;">${esc(p.name)}</div>
                 ${p.description ? `<div style="font-size:11px;color:var(--muted);">${esc(p.description)}</div>` : ''}
               </div>
-              <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-                <div style="font-size:13px;font-weight:700;color:${col};">${pct}%</div>
-                <div style="font-size:10px;color:var(--muted);">chance</div>
-              </div>
-            </div>
-            <div style="height:5px;background:var(--border);border-radius:99px;">
-              <div style="width:${barW}%;height:100%;border-radius:99px;background:${col};"></div>
             </div>
           </div>`;
       }).join('');
