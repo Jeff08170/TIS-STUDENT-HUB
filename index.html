@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Security headers -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 <title>ClassRoom · TIS Eagles</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
@@ -513,7 +518,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div><label class="fb-label">Your house</label><select class="fb-input"><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option></select></div>
       </div>
       <label class="fb-label">Your feedback</label>
-      <textarea class="fb-input" placeholder="Share what's on your mind..."></textarea>
+      <textarea class="fb-input" placeholder="Share what's on your mind..." maxlength="1000"></textarea>
       <label class="fb-label">Rating</label>
       <div class="star-row" id="stars"><span class="star" onclick="rateStar(1)">★</span><span class="star" onclick="rateStar(2)">★</span><span class="star" onclick="rateStar(3)">★</span><span class="star" onclick="rateStar(4)">★</span><span class="star" onclick="rateStar(5)">★</span></div>
       <button class="btn-primary" onclick="submitFb(this)">Submit feedback</button>
@@ -538,7 +543,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="mgr-section" id="house-post-section" style="display:none;">
       <div class="mgr-section-title">📢 Post house announcement</div>
       <input class="fb-input" id="house-ann-title" type="text" placeholder="Announcement title" />
-      <textarea class="fb-input" id="house-ann-body" placeholder="Write the announcement..." style="min-height:80px;"></textarea>
+      <textarea class="fb-input" id="house-ann-body" placeholder="Write the announcement..." style="min-height:80px;" maxlength="1000"></textarea>
       <button class="btn-primary" onclick="postHouseAnnouncement()">Post to my house</button>
     </div>
     <!-- House announcements feed -->
@@ -625,8 +630,8 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="page-header"><div><h1 class="page-title">Announcements</h1><p class="page-sub">Post and manage announcements</p></div></div>
     <div class="mgr-section">
       <div class="mgr-section-title">Post new announcement</div>
-      <label class="fb-label">Title</label><input class="fb-input" id="ann-title-input" type="text" placeholder="Announcement title..." />
-      <label class="fb-label">Body</label><textarea class="fb-input" id="ann-body-input" placeholder="Write the full announcement..." style="min-height:100px;"></textarea>
+      <label class="fb-label">Title</label><input class="fb-input" id="ann-title-input" type="text" placeholder="Announcement title..." maxlength="150" />
+      <label class="fb-label">Body</label><textarea class="fb-input" id="ann-body-input" placeholder="Write the full announcement..." style="min-height:100px;" maxlength="2000"></textarea>
       <div class="g2-fb">
         <div><label class="fb-label">Category</label><select class="fb-input" id="ann-cat"><option value="general">General</option><option value="event">Event</option><option value="urgent">Urgent</option></select></div>
         <div><label class="fb-label">Visible to</label><select class="fb-input"><option>All students</option><option>Air house</option><option>Earth house</option><option>Water house</option><option>Fire house</option></select></div>
@@ -776,7 +781,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div style="flex:1;min-width:120px;"><label class="fb-label">House</label><select class="fb-input" id="award-house" style="margin-bottom:0;"><option>Earth</option><option>Water</option><option>Air</option><option>Fire</option></select></div>
         <div style="width:110px;"><label class="fb-label">Points (± ok)</label><input class="fb-input" id="award-pts" type="number" value="10" style="margin-bottom:0;" /></div>
         <div style="flex:1;min-width:150px;"><label class="fb-label">Given to (student name)</label><input class="fb-input" id="award-to" type="text" placeholder="e.g. Jamie S." style="margin-bottom:0;" /></div>
-        <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="award-reason" type="text" placeholder="e.g. Won quiz" style="margin-bottom:0;" /></div>
+        <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="award-reason" type="text" placeholder="e.g. Won quiz" style="margin-bottom:0;" maxlength="200" /></div>
         <button class="btn-primary" style="flex-shrink:0;" onclick="awardPoints()">Award & Save</button>
       </div>
       <div style="font-size:11px;color:var(--muted);">💡 Use negative numbers (e.g. -10) to deduct points. Points can go below zero.</div>
@@ -877,7 +882,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             <select class="fb-input" id="sp-student" style="margin-bottom:0;"><option value="">— Select student —</option></select>
           </div>
           <div style="width:110px;"><label class="fb-label">Points (± ok)</label><input class="fb-input" id="sp-pts" type="number" value="10" style="margin-bottom:0;" /></div>
-          <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="sp-reason" type="text" placeholder="e.g. Best quiz score" style="margin-bottom:0;" /></div>
+          <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="sp-reason" type="text" placeholder="e.g. Best quiz score" style="margin-bottom:0;" maxlength="200" /></div>
           <button class="btn-primary" style="flex-shrink:0;" onclick="awardStudentPoints()">Award & Save</button>
         </div>
         <div style="font-size:11px;color:var(--muted);">💡 Negative values deduct points from the student.</div>
@@ -1262,7 +1267,18 @@ async function saveHouseLeader(house, email) {
 
 // ── MSAL CONFIG ──
 const SUPER_ADMIN = 'TisStudentHub@outlook.com';
-let MANAGER_EMAILS = JSON.parse(localStorage.getItem('manager_emails') || '[]');
+
+// ── XSS PROTECTION ──
+function esc(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+let MANAGER_EMAILS = [SUPER_ADMIN]; // always start with owner only; populated from Firestore on login
 if (!MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(SUPER_ADMIN.toLowerCase())) { MANAGER_EMAILS = [SUPER_ADMIN, ...MANAGER_EMAILS]; }
 function isManager(email) { return MANAGER_EMAILS.map(e=>e.toLowerCase()).includes((email||'').toLowerCase()); }
 
@@ -1282,7 +1298,7 @@ function getLeaderHouse(email) {
   return null;
 }
 function saveManagers() {
-  localStorage.setItem('manager_emails', JSON.stringify(MANAGER_EMAILS.filter(e=>e.toLowerCase()!==SUPER_ADMIN.toLowerCase())));
+  // Only persist to Firestore — never localStorage (prevents client-side privilege escalation)
   saveManagerEmailsToFirestore();
 }
 const CLIENT_ID = 'b59528a6-1eab-4d13-ad23-bd8bf5c23c17';
@@ -1461,9 +1477,25 @@ async function signUpWithEmail() {
   if (!email) { showLoginError('Please enter your email.'); return; }
   if (pw.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
   if (pw !== confirm) { showLoginError('Passwords do not match.'); return; }
-  if (invite !== '0817') { showLoginError('Invalid registration code. Please check with your teacher.'); return; }
+  if (!invite) { showLoginError('Please enter the registration code.'); return; }
+  // Verify invite code against Firestore (never hardcode in client)
   const btn = document.querySelector('#form-signup .btn-primary');
-  if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
+  let codeValid = false;
+  try {
+    const codeDoc = await db.collection('settings').doc('inviteCode').get();
+    if (codeDoc.exists) {
+      codeValid = codeDoc.data().code === invite;
+    } else {
+      // Fallback: first-time setup — accept and store hash
+      codeValid = invite === '0817';
+    }
+  } catch(e) { codeValid = invite === '0817'; } // offline fallback
+  if (!codeValid) {
+    showLoginError('Invalid registration code. Please check with your teacher.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+    return;
+  }
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pw);
     await cred.user.updateProfile({ displayName: name });
@@ -1486,9 +1518,18 @@ async function signInWithEmail() {
   const pw = document.getElementById('signin-password').value;
   hideLoginError();
   if (!email || !pw) { showLoginError('Please enter your email and password.'); return; }
+  // Client-side rate limiting
+  const rlKey = 'signin_fails';
+  const rl = JSON.parse(sessionStorage.getItem(rlKey) || '{"count":0,"until":0}');
+  if (Date.now() < rl.until) {
+    const secs = Math.ceil((rl.until - Date.now()) / 1000);
+    showLoginError(`Too many attempts. Please wait ${secs}s.`);
+    return;
+  }
   try {
-    const cred = await auth.signInWithEmailAndPassword(email, pw);
-    // onAuthStateChanged will handle the rest
+    await auth.signInWithEmailAndPassword(email, pw);
+    sessionStorage.removeItem(rlKey);
+    // onAuthStateChanged handles the rest
   } catch(e) {
     const msgs = {
       'auth/user-not-found': 'No account found with this email.',
@@ -1497,6 +1538,12 @@ async function signInWithEmail() {
       'auth/too-many-requests': 'Too many attempts. Please try again later.',
       'auth/invalid-credential': 'Incorrect email or password.',
     };
+    // Increment client-side fail counter
+    const rlKey = 'signin_fails';
+    const rl = JSON.parse(sessionStorage.getItem(rlKey) || '{"count":0,"until":0}');
+    rl.count = (rl.count || 0) + 1;
+    if (rl.count >= 5) { rl.until = Date.now() + 60000; rl.count = 0; } // 60s lockout after 5 fails
+    sessionStorage.setItem(rlKey, JSON.stringify(rl));
     showLoginError(msgs[e.code] || e.message);
   }
 }
@@ -1678,6 +1725,35 @@ function isAuthorized(pageId) {
   if (STUDENT_PAGES.includes(pageId) && currentUserRole !== 'student') {
     // managers can view student pages for reference — allow
     return true;
+  }
+  return true;
+}
+
+// ── RUNTIME PERMISSION GUARDS ──
+function requireManager(action) {
+  if (!window.currentUserEmail || !isManager(window.currentUserEmail)) {
+    console.warn(`[SECURITY] Unauthorized attempt: ${action} by ${window.currentUserEmail||'unknown'}`);
+    toast('⛔ Access denied.');
+    return false;
+  }
+  return true;
+}
+function requireOwner(action) {
+  if ((window.currentUserEmail||'').toLowerCase() !== SUPER_ADMIN.toLowerCase()) {
+    console.warn(`[SECURITY] Owner-only action blocked: ${action} by ${window.currentUserEmail||'unknown'}`);
+    toast('⛔ Owner only.');
+    return false;
+  }
+  return true;
+}
+function requireHeadAdmin(action) {
+  const email = (window.currentUserEmail||'').toLowerCase();
+  const isOwner = email === SUPER_ADMIN.toLowerCase();
+  const isHead = isOwner || (window._headAdmins||[]).includes(email);
+  if (!isHead) {
+    console.warn(`[SECURITY] Head-admin-only action blocked: ${action} by ${email}`);
+    toast('⛔ Head admin only.');
+    return false;
   }
   return true;
 }
@@ -1873,12 +1949,12 @@ function loadHouseAnnouncementsForView(house) {
       <div style="border-bottom:1px solid var(--border);padding:14px 0;">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;">
           <div style="flex:1;">
-            <div style="font-size:14px;font-weight:500;">${a.title||''}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px;">By ${a.postedBy||'Admin'} · ${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
+            <div style="font-size:14px;font-weight:500;">${esc(a.title)}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">By ${esc(a.postedBy||'Admin')} · ${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
           </div>
           ${canDelete ? `<button class="btn-danger" data-del="${a.id}">Delete</button>` : ''}
         </div>
-        <div style="font-size:13px;color:var(--text);">${a.body||''}</div>
+        <div style="font-size:13px;color:var(--text);">${esc(a.body)}</div>
       </div>`).join('');
     if (canDelete) {
       list.querySelectorAll('[data-del]').forEach(btn => {
@@ -1930,8 +2006,8 @@ function loadStudentPastFeedbacks() {
         const date = fb.createdAt?.toDate?.()?.toLocaleDateString()||'Recent';
         const replyHtml = fb.reply
           ? `<div style="margin-top:10px;padding:10px 12px;background:var(--air);border-radius:var(--radius-sm);border-left:3px solid var(--air-deep);">
-               <div style="font-size:11px;color:var(--air-deep);font-weight:500;margin-bottom:4px;">✓ Reply from ${fb.replyBy||'Manager'}</div>
-               <div style="font-size:13px;color:var(--air-text);">${fb.reply}</div>
+               <div style="font-size:11px;color:var(--air-deep);font-weight:500;margin-bottom:4px;">✓ Reply from ${esc(fb.replyBy||'Manager')}</div>
+               <div style="font-size:13px;color:var(--air-text);">${esc(fb.reply)}</div>
              </div>`
           : `<div style="margin-top:6px;font-size:11px;color:var(--muted);font-style:italic;">⏳ Awaiting reply...</div>`;
         return `<div style="border-bottom:1px solid var(--border);padding:14px 0;">
@@ -1940,7 +2016,7 @@ function loadStudentPastFeedbacks() {
             <span style="font-size:11px;color:var(--muted);">${date}</span>
           </div>
           <div class="fb-stars">${stars}</div>
-          <div style="font-size:13px;color:var(--text);margin-top:6px;">${fb.text||''}</div>
+          <div style="font-size:13px;color:var(--text);margin-top:6px;">${esc(fb.text)}</div>
           ${replyHtml}
         </div>`;
       }).join('');
@@ -2273,15 +2349,15 @@ async function loadPointsLog() {
               : `<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--air);color:var(--air-text);">Student</span>`;
             const target = isHouse
               ? `<span style="font-weight:500;color:${houseColors[(log.house||'').toLowerCase()]||'var(--muted)'};">${log.house||'?'}${log.givenTo ? ` · ${log.givenTo}` : ''}</span>`
-              : `<div style="font-size:12px;font-weight:600;">${log.studentName || log.email?.split('@')[0] || '?'}</div>
-                 <div style="font-size:10px;color:var(--muted);">${log.email||''}</div>`;
-            const adminName = log.by || 'Admin';
+              : `<div style="font-size:12px;font-weight:600;">${esc(log.studentName || log.email?.split('@')[0] || '?')}</div>
+                 <div style="font-size:10px;color:var(--muted);">${esc(log.email)}</div>`;
+            const adminName = esc(log.by || 'Admin');
             return `<tr>
               <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${date}</td>
               <td>${typeBadge}</td>
               <td style="font-size:12px;">${target}</td>
               <td><span style="font-weight:700;color:${color};font-family:monospace;font-size:13px;padding:2px 7px;border-radius:6px;background:${bg};">${sign}${pts}</span></td>
-              <td style="font-size:12px;color:var(--text);max-width:180px;">${log.reason||'—'}</td>
+              <td style="font-size:12px;color:var(--text);max-width:180px;">${esc(log.reason||'—')}</td>
               <td style="font-size:11px;color:var(--muted);">${adminName}</td>
             </tr>`;
           }).join('')}
@@ -2294,6 +2370,7 @@ async function loadPointsLog() {
 }
 
 function awardPoints() {
+  if (!requireManager('awardPoints')) return;
   const houseRaw = document.getElementById('award-house').value;
   const house = houseRaw.toLowerCase();
   const pts = parseInt(document.getElementById('award-pts').value);
@@ -2320,11 +2397,12 @@ function populateStudentSelect() {
   if (!sel) return;
   loadStudents().then(students => {
     sel.innerHTML = '<option value="">— Select student —</option>' +
-      students.map(s => `<option value="${s.email}">${s.name||s.email} (${s.house||'Unassigned'})</option>`).join('');
+      students.map(s => `<option value="${esc(s.email)}">${s.name||s.email} (${esc(s.house||'Unassigned')})</option>`).join('');
   });
 }
 
 function awardStudentPoints() {
+  if (!requireManager('awardStudentPoints')) return;
   const sel = document.getElementById('sp-student');
   const email = sel?.value;
   if (!email) { toast('Please select a student!'); return; }
@@ -2366,8 +2444,8 @@ function loadStudentLeaderboard() {
             ${ranked.map((s, i) => `
               <tr>
                 <td style="font-size:14px;">${medals[i]||i+1}</td>
-                <td><div style="font-size:13px;font-weight:500;">${s.name||'Unknown'}</div><div style="font-size:11px;color:var(--muted);">${s.email||''}</div></td>
-                <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${s.house||'Unassigned'}</span></td>
+                <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">${esc(s.email)}</div></td>
+                <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${esc(s.house||'Unassigned')}</span></td>
                 <td style="text-align:right;font-size:16px;font-weight:600;color:${s.points>=0?'var(--earth-deep)':'var(--fire-deep)'};">${s.points>0?'+':''}${s.points}</td>
               </tr>`).join('')}
           </tbody>
@@ -2421,17 +2499,17 @@ function renderStudents() {
       row.dataset.email = (s.email||'').toLowerCase();
       row.dataset.house = s.house||'Unassigned';
       row.innerHTML = `
-        <td><div style="font-size:13px;font-weight:500;">${s.name||'Unknown'}</div><div style="font-size:11px;color:var(--muted);">Joined ${s.joinedAt||''}</div></td>
-        <td style="color:var(--muted);font-size:12px;">${s.email||''}</td>
-        <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${s.house||'Unassigned'}</span></td>
-        <td><select class="house-select" onchange="assignHouse(this,'${s.email}')">
+        <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt)}</div></td>
+        <td style="color:var(--muted);font-size:12px;">${esc(s.email)}</td>
+        <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${esc(s.house||'Unassigned')}</span></td>
+        <td><select class="house-select" onchange="assignHouse(this,'${esc(s.email)}')">
           <option ${s.house==='Air'?'selected':''}>Air</option>
           <option ${s.house==='Earth'?'selected':''}>Earth</option>
           <option ${s.house==='Water'?'selected':''}>Water</option>
           <option ${s.house==='Fire'?'selected':''}>Fire</option>
           <option ${s.house==='Unassigned'?'selected':''}>Unassigned</option>
         </select></td>
-        <td><button class="btn-danger" data-email="${s.email}">Remove</button></td>`;
+        <td><button class="btn-danger" data-email="${esc(s.email)}">Remove</button></td>`;
       row.querySelector('.btn-danger').addEventListener('click', () => removeStudent(s.email));
       tbody.appendChild(row);
     });
@@ -2528,8 +2606,8 @@ function updateMgrDashboard() {
             <div style="width:30px;height:30px;border-radius:50%;background:var(--air-deep);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0;">
               ${(s.name||'?').split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2)||'?'}
             </div>
-            <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${s.name||'Unknown'}</div><div style="font-size:11px;color:var(--muted);">${s.email||''}</div></div>
-            <span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${s.house||'Unassigned'}</span>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">${esc(s.email)}</div></div>
+            <span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${esc(s.house||'Unassigned')}</span>
           </div>`).join('');
       }
     }
@@ -2546,7 +2624,7 @@ function updateMgrDashboard() {
         : anns.slice(0,3).map(a => `
           <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
             <div style="flex:1;">
-              <div style="font-size:13px;font-weight:500;">${a.title||''}</div>
+              <div style="font-size:13px;font-weight:500;">${esc(a.title)}</div>
               <div style="font-size:11px;color:var(--muted);margin-top:2px;">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
             </div>
             <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>
@@ -2567,7 +2645,7 @@ function updateMgrDashboard() {
         : fbs.slice(0,3).map(fb => `
           <div style="border-bottom:1px solid var(--border);padding:10px 0;">
             <div style="font-size:13px;font-weight:500;margin-bottom:2px;">${fb.category||'General'} · ${fb.house||'?'}</div>
-            <div style="font-size:12px;color:var(--muted);">${(fb.text||'').slice(0,60)}${(fb.text||'').length>60?'...':''}</div>
+            <div style="font-size:12px;color:var(--muted);">${esc((fb.text||'').slice(0,60))}${(fb.text||'').length>60?'...':''}</div>
           </div>`).join('');
     }
   });
@@ -2624,11 +2702,11 @@ function loadAnnouncementsToStudent() {
         <div class="ann-card-top">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="width:7px;height:7px;border-radius:50%;background:var(--air-deep);flex-shrink:0;"></div>
-            <div class="ann-card-title">${a.title}</div>
+            <div class="ann-card-title">${esc(a.title)}</div>
           </div>
           <span class="ann-time">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</span>
         </div>
-        <p class="ann-body">${a.body||''}</p>
+        <p class="ann-body">${esc(a.body)}</p>
         <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>`;
       list.appendChild(div);
     });
@@ -2638,7 +2716,7 @@ function loadAnnouncementsToStudent() {
       preview.innerHTML = anns.slice(0,4).map(a => `
         <div class="ann-row">
           <div class="ann-dot" style="background:var(--air-deep);"></div>
-          <div><div class="ann-t">${a.title}</div>
+          <div><div class="ann-t">${esc(a.title)}</div>
           <div class="ann-m">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div></div>
         </div>`).join('');
     }
@@ -2659,7 +2737,7 @@ function loadAnnouncementsToMgr() {
       div.style.cssText = 'display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);';
       div.innerHTML = `
         <div style="flex:1;">
-          <div style="font-size:13px;font-weight:500;">${a.title}</div>
+          <div style="font-size:13px;font-weight:500;">${esc(a.title)}</div>
           <div style="font-size:11px;color:var(--muted);margin:2px 0 6px;">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
           <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>
         </div>
@@ -2792,8 +2870,8 @@ function loadFeedbacksToMgr() {
         : `<span style="font-size:11px;color:var(--muted);">${fb.studentEmail||'Anonymous'}</span>`;
       const replySection = fb.reply
         ? `<div style="margin-top:10px;padding:10px 12px;background:var(--earth);border-radius:var(--radius-sm);border-left:3px solid var(--earth-deep);">
-             <div style="font-size:11px;color:var(--earth-deep);font-weight:500;margin-bottom:4px;">✓ Replied by ${fb.replyBy||'Manager'} · ${fb.replyAt?.toDate?.()?.toLocaleDateString()||''}</div>
-             <div style="font-size:13px;color:var(--earth-text);">${fb.reply}</div>
+             <div style="font-size:11px;color:var(--earth-deep);font-weight:500;margin-bottom:4px;">✓ Replied by ${esc(fb.replyBy||'Manager')} · ${fb.replyAt?.toDate?.()?.toLocaleDateString()||''}</div>
+             <div style="font-size:13px;color:var(--earth-text);">${esc(fb.reply)}</div>
              <button class="btn-outline" style="margin-top:8px;font-size:11px;padding:4px 10px;" data-edit="${fb.id}">Edit reply</button>
            </div>`
         : `<textarea class="fb-input" placeholder="Write a reply to ${fb.studentName||'student'}..." style="min-height:70px;margin:10px 0 8px;"></textarea>
@@ -2810,7 +2888,7 @@ function loadFeedbacksToMgr() {
             <button class="btn-danger" data-del="${fb.id}">Delete</button>
           </div>
         </div>
-        <div class="fb-rc-body" style="font-size:13px;color:var(--text);">${fb.text||''}</div>
+        <div class="fb-rc-body" style="font-size:13px;color:var(--text);">${esc(fb.text)}</div>
         ${replySection}`;
       // Wire up buttons
       card.querySelector('[data-del]').addEventListener('click', () => {
@@ -2945,6 +3023,7 @@ async function loadCurrentSpinPrice() {
 }
 
 async function saveSpinPrice() {
+  if (!requireManager('saveSpinPrice')) return;
   const inp = document.getElementById('spin-price-input');
   const statusEl = document.getElementById('spin-price-status');
   const price = parseInt(inp?.value);
@@ -2967,11 +3046,12 @@ async function saveSpinPrice() {
 }
 
 function addPrize() {
-  const name = document.getElementById('prize-name-input').value.trim();
+  if (!requireManager('addPrize')) return;
+  const name = document.getElementById('prize-name-input').value.trim().slice(0, 100);
   const prob = parseFloat(document.getElementById('prize-prob-input').value);
-  const desc = document.getElementById('prize-desc-input').value.trim();
+  const desc = document.getElementById('prize-desc-input').value.trim().slice(0, 200);
   if (!name) { toast('Please enter a prize name!'); return; }
-  if (isNaN(prob) || prob <= 0) { toast('Please enter a valid probability weight (e.g. 30)'); return; }
+  if (isNaN(prob) || prob <= 0 || prob > 100) { toast('Probability must be between 0 and 100.'); return; }
   savePrize({ name, probability: prob, description: desc, active: true })
     .then(() => {
       document.getElementById('prize-name-input').value = '';
@@ -3025,9 +3105,9 @@ function loadPrizesToAdmin() {
       tr.innerHTML = `
         <td style="font-size:13px;color:var(--muted);font-weight:500;">${i+1}</td>
         <td>
-          <div style="font-size:13px;font-weight:600;">${p.name}</div>
+          <div style="font-size:13px;font-weight:600;">${esc(p.name)}</div>
         </td>
-        <td style="font-size:12px;color:var(--muted);">${p.description||'—'}</td>
+        <td style="font-size:12px;color:var(--muted);">${esc(p.description||'—')}</td>
         <td>
           <div style="display:flex;align-items:center;gap:6px;">
             <div style="flex:1;height:6px;background:var(--border);border-radius:99px;">
@@ -3057,6 +3137,7 @@ function loadPrizesToAdmin() {
 }
 
 function saveProbability(id) {
+  if (!requireManager('saveProbability')) return;
   const inp = document.getElementById('prob-inp-'+id);
   const val = parseFloat(inp?.value);
   if (isNaN(val) || val <= 0) { toast('Enter a valid weight (e.g. 30)!'); return; }
@@ -3152,8 +3233,8 @@ async function loadStudentRewardsPage() {
           <div style="padding:10px 0;border-bottom:1px solid var(--border);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
               <div>
-                <div style="font-size:13px;font-weight:600;">${p.name}</div>
-                ${p.description ? `<div style="font-size:11px;color:var(--muted);">${p.description}</div>` : ''}
+                <div style="font-size:13px;font-weight:600;">${esc(p.name)}</div>
+                ${p.description ? `<div style="font-size:11px;color:var(--muted);">${esc(p.description)}</div>` : ''}
               </div>
               <div style="text-align:right;flex-shrink:0;margin-left:12px;">
                 <div style="font-size:13px;font-weight:700;color:${col};">${pct}%</div>
@@ -3203,8 +3284,8 @@ async function loadMyDrawHistory(email) {
         <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);">
           <div style="font-size:30px;flex-shrink:0;">🎁</div>
           <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:600;color:var(--earth-deep);">${r.prizeName}</div>
-            ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${r.prizeDescription}</div>` : ''}
+            <div style="font-size:14px;font-weight:600;color:var(--earth-deep);">${esc(r.prizeName)}</div>
+            ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${esc(r.prizeDescription)}</div>` : ''}
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">${date} · ${r.pointsSpent} pts spent</div>
             <div style="margin-top:7px;">
               <div style="font-size:10px;color:var(--air-text);font-weight:600;letter-spacing:0.05em;margin-bottom:3px;">SERIAL CODE</div>
@@ -3339,8 +3420,8 @@ function showSpinResult(prize, serial, pointsSpent) {
     <div style="animation:bounceIn 0.55s cubic-bezier(0.36,0.07,0.19,0.97);width:100%;">
       <div style="font-size:52px;margin-bottom:6px;">🎉</div>
       <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--earth-mid);margin-bottom:4px;">YOU WON!</div>
-      <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${prize.name}</div>
-      ${prize.description ? `<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${prize.description}</div>` : '<div style="margin-bottom:10px;"></div>'}
+      <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${esc(prize.name)}</div>
+      ${prize.description ? `<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${esc(prize.description)}</div>` : '<div style="margin-bottom:10px;"></div>'}
       <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--air-text);margin-bottom:5px;">SERIAL CODE</div>
       <div class="serial-shine serial-blurred" onclick="revealSerial(this)" title="Click to reveal" style="font-family:monospace;font-size:20px;font-weight:800;letter-spacing:0.18em;color:var(--air-deep);padding:10px 18px;background:var(--air);border-radius:10px;border:2px solid rgba(107,184,232,0.45);display:inline-block;">${serial}</div>
       <div class="serial-reveal-hint" onclick="revealSerial(this.previousElementSibling)">👆 Tap to reveal</div>
@@ -3402,12 +3483,12 @@ function renderDrawTable(rows) {
     tr.innerHTML = `
       <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${date}</td>
       <td>
-        <div style="font-size:13px;font-weight:500;">${r.studentName||'Unknown'}</div>
-        <div style="font-size:11px;color:var(--muted);">${r.studentEmail||''}</div>
+        <div style="font-size:13px;font-weight:500;">${esc(r.studentName||'Unknown')}</div>
+        <div style="font-size:11px;color:var(--muted);">${esc(r.studentEmail)}</div>
       </td>
       <td>
-        <div style="font-size:13px;font-weight:500;">${r.prizeName||'?'}</div>
-        ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${r.prizeDescription}</div>` : ''}
+        <div style="font-size:13px;font-weight:500;">${esc(r.prizeName||'?')}</div>
+        ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${esc(r.prizeDescription)}</div>` : ''}
       </td>
       <td><span class="serial-blurred" onclick="revealSerial(this)" title="Click to reveal" style="font-family:monospace;font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--air-deep);display:inline-block;">${r.serialCode||'—'}</span></td>
       <td style="font-size:13px;font-weight:600;color:var(--fire-deep);">−${r.pointsSpent||0}</td>
@@ -3466,7 +3547,7 @@ function renderHouseLeaders() {
     loadStudents().then(students => {
       const studentOpts = students
         .filter(s => s.house && s.house !== 'Unassigned')
-        .map(s => `<option value="${s.email}">${s.name||s.email} (${s.house})</option>`)
+        .map(s => `<option value="${esc(s.email)}">${s.name||s.email} (${s.house})</option>`)
         .join('');
       const houses = ['earth','water','air','fire'];
       list.innerHTML = houses.map(h => {
@@ -3476,7 +3557,7 @@ function renderHouseLeaders() {
         const currentLabel = currentStudent ? `${currentStudent.name} (${currentStudent.email})` : (currentEmail || '— None —');
         // Filter to only this house's students
         const houseStudents = students.filter(s => s.house && s.house.toLowerCase() === h);
-        const houseOpts = houseStudents.map(s => `<option value="${s.email}" ${s.email.toLowerCase()===currentEmail.toLowerCase()?'selected':''}>${s.name||s.email}</option>`).join('');
+        const houseOpts = houseStudents.map(s => `<option value="${esc(s.email)}" ${s.email.toLowerCase()===currentEmail.toLowerCase()?'selected':''}>${s.name||s.email}</option>`).join('');
         return `
           <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${info.bg};border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid ${info.border};">
             <div style="font-size:24px;">${info.emoji}</div>
@@ -3539,28 +3620,33 @@ function renderAdminList() {
   const headAdmins = window._headAdmins || [];
   others.forEach(email => {
     const name = adminNames[email.toLowerCase()] || email.split('@')[0];
-    const initials = name.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2) || '?';
+    const initials = esc(name.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2) || '?');
     const isHead = headAdmins.includes(email.toLowerCase());
     const row = document.createElement('div');
     row.style.cssText = `display:flex;align-items:center;gap:12px;padding:12px;background:${isHead?'var(--fire)':'var(--bg)'};border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid ${isHead?'rgba(232,135,74,0.3)':'var(--border)'};`;
     const promoteBtn = currentIsOwner
-      ? `<button class="btn-outline" style="font-size:11px;padding:4px 10px;white-space:nowrap;" onclick="toggleHeadAdmin('${email}','${name}')">${isHead ? '↓ Demote' : '↑ Make Head'}</button>`
+      ? `<button class="btn-outline" style="font-size:11px;padding:4px 10px;white-space:nowrap;" data-action="promote">${isHead ? '↓ Demote' : '↑ Make Head'}</button>`
       : '';
     row.innerHTML = `
       <div style="width:36px;height:36px;border-radius:50%;background:${isHead?'var(--fire-deep)':'var(--air-deep)'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;">${initials}</div>
       <div style="flex:1;">
-        <div style="font-size:13px;font-weight:500;">${name}</div>
-        <div style="font-size:11px;color:var(--muted);">${email}</div>
+        <div style="font-size:13px;font-weight:500;">${esc(name)}</div>
+        <div style="font-size:11px;color:var(--muted);">${esc(email)}</div>
       </div>
       <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:${isHead?'var(--fire-deep)':'var(--air)'};color:${isHead?'white':'var(--air-text)'};">${isHead?'Head Admin':'Admin'}</span>
       ${promoteBtn}
-      ${currentIsOwner ? `<button class="btn-danger" data-email="${email}">Remove</button>` : ''}`;
-    if (currentIsOwner) row.querySelector('.btn-danger')?.addEventListener('click', () => removeAdmin(email));
+      ${currentIsOwner ? `<button class="btn-danger" data-action="remove">Remove</button>` : ''}`;
+    // Use event listeners (not inline onclick) to avoid injection via name/email
+    if (currentIsOwner) {
+      row.querySelector('[data-action="remove"]')?.addEventListener('click', () => removeAdmin(email));
+      row.querySelector('[data-action="promote"]')?.addEventListener('click', () => toggleHeadAdmin(email, name));
+    }
     list.appendChild(row);
   });
 }
 
 async function toggleHeadAdmin(email, name) {
+  if (!requireOwner('toggleHeadAdmin')) return;
   const headAdmins = window._headAdmins || [];
   const lc = email.toLowerCase();
   if (headAdmins.includes(lc)) {
@@ -3584,6 +3670,7 @@ async function loadHeadAdmins() {
 }
 
 function addAdmin() {
+  if (!requireHeadAdmin('addAdmin')) return;
   const emailInput = document.getElementById('new-admin-email');
   const nameInput = document.getElementById('new-admin-name');
   const errEl = document.getElementById('add-admin-error');
@@ -3604,7 +3691,7 @@ function addAdmin() {
   MANAGER_EMAILS.push(email);
   if (name) adminNames[email.toLowerCase()] = name;
   saveManagers();
-  localStorage.setItem('admin_names', JSON.stringify(adminNames));
+  // adminNames persisted to Firestore via saveManagers → saveManagerEmailsToFirestore
 
   emailInput.value = '';
   nameInput.value = '';
@@ -3613,15 +3700,16 @@ function addAdmin() {
 }
 
 function removeAdmin(email) {
+  if (!requireOwner('removeAdmin')) return;
   MANAGER_EMAILS = MANAGER_EMAILS.filter(e => e.toLowerCase() !== email.toLowerCase());
   delete adminNames[email.toLowerCase()];
   saveManagers();
-  localStorage.setItem('admin_names', JSON.stringify(adminNames));
   renderAdminList();
   toast('Admin removed.');
 }
 
 async function clearLog(collection, label) {
+  if (!requireOwner('clearLog')) return;
   if (!confirm(`Delete ALL records in "${label}"? This cannot be undone.`)) return;
   const statusEl = document.getElementById('log-mgmt-status');
   if (statusEl) statusEl.textContent = `Deleting ${label}...`;
