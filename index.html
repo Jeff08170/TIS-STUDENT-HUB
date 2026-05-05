@@ -1269,7 +1269,7 @@ function initMsal() {
     auth: {
       clientId: CLIENT_ID,
       authority: 'https://login.microsoftonline.com/common',
-      redirectUri: 'https://jeff08170.github.io/TIS-STUDENT-HUB',
+      redirectUri: 'https://jeff08170.github.io/TIS-STUDENT-HUB/',
       navigateToLoginRequestUrl: true,
     },
     cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: true }
@@ -1318,7 +1318,7 @@ async function signOut() {
     if (accounts.length > 0) {
       await msalInstance.logoutRedirect({
         account: accounts[0],
-        postLogoutRedirectUri: 'https://jeff08170.github.io/TIS-STUDENT-HUB'
+        postLogoutRedirectUri: 'https://jeff08170.github.io/TIS-STUDENT-HUB/'
       });
       return; // page will redirect
     }
