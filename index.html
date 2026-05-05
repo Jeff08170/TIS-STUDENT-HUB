@@ -509,23 +509,43 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   </div>
 
   <!-- Student: Feedbacks -->
+  <!-- Student: Feedbacks -->
   <div id="page-feedbacks" class="page">
-    <div class="page-header"><div><h1 class="page-title">Feedbacks</h1><p class="page-sub">Share your thoughts</p></div></div>
-    <div class="card" style="margin-bottom:14px;">
-      <div style="font-size:15px;font-weight:500;margin-bottom:1rem;">Submit new feedback</div>
-      <div class="g2-fb">
-        <div><label class="fb-label">Category</label><select class="fb-input"><option>Class activity</option><option>Teacher feedback</option><option>School facilities</option><option>Suggestions</option></select></div>
-        <div><label class="fb-label">Your house</label><select class="fb-input"><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option></select></div>
-      </div>
-      <label class="fb-label">Your feedback</label>
-      <textarea class="fb-input" placeholder="Share what's on your mind..." maxlength="1000"></textarea>
-      <label class="fb-label">Rating</label>
-      <div class="star-row" id="stars"><span class="star" onclick="rateStar(1)">★</span><span class="star" onclick="rateStar(2)">★</span><span class="star" onclick="rateStar(3)">★</span><span class="star" onclick="rateStar(4)">★</span><span class="star" onclick="rateStar(5)">★</span></div>
-      <button class="btn-primary" onclick="submitFb(this)">Submit feedback</button>
+    <div class="page-header">
+      <div><h1 class="page-title">Feedbacks</h1><p class="page-sub">Share your thoughts</p></div>
+      <span class="hdr-badge" id="my-fb-count-badge" style="display:none;background:var(--air);color:var(--air-text);border-color:rgba(107,184,232,0.3);">0 submitted</span>
     </div>
-    <div class="card">
-      <div class="section-label" style="margin-bottom:4px;">Your past feedbacks</div>
-      <div id="student-fb-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+
+    <!-- Tab switcher -->
+    <div style="display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;width:fit-content;">
+      <button class="login-tab active" id="fb-tab-new" onclick="switchFbTab('new')">✏️ New feedback</button>
+      <button class="login-tab" id="fb-tab-mine" onclick="switchFbTab('mine')">📋 My feedbacks <span id="fb-mine-count" style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:var(--air-deep);color:white;margin-left:4px;display:none;"></span></button>
+    </div>
+
+    <!-- Panel: Submit new feedback -->
+    <div id="fb-panel-new">
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:15px;font-weight:500;margin-bottom:1rem;">Submit new feedback</div>
+        <div class="g2-fb">
+          <div><label class="fb-label">Category</label><select class="fb-input" id="fb-select-category"><option>Class activity</option><option>Teacher feedback</option><option>School facilities</option><option>Suggestions</option></select></div>
+          <div><label class="fb-label">Your house</label><select class="fb-input" id="fb-select-house"><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option></select></div>
+        </div>
+        <label class="fb-label">Your feedback</label>
+        <textarea class="fb-input" id="fb-textarea" placeholder="Share what's on your mind..." maxlength="1000"></textarea>
+        <label class="fb-label">Rating</label>
+        <div class="star-row" id="stars"><span class="star" onclick="rateStar(1)">★</span><span class="star" onclick="rateStar(2)">★</span><span class="star" onclick="rateStar(3)">★</span><span class="star" onclick="rateStar(4)">★</span><span class="star" onclick="rateStar(5)">★</span></div>
+        <button class="btn-primary" id="fb-submit-btn" onclick="submitFb(this)">Submit feedback</button>
+      </div>
+    </div>
+
+    <!-- Panel: My past feedbacks -->
+    <div id="fb-panel-mine" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <button class="fpill active" onclick="filterMyFb('all',this)">All</button>
+        <button class="fpill" onclick="filterMyFb('replied',this)">✓ Replied</button>
+        <button class="fpill" onclick="filterMyFb('pending',this)">⏳ Pending</button>
+      </div>
+      <div id="student-fb-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">Loading...</div></div>
     </div>
   </div>
 
@@ -771,7 +791,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div style="font-size:14px;font-weight:500;">Save house points</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px;">Changes are local until you save to Firebase</div>
       </div>
-      <button class="btn-primary" id="save-pts-btn" onclick="saveAllHousePoints()" style="padding:10px 24px;">
+      <button class="btn-primary" id="save-pts-btn-2" onclick="saveAllHousePoints()" style="padding:10px 24px;">
         💾 Save to Firebase
       </button>
     </div>
@@ -869,6 +889,15 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPrizesToAdmin()">↻ Refresh</button>
         </div>
         <div id="admin-prize-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading prizes...</div></div>
+      </div>
+
+      <!-- Prize Settings change log -->
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span>📋 Prize Settings change log</span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPrizeSettingsLog()">↻ Refresh</button>
+        </div>
+        <div id="prize-settings-log"><div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">Loading log...</div></div>
       </div>
     </div>
 
@@ -1186,6 +1215,19 @@ async function savePoll(poll) {
     return ref.id;
   } catch(e) { console.error('savePoll:', e); }
 }
+// castVote is used by the hardcoded demo poll on the dashboard — delegates to active poll if available
+function castVote(optionIndex) {
+  const userEmail = window.currentUserEmail || '';
+  if (!userEmail) { toast('Please sign in to vote.'); return; }
+  // Find the active poll ID from rendered poll options
+  const activePollId = window._activeDashboardPollId;
+  if (activePollId) {
+    castVoteDB(activePollId, optionIndex, userEmail, null);
+  } else {
+    toast('No active poll found.');
+  }
+}
+
 async function castVoteFirestore(pollId, optionIndex, userEmail) {
   try {
     const voteRef = db.collection('polls').doc(pollId).collection('votes').doc(userEmail.toLowerCase());
@@ -1871,7 +1913,7 @@ function showPage(id, btn) {
       if (window.currentUserEmail) loadStudentPolls(window.currentUserEmail);
       break;
     case 'feedbacks':
-      loadStudentPastFeedbacks();
+      switchFbTab('new');
       break;
     case 'houses':
       // Refresh house leaders, then re-render
@@ -2068,6 +2110,7 @@ function loadDashboardPollPreview(userEmail) {
       return;
     }
     const poll = active[0];
+    window._activeDashboardPollId = poll.id; // store for castVote()
     const total = poll.totalVotes || 0;
     el.innerHTML = `
       <div style="font-family:'DM Serif Display',serif;font-size:15px;margin-bottom:10px;line-height:1.3;">${poll.question}</div>
@@ -2251,8 +2294,7 @@ function previewPts(house, val) {
   const el = document.getElementById('pts-' + house);
   if (el) el.textContent = num.toLocaleString();
   // Mark unsaved
-  const btn = document.getElementById('save-pts-btn');
-  if (btn) { btn.textContent = '💾 Save to Firebase'; btn.style.background = '#C04A10'; }
+  ['save-pts-btn','save-pts-btn-2'].forEach(id => { const b=document.getElementById(id); if(b){b.textContent='💾 Save to Firebase';b.style.background='#C04A10';} });
 }
 
 function adjustPts(house, delta) {
@@ -2261,22 +2303,19 @@ function adjustPts(house, delta) {
   if (el) el.textContent = housePts[house].toLocaleString();
   const input = document.getElementById('pts-input-' + house);
   if (input) input.value = housePts[house];
-  const btn = document.getElementById('save-pts-btn');
-  if (btn) { btn.textContent = '💾 Save to Firebase'; btn.style.background = '#C04A10'; }
+  ['save-pts-btn','save-pts-btn-2'].forEach(id => { const b=document.getElementById(id); if(b){b.textContent='💾 Save to Firebase';b.style.background='#C04A10';} });
 }
 
 function saveAllHousePoints() {
-  const btn = document.getElementById('save-pts-btn');
-  if (btn) { btn.textContent = 'Saving...'; btn.disabled = true; }
+  const btns = ['save-pts-btn','save-pts-btn-2'].map(id => document.getElementById(id)).filter(Boolean);
+  btns.forEach(b => { b.textContent = 'Saving...'; b.disabled = true; });
   saveHousePoints().then(() => {
-    if (btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#2D7A1F'; btn.disabled = false; }
-    setTimeout(() => {
-      if (btn) { btn.textContent = '💾 Save to Firebase'; btn.style.background = ''; }
-    }, 2000);
+    btns.forEach(b => { b.textContent = '✓ Saved!'; b.style.background = '#2D7A1F'; b.disabled = false; });
+    setTimeout(() => btns.forEach(b => { b.textContent = '💾 Save to Firebase'; b.style.background = ''; }), 2000);
     toast('House points saved to Firebase! ✓');
     updateMgrDashboard();
   }).catch(() => {
-    if (btn) { btn.textContent = '❌ Save failed'; btn.style.background = '#791F1F'; btn.disabled = false; }
+    btns.forEach(b => { b.textContent = '❌ Save failed'; b.style.background = '#791F1F'; b.disabled = false; });
     toast('Failed to save. Check your connection.');
   });
 }
@@ -2962,28 +3001,191 @@ function loadFeedbacksToMgr() {
   });
 }
 
+// ── FEEDBACK TAB SYSTEM ──
+function switchFbTab(tab) {
+  const panelNew = document.getElementById('fb-panel-new');
+  const panelMine = document.getElementById('fb-panel-mine');
+  const tabNew = document.getElementById('fb-tab-new');
+  const tabMine = document.getElementById('fb-tab-mine');
+  if (panelNew) panelNew.style.display = tab === 'new' ? '' : 'none';
+  if (panelMine) panelMine.style.display = tab === 'mine' ? '' : 'none';
+  if (tabNew) tabNew.classList.toggle('active', tab === 'new');
+  if (tabMine) tabMine.classList.toggle('active', tab === 'mine');
+  if (tab === 'mine') loadStudentPastFeedbacks();
+}
+
+function filterMyFb(filter, btn) {
+  document.querySelectorAll('#fb-panel-mine .fpill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (!window._myFeedbacks) return;
+  let filtered = window._myFeedbacks;
+  if (filter === 'replied') filtered = filtered.filter(f => f.reply);
+  if (filter === 'pending') filtered = filtered.filter(f => !f.reply);
+  renderMyFeedbackCards(filtered);
+}
+
+function renderMyFeedbackCards(feedbacks) {
+  // After stats header is rendered, cards go in #fb-cards-container; otherwise direct in #student-fb-list
+  const container = document.getElementById('fb-cards-container') || document.getElementById('student-fb-list');
+  if (!container) return;
+  if (!feedbacks || feedbacks.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;">
+        <div style="font-size:36px;margin-bottom:12px;">💬</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:6px;">No feedbacks yet</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Submit your first feedback using the "New feedback" tab.</div>
+        <button class="btn-outline" onclick="switchFbTab('new')">✏️ Write feedback</button>
+      </div>`;
+    return;
+  }
+  const CAT_COLORS = {
+    'Class activity':    { bg:'var(--air)',   color:'var(--air-text)',   border:'rgba(107,184,232,0.3)' },
+    'Teacher feedback':  { bg:'var(--earth)', color:'var(--earth-text)', border:'rgba(114,181,90,0.3)'  },
+    'School facilities': { bg:'var(--water)', color:'var(--water-text)', border:'rgba(90,143,200,0.3)'  },
+    'Suggestions':       { bg:'var(--fire)',  color:'var(--fire-text)',  border:'rgba(232,135,74,0.3)'  },
+  };
+  container.innerHTML = feedbacks.map(fb => {
+    const starsHtml = [1,2,3,4,5].map(i =>
+      `<span style="color:${i<=(fb.rating||0)?'#F5C747':'#DDD'};font-size:14px;">★</span>`).join('');
+    const date = fb.createdAt?.toDate?.()
+      ? fb.createdAt.toDate().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})
+      : 'Recent';
+    const cat = CAT_COLORS[fb.category] || { bg:'var(--bg)', color:'var(--muted)', border:'var(--border)' };
+    const statusHtml = fb.reply
+      ? `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--earth);color:var(--earth-deep);">✓ Replied</span>`
+      : `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--muted);border:1px solid var(--border);">⏳ Pending</span>`;
+    const replyHtml = fb.reply
+      ? `<div style="margin-top:12px;padding:12px 14px;background:var(--air);border-radius:var(--radius-sm);border-left:3px solid var(--air-deep);">
+           <div style="font-size:11px;font-weight:600;color:var(--air-deep);margin-bottom:6px;">↩ Reply from ${esc(fb.replyBy||'Manager')}</div>
+           <div style="font-size:13px;color:var(--air-text);line-height:1.6;">${esc(fb.reply)}</div>
+         </div>`
+      : `<div style="margin-top:10px;font-size:11px;color:var(--muted);font-style:italic;">⏳ Awaiting manager reply...</div>`;
+    return `
+      <div class="ann-card" style="margin-bottom:10px;cursor:default;">
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:${cat.bg};color:${cat.color};border:1px solid ${cat.border};">${esc(fb.category||'General')}</span>
+          <span style="font-size:11px;padding:3px 10px;border-radius:99px;background:var(--bg);color:var(--muted);border:1px solid var(--border);">${esc(fb.house||'—')} House</span>
+          ${statusHtml}
+          <span style="font-size:11px;color:var(--muted);margin-left:auto;">${date}</span>
+        </div>
+        <div style="margin-bottom:8px;">${starsHtml}</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;">${esc(fb.text||'')}</div>
+        ${replyHtml}
+      </div>`;
+  }).join('');
+}
+
+function loadStudentPastFeedbacks() {
+  const el = document.getElementById('student-fb-list');
+  if (!el || !window.currentUserEmail) return;
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;text-align:center;">Loading...</div>';
+  db.collection('feedbacks')
+    .where('studentEmail','==',window.currentUserEmail.toLowerCase())
+    .orderBy('createdAt','desc').get()
+    .then(snap => {
+      const badge = document.getElementById('my-fb-count-badge');
+      const countPill = document.getElementById('fb-mine-count');
+      const total = snap.size;
+      if (badge) { badge.style.display = total > 0 ? '' : 'none'; badge.textContent = `${total} submitted`; }
+      if (countPill) { countPill.style.display = total > 0 ? '' : 'none'; countPill.textContent = total; }
+      if (snap.empty) { renderMyFeedbackCards([]); return; }
+      const replied = snap.docs.filter(d => d.data().reply).length;
+      const pending = total - replied;
+      const statsHtml = `
+        <div style="display:flex;gap:10px;margin-bottom:1.25rem;">
+          <div style="flex:1;background:var(--bg);border-radius:var(--radius-sm);padding:10px;text-align:center;border:1px solid var(--border);">
+            <div style="font-size:20px;font-weight:300;">${total}</div><div style="font-size:11px;color:var(--muted);">Total</div>
+          </div>
+          <div style="flex:1;background:var(--earth);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+            <div style="font-size:20px;font-weight:300;color:var(--earth-deep);">${replied}</div><div style="font-size:11px;color:var(--earth-text);">Replied</div>
+          </div>
+          <div style="flex:1;background:var(--air);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+            <div style="font-size:20px;font-weight:300;color:var(--air-deep);">${pending}</div><div style="font-size:11px;color:var(--air-text);">Pending</div>
+          </div>
+        </div>
+        <div id="fb-cards-container"></div>`;
+      el.innerHTML = statsHtml;
+      window._myFeedbacks = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      renderMyFeedbackCards(window._myFeedbacks);
+    })
+    .catch(e => {
+      console.warn('loadStudentPastFeedbacks:', e);
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;">Could not load feedbacks.</div>';
+    });
+}
+
+// ── PRIZE SETTINGS LOG ──
+async function logPrizeSetting(action, detail) {
+  try {
+    const actor = currentUser ? (currentUser.displayName || currentUser.email || 'unknown') : (window.currentUserName || window.currentUserEmail || 'unknown');
+    await db.collection('prizeLogs').add({
+      action, detail, actor,
+      actorEmail: window.currentUserEmail || '',
+      ts: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.warn('logPrizeSetting failed:', e); }
+}
+
+async function loadPrizeSettingsLog() {
+  const el = document.getElementById('prize-settings-log');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;text-align:center;">Loading...</div>';
+  try {
+    const snap = await db.collection('prizeLogs').orderBy('ts','desc').limit(50).get();
+    if (snap.empty) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No changes recorded yet.</div>';
+      return;
+    }
+    const ACTION_META = {
+      prize_added:        { label:'Prize added',        color:'var(--earth-deep)', bg:'var(--earth)', icon:'➕' },
+      prize_deleted:      { label:'Prize removed',      color:'var(--fire-deep)',  bg:'var(--fire)',  icon:'🗑️' },
+      prize_prob_updated: { label:'Probability edited', color:'var(--air-deep)',   bg:'var(--air)',   icon:'✏️' },
+      spin_price_changed: { label:'Spin price changed', color:'var(--water-deep)', bg:'var(--water)', icon:'💰' },
+    };
+    el.innerHTML = `
+      <table class="mgr-table">
+        <thead><tr><th style="width:140px;">Time</th><th style="width:160px;">Action</th><th>Detail</th><th>Admin</th></tr></thead>
+        <tbody id="prize-log-tbody"></tbody>
+      </table>`;
+    const tbody = document.getElementById('prize-log-tbody');
+    snap.docs.forEach(doc => {
+      const d = doc.data();
+      const meta = ACTION_META[d.action] || { label: d.action, color:'var(--muted)', bg:'var(--bg)', icon:'📝' };
+      const ts = d.ts?.toDate ? d.ts.toDate() : null;
+      const timeStr = ts ? ts.toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${timeStr}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:${meta.bg};color:${meta.color};">${meta.icon} ${esc(meta.label)}</span></td>
+        <td style="font-size:12px;color:var(--text);">${esc(d.detail||'—')}</td>
+        <td style="font-size:12px;color:var(--muted);">${esc(d.actor||'—')}</td>`;
+      tbody.appendChild(tr);
+    });
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;">Failed to load log.</div>';
+  }
+}
+
 function submitFb(btn) {
-  const form = btn.closest('.card');
-  const selects = form.querySelectorAll('select');
-  const category = selects[0]?.value || 'General';
-  const house = selects[1]?.value || 'Unassigned';
-  const text = form.querySelector('textarea')?.value?.trim() || '';
-  const rating = form.querySelectorAll('.star.on').length;
+  const category = document.getElementById('fb-select-category')?.value || 'General';
+  const house = document.getElementById('fb-select-house')?.value || 'Unassigned';
+  const textarea = document.getElementById('fb-textarea');
+  const text = textarea?.value?.trim() || '';
+  const rating = document.querySelectorAll('#stars .star.on').length;
   if (!text) { toast('Please write your feedback first.'); return; }
   const email = (window.currentUserEmail || '').toLowerCase();
   const studentName = window.currentUserName || email.split('@')[0] || 'Student';
-  saveFeedback({
-    category, house, text, rating,
-    studentEmail: email,
-    studentName
-  }).then(() => {
-    btn.textContent = 'Submitted!';
-    setTimeout(() => btn.textContent = 'Submit feedback', 2000);
-    form.querySelector('textarea').value = '';
-    form.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
-    loadStudentPastFeedbacks();
-    toast('Feedback submitted! ✓');
-  });
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  saveFeedback({ category, house, text, rating, studentEmail: email, studentName })
+    .then(() => {
+      btn.disabled = false;
+      btn.textContent = 'Submit feedback';
+      if (textarea) textarea.value = '';
+      document.querySelectorAll('#stars .star').forEach(s => s.classList.remove('on'));
+      toast('Feedback submitted! ✓');
+      switchFbTab('mine');
+    });
 }
 
 // ── PRIZES & DRAWS FIREBASE ──
@@ -3043,7 +3245,7 @@ function switchRewardTab(tab, btn) {
   if (btn) btn.classList.add('active');
   if (tab === 'draws') loadAdminDrawHistory();
   if (tab === 'points') { populateStudentSelect(); loadStudentLeaderboard(); loadPointsLog(); }
-  if (tab === 'prizes') { loadPrizesToAdmin(); loadCurrentSpinPrice(); }
+  if (tab === 'prizes') { loadPrizesToAdmin(); loadCurrentSpinPrice(); loadPrizeSettingsLog(); }
 }
 
 async function loadCurrentSpinPrice() {
