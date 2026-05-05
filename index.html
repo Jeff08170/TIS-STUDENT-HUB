@@ -146,6 +146,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 .filter-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;}
 .fpill{font-size:12px;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.12s;font-family:'DM Sans',sans-serif;}
+.serial-blurred{filter:blur(6px);cursor:pointer;user-select:none;transition:filter 0.2s;}
+.serial-blurred:hover{filter:blur(4px);}
+.serial-reveal-hint{font-size:10px;color:var(--muted);margin-top:4px;cursor:pointer;}
 .fpill.active{background:var(--text);color:white;border-color:var(--text);}
 .fpill:hover:not(.active){background:var(--bg);}
 
@@ -885,6 +888,13 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadStudentLeaderboard()">↻ Refresh</button>
         </div>
         <div id="student-leaderboard"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
+      </div>
+      <div class="mgr-section">
+        <div class="mgr-section-title" style="justify-content:space-between;">
+          <span>📋 Points award log</span>
+          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPointsLog()">↻ Refresh</button>
+        </div>
+        <div id="pts-log-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">Loading...</div></div>
       </div>
       <!-- Points log merged here -->
     </div>
@@ -2179,7 +2189,7 @@ async function getStudentPoints(email) {
     return doc.exists ? (doc.data().points || 0) : 0;
   } catch(e) { return 0; }
 }
-async function updateStudentPoints(email, delta, reason, by) {
+async function updateStudentPoints(email, delta, reason, by, studentName) {
   const ref = db.collection('studentPoints').doc(email.toLowerCase());
   try {
     await db.runTransaction(async tx => {
@@ -2191,6 +2201,7 @@ async function updateStudentPoints(email, delta, reason, by) {
     // Log it
     await db.collection('studentPointsLog').add({
       email: email.toLowerCase(),
+      studentName: studentName || email.split('@')[0],
       delta, reason,
       by: by || 'Admin',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2207,37 +2218,78 @@ async function loadAllStudentPoints() {
 async function loadPointsLog() {
   const el = document.getElementById('pts-log-list');
   if (!el) return;
-  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;">Loading...</div>';
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;text-align:center;">Loading...</div>';
   try {
-    const snap = await db.collection('pointsLog').orderBy('createdAt','desc').limit(50).get();
-    if (snap.empty) {
-      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No point changes logged yet.</div>';
+    const [houseSnap, studentSnap] = await Promise.all([
+      db.collection('pointsLog').orderBy('createdAt','desc').limit(100).get(),
+      db.collection('studentPointsLog').orderBy('createdAt','desc').limit(100).get()
+    ]);
+
+    const rows = [];
+    houseSnap.docs.forEach(d => rows.push({ ...d.data(), _type: 'house' }));
+    studentSnap.docs.forEach(d => rows.push({ ...d.data(), _type: 'student' }));
+    rows.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+
+    if (rows.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No point changes logged yet.</div>';
       return;
     }
+
+    // Summary stats
+    const totalAwarded = rows.reduce((s, r) => s + (r.delta > 0 ? r.delta : 0), 0);
+    const totalDeducted = rows.reduce((s, r) => s + (r.delta < 0 ? r.delta : 0), 0);
+
     const houseColors = { earth:'var(--earth-deep)', water:'var(--water-deep)', air:'var(--air-deep)', fire:'var(--fire-deep)' };
+
     el.innerHTML = `
+      <div style="display:flex;gap:10px;margin-bottom:1rem;">
+        <div style="flex:1;background:var(--earth);border-radius:var(--radius-sm);padding:10px 14px;">
+          <div style="font-size:18px;font-weight:600;color:var(--earth-deep);">+${totalAwarded.toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--earth-text);">Total awarded</div>
+        </div>
+        <div style="flex:1;background:var(--fire);border-radius:var(--radius-sm);padding:10px 14px;">
+          <div style="font-size:18px;font-weight:600;color:var(--fire-deep);">${totalDeducted.toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--fire-text);">Total deducted</div>
+        </div>
+        <div style="flex:1;background:var(--bg);border-radius:var(--radius-sm);padding:10px 14px;border:1px solid var(--border);">
+          <div style="font-size:18px;font-weight:600;">${rows.length}</div>
+          <div style="font-size:11px;color:var(--muted);">Total entries</div>
+        </div>
+      </div>
       <table class="mgr-table">
-        <thead><tr><th>Time</th><th>House</th><th>Points</th><th>Given to</th><th>Reason</th><th>By</th></tr></thead>
+        <thead><tr><th>Time</th><th>Type</th><th>Recipient</th><th>Pts</th><th>Reason</th><th>Admin</th></tr></thead>
         <tbody>
-          ${snap.docs.map(d => {
-            const log = d.data();
+          ${rows.map(log => {
             const pts = log.delta;
-            const color = pts > 0 ? '#2D7A1F' : '#C04A10';
+            const color = pts > 0 ? 'var(--earth-deep)' : 'var(--fire-deep)';
+            const bg = pts > 0 ? 'var(--earth)' : 'var(--fire)';
             const sign = pts > 0 ? '+' : '';
-            const date = log.createdAt?.toDate?.()?.toLocaleString() || 'Recent';
+            const date = log.createdAt?.toDate?.()
+              ? log.createdAt.toDate().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+              : 'Recent';
+            const isHouse = log._type === 'house';
+            const typeBadge = isHouse
+              ? `<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--fire);color:var(--fire-text);">House</span>`
+              : `<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--air);color:var(--air-text);">Student</span>`;
+            const target = isHouse
+              ? `<span style="font-weight:500;color:${houseColors[(log.house||'').toLowerCase()]||'var(--muted)'};">${log.house||'?'}${log.givenTo ? ` · ${log.givenTo}` : ''}</span>`
+              : `<div style="font-size:12px;font-weight:600;">${log.studentName || log.email?.split('@')[0] || '?'}</div>
+                 <div style="font-size:10px;color:var(--muted);">${log.email||''}</div>`;
+            const adminName = log.by || 'Admin';
             return `<tr>
               <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${date}</td>
-              <td><span style="font-weight:500;color:${houseColors[log.house]||'var(--muted)'};">${log.house?.charAt(0).toUpperCase()+log.house?.slice(1)||'?'}</span></td>
-              <td><span style="font-weight:600;color:${color};">${sign}${pts}</span></td>
-              <td style="font-size:13px;">${log.givenTo||'—'}</td>
-              <td style="font-size:13px;color:var(--muted);">${log.reason||'—'}</td>
-              <td style="font-size:11px;color:var(--muted);">${log.by||'Manager'}</td>
+              <td>${typeBadge}</td>
+              <td style="font-size:12px;">${target}</td>
+              <td><span style="font-weight:700;color:${color};font-family:monospace;font-size:13px;padding:2px 7px;border-radius:6px;background:${bg};">${sign}${pts}</span></td>
+              <td style="font-size:12px;color:var(--text);max-width:180px;">${log.reason||'—'}</td>
+              <td style="font-size:11px;color:var(--muted);">${adminName}</td>
             </tr>`;
           }).join('')}
         </tbody>
       </table>`;
   } catch(e) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load log.</div>';
+    console.error('loadPointsLog:', e);
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;">Could not load log.</div>';
   }
 }
 
@@ -2279,10 +2331,11 @@ function awardStudentPoints() {
   const pts = parseInt(document.getElementById('sp-pts').value);
   if (isNaN(pts) || pts === 0) { toast('Please enter a valid number.'); return; }
   const reason = document.getElementById('sp-reason').value.trim() || 'manual award';
-  const studentName = sel.options[sel.selectedIndex]?.text || email;
-  updateStudentPoints(email, pts, reason, window.currentUserName || 'Admin')
+  const studentName = sel.options[sel.selectedIndex]?.text.split('(')[0].trim() || email;
+  updateStudentPoints(email, pts, reason, window.currentUserName || window.currentUserEmail || 'Admin', studentName)
     .then(() => {
       loadStudentLeaderboard();
+      loadPointsLog();
       const sign = pts > 0 ? '+' : '';
       toast(`${sign}${pts} pts to ${studentName} ✓`);
       document.getElementById('sp-pts').value = 10;
@@ -2879,7 +2932,7 @@ function switchRewardTab(tab, btn) {
   if (logPanel) logPanel.style.display = 'none';
   if (btn) btn.classList.add('active');
   if (tab === 'draws') loadAdminDrawHistory();
-  if (tab === 'points') { populateStudentSelect(); loadStudentLeaderboard(); }
+  if (tab === 'points') { populateStudentSelect(); loadStudentLeaderboard(); loadPointsLog(); }
   if (tab === 'prizes') { loadPrizesToAdmin(); loadCurrentSpinPrice(); }
 }
 
@@ -3017,6 +3070,15 @@ function saveProbability(id) {
   });
 }
 
+function revealSerial(el) {
+  if (!el) return;
+  el.classList.remove('serial-blurred');
+  el.style.cursor = 'default';
+  // Also hide the "tap to reveal" hint if present
+  const hint = el.nextElementSibling;
+  if (hint && hint.classList.contains('serial-reveal-hint')) hint.style.display = 'none';
+}
+
 // ── SERIAL CODE GENERATOR ──
 function generateSerial() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -3146,7 +3208,8 @@ async function loadMyDrawHistory(email) {
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">${date} · ${r.pointsSpent} pts spent</div>
             <div style="margin-top:7px;">
               <div style="font-size:10px;color:var(--air-text);font-weight:600;letter-spacing:0.05em;margin-bottom:3px;">SERIAL CODE</div>
-              <div style="font-family:monospace;font-size:15px;font-weight:700;letter-spacing:0.12em;color:var(--air-deep);padding:5px 10px;background:var(--air);border-radius:6px;display:inline-block;border:1px solid rgba(107,184,232,0.3);">${r.serialCode}</div>
+              <div class="serial-blurred" onclick="revealSerial(this)" title="Click to reveal" style="font-family:monospace;font-size:15px;font-weight:700;letter-spacing:0.12em;color:var(--air-deep);padding:5px 10px;background:var(--air);border-radius:6px;display:inline-block;border:1px solid rgba(107,184,232,0.3);">${r.serialCode}</div>
+              <div class="serial-reveal-hint" onclick="revealSerial(this.previousElementSibling)">👆 Tap to reveal</div>
             </div>
             <div style="font-size:11px;color:var(--muted);margin-top:5px;">📌 Show this code to a teacher to claim your prize</div>
           </div>
@@ -3279,7 +3342,8 @@ function showSpinResult(prize, serial, pointsSpent) {
       <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${prize.name}</div>
       ${prize.description ? `<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${prize.description}</div>` : '<div style="margin-bottom:10px;"></div>'}
       <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--air-text);margin-bottom:5px;">SERIAL CODE</div>
-      <div class="serial-shine" style="font-family:monospace;font-size:20px;font-weight:800;letter-spacing:0.18em;color:var(--air-deep);padding:10px 18px;background:var(--air);border-radius:10px;border:2px solid rgba(107,184,232,0.45);display:inline-block;">${serial}</div>
+      <div class="serial-shine serial-blurred" onclick="revealSerial(this)" title="Click to reveal" style="font-family:monospace;font-size:20px;font-weight:800;letter-spacing:0.18em;color:var(--air-deep);padding:10px 18px;background:var(--air);border-radius:10px;border:2px solid rgba(107,184,232,0.45);display:inline-block;">${serial}</div>
+      <div class="serial-reveal-hint" onclick="revealSerial(this.previousElementSibling)">👆 Tap to reveal</div>
       <div style="font-size:11px;color:var(--muted);margin-top:8px;">📌 Show this code to a teacher to redeem your prize</div>
     </div>`;
 
@@ -3345,7 +3409,7 @@ function renderDrawTable(rows) {
         <div style="font-size:13px;font-weight:500;">${r.prizeName||'?'}</div>
         ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${r.prizeDescription}</div>` : ''}
       </td>
-      <td style="font-family:monospace;font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--air-deep);">${r.serialCode||'—'}</td>
+      <td><span class="serial-blurred" onclick="revealSerial(this)" title="Click to reveal" style="font-family:monospace;font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--air-deep);display:inline-block;">${r.serialCode||'—'}</span></td>
       <td style="font-size:13px;font-weight:600;color:var(--fire-deep);">−${r.pointsSpent||0}</td>
       <td>
         <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;
