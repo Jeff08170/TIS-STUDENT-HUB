@@ -295,12 +295,16 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             <input class="fb-input" id="signup-password" type="password" placeholder="Password (min 6 characters)" style="margin-bottom:0;padding-right:40px;" />
             <span onclick="togglePw('signup-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
           </div>
-          <div style="position:relative;margin-bottom:14px;">
+          <div style="position:relative;margin-bottom:8px;">
             <input class="fb-input" id="signup-confirm" type="password" placeholder="Confirm password" style="margin-bottom:0;padding-right:40px;" />
             <span onclick="togglePw('signup-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
           </div>
+          <div style="position:relative;margin-bottom:14px;">
+            <input class="fb-input" id="signup-invite" type="text" placeholder="Registration code" maxlength="10"
+              style="margin-bottom:0;letter-spacing:0.15em;font-weight:600;text-align:center;font-size:15px;" />
+          </div>
           <button class="btn-primary" style="width:100%;padding:12px;" onclick="signUpWithEmail()">Create Account</button>
-          <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;">A verification email will be sent to confirm your address.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;">Enter the registration code provided by your teacher.</div>
         </div>
 
         <!-- Email verification pending -->
@@ -1054,11 +1058,7 @@ function initFirebase() {
     if (window._loginHandled) return; // MSAL already handled login
     if (!fbUser) return;
     if (fbUser.providerData[0]?.providerId !== 'password') return; // only email/pass
-    if (!fbUser.emailVerified) {
-      showVerifyScreen(fbUser.email);
-      return;
-    }
-    // Email/password verified user — load managers/leaders then login
+    // Email/password user — load managers/leaders then login
     const fbManagers = await loadManagerEmails().catch(() => []);
     fbManagers.forEach(e => {
       if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
@@ -1418,23 +1418,20 @@ async function signUpWithEmail() {
   const email = document.getElementById('signup-email').value.trim();
   const pw = document.getElementById('signup-password').value;
   const confirm = document.getElementById('signup-confirm').value;
+  const invite = document.getElementById('signup-invite').value.trim();
   hideLoginError();
   if (!name) { showLoginError('Please enter your full name.'); return; }
   if (!email) { showLoginError('Please enter your email.'); return; }
   if (pw.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
   if (pw !== confirm) { showLoginError('Passwords do not match.'); return; }
+  if (invite !== '0817') { showLoginError('Invalid registration code. Please check with your teacher.'); return; }
   const btn = document.querySelector('#form-signup .btn-primary');
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pw);
     await cred.user.updateProfile({ displayName: name });
-    const actionCodeSettings = {
-      url: window.location.href,
-      handleCodeInApp: false
-    };
-    await cred.user.sendEmailVerification(actionCodeSettings);
-    console.log('Verification email sent to:', email);
-    showVerifyScreen(email);
+    // No email verification needed — invite code was used
+    // onAuthStateChanged will handle login automatically
   } catch(e) {
     console.error('signUpWithEmail error:', e.code, e.message);
     const msgs = {
@@ -1443,7 +1440,6 @@ async function signUpWithEmail() {
       'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
     };
     showLoginError(msgs[e.code] || `Error: ${e.message}`);
-  } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
   }
 }
@@ -1455,10 +1451,6 @@ async function signInWithEmail() {
   if (!email || !pw) { showLoginError('Please enter your email and password.'); return; }
   try {
     const cred = await auth.signInWithEmailAndPassword(email, pw);
-    if (!cred.user.emailVerified) {
-      showVerifyScreen(email);
-      return;
-    }
     // onAuthStateChanged will handle the rest
   } catch(e) {
     const msgs = {
