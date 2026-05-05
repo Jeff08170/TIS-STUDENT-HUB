@@ -77,6 +77,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .role-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px;margin-left:auto;flex-shrink:0;}
 .role-badge.manager{background:var(--fire);color:var(--fire-text);}
 .role-badge.owner{background:linear-gradient(135deg,#7c3aed,#c026d3);color:white;}
+.role-badge.teacher{background:var(--water);color:var(--water-text);}
 .role-badge.student{background:var(--air);color:var(--air-text);}
 /* Profile modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;}
@@ -383,6 +384,28 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="nav-section">
       <div class="nav-label">Rewards</div>
       <button class="nav-item" onclick="showPage('rewards',this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
+      </button>
+    </div>
+  </div>
+
+  <!-- Teacher nav (subset of manager nav) -->
+  <div id="nav-teacher" style="display:none;">
+    <div class="nav-section">
+      <div class="nav-label">Manage</div>
+      <button class="nav-item" onclick="showPage('mgr-announcements',this)">
+        <svg viewBox="0 0 24 24"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Announcements
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-voting',this)">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Polls & Voting
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Rewards</div>
+      <button class="nav-item" id="nav-teacher-rewards-btn" onclick="showPage('mgr-rewards',this)">
         <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
       </button>
     </div>
@@ -1091,6 +1114,29 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div id="log-mgmt-status" style="font-size:12px;color:var(--muted);margin-top:10px;min-height:16px;"></div>
     </div>
 
+    <!-- Teacher Management -->
+    <div class="mgr-section">
+      <div class="mgr-section-title">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Teachers
+        <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--water);color:var(--water-text);">Below Admin</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Teachers can access Announcements, Polls & Voting, Feedbacks, and the Student Points + Draw History sections of Rewards.</p>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;">
+        <div style="flex:1;min-width:220px;">
+          <label class="fb-label">Email address</label>
+          <input class="fb-input" id="new-teacher-email" type="email" placeholder="e.g. teacher@outlook.com" style="margin-bottom:0;" />
+        </div>
+        <div style="flex:1;min-width:150px;">
+          <label class="fb-label">Name (optional)</label>
+          <input class="fb-input" id="new-teacher-name" type="text" placeholder="e.g. Ms. Park" style="margin-bottom:0;" />
+        </div>
+        <button class="btn-primary" style="flex-shrink:0;" onclick="addTeacher()">Add teacher</button>
+      </div>
+      <div id="add-teacher-error" style="font-size:12px;color:#791F1F;margin-bottom:8px;display:none;">Please enter a valid email address.</div>
+      <div id="teacher-list"><div style="color:var(--muted);font-size:13px;padding:0.5rem 0;">Loading...</div></div>
+    </div>
+
     <div class="mgr-section">
       <div class="mgr-section-title">
         <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1149,6 +1195,7 @@ function initFirebase() {
     const leaders = await loadHouseLeaders().catch(() => null);
     if (leaders) Object.assign(HOUSE_LEADERS, leaders);
     await loadHeadAdmins().catch(() => {});
+    TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
     window._loginHandled = true;
     handleLogin({ username: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
   });
@@ -1283,6 +1330,19 @@ async function saveManagerEmailsToFirestore() {
     await db.collection('settings').doc('managers').set({emails: MANAGER_EMAILS});
   } catch(e) { console.error('saveManagers:', e); }
 }
+async function loadTeacherEmails() {
+  try {
+    const doc = await db.collection('settings').doc('teachers').get();
+    if (doc.exists) return doc.data().emails || [];
+    return [];
+  } catch(e) { return []; }
+}
+async function saveTeacherEmailsToFirestore() {
+  try {
+    await db.collection('settings').doc('teachers').set({ emails: TEACHER_EMAILS });
+  } catch(e) { console.error('saveTeachers:', e); }
+}
+let teacherNames = {};
 
 // House announcements
 async function loadHouseAnnouncements(house) {
@@ -1337,7 +1397,10 @@ function esc(str) {
 }
 let MANAGER_EMAILS = [SUPER_ADMIN]; // always start with owner only; populated from Firestore on login
 if (!MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(SUPER_ADMIN.toLowerCase())) { MANAGER_EMAILS = [SUPER_ADMIN, ...MANAGER_EMAILS]; }
+let TEACHER_EMAILS = []; // populated from Firestore on login
+
 function isManager(email) { return MANAGER_EMAILS.map(e=>e.toLowerCase()).includes((email||'').toLowerCase()); }
+function isTeacher(email) { return TEACHER_EMAILS.map(e=>e.toLowerCase()).includes((email||'').toLowerCase()); }
 
 // House leaders state
 let HOUSE_LEADERS = { earth:'', water:'', air:'', fire:'' };
@@ -1416,6 +1479,12 @@ async function signOut() {
   window._signedInViaForm = false;
   window._createdViaSignup = false;
   window._loginHandled = false;
+  window._profilePhotoUrl = null;
+  window.currentUserEmail = null;
+  window.currentUserName = null;
+  window._myFeedbacks = null;
+  window._headAdmins = [];
+  TEACHER_EMAILS = [];
   // Sign out Firebase (email/password users)
   if (auth && auth.currentUser) {
     await auth.signOut().catch(() => {});
@@ -1451,6 +1520,7 @@ async function init() {
       const leaders = await loadHouseLeaders().catch(() => null);
       if (leaders) Object.assign(HOUSE_LEADERS, leaders);
       await loadHeadAdmins().catch(() => {});
+      TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
       handleLogin(response.account);
       return;
     }
@@ -1465,6 +1535,7 @@ async function init() {
       const leaders = await loadHouseLeaders().catch(() => null);
       if (leaders) Object.assign(HOUSE_LEADERS, leaders);
       await loadHeadAdmins().catch(() => {});
+      TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
       handleLogin(accounts[0]);
       return;
     }
@@ -1616,11 +1687,9 @@ async function signInWithEmail() {
       'auth/too-many-requests': 'Too many attempts. Please try again later.',
       'auth/invalid-credential': 'Incorrect email or password.',
     };
-    // Increment client-side fail counter
-    const rlKey = 'signin_fails';
-    const rl = JSON.parse(sessionStorage.getItem(rlKey) || '{"count":0,"until":0}');
+    // Increment client-side fail counter (rlKey declared above)
     rl.count = (rl.count || 0) + 1;
-    if (rl.count >= 5) { rl.until = Date.now() + 60000; rl.count = 0; } // 60s lockout after 5 fails
+    if (rl.count >= 5) { rl.until = Date.now() + 60000; rl.count = 0; }
     sessionStorage.setItem(rlKey, JSON.stringify(rl));
     showLoginError(msgs[e.code] || e.message);
   }
@@ -1713,7 +1782,7 @@ function handleLogin(account) {
   const parts = fullName.split(' ').filter(Boolean);
   const initials = parts.map(p => p[0]).join('').toUpperCase().slice(0, 2) || '?';
   const firstName = parts[0] || 'there';
-  const role = isManager(email) ? 'manager' : 'student';
+  const role = isManager(email) ? 'manager' : isTeacher(email) ? 'teacher' : 'student';
   currentUserRole = role;
   window.currentUserEmail = email;
   window.currentUserName = fullName;
@@ -1756,6 +1825,19 @@ function handleLogin(account) {
     loadAnnouncementsToMgr();
     loadPollsToMgr();
     loadFeedbacksToMgr();
+  } else if (role === 'teacher') {
+    document.getElementById('role-badge').textContent = 'Teacher';
+    document.getElementById('role-badge').className = 'role-badge teacher';
+    document.getElementById('nav-student').style.display = 'none';
+    document.getElementById('nav-manager').style.display = 'none';
+    document.getElementById('nav-teacher').style.display = '';
+    document.getElementById('user-role').textContent = 'Teacher · TIS Eagles';
+    document.getElementById('user-avatar').style.background = '#1E4F8C';
+    document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
+    showPage('mgr-announcements', null);
+    loadAnnouncementsToMgr();
+    loadPollsToMgr();
+    loadFeedbacksToMgr();
   } else {
     // Auto-register student
     registerStudent(email, fullName);
@@ -1795,23 +1877,35 @@ function handleLogin(account) {
 // ── SECURITY ──
 const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
 const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards'];
+const TEACHER_PAGES = ['mgr-announcements','mgr-voting','mgr-feedbacks','mgr-rewards'];
 let currentUserRole = null; // set on login
 
 function isAuthorized(pageId) {
-  if (!currentUserRole) return false; // not logged in
-  if (MANAGER_PAGES.includes(pageId) && currentUserRole !== 'manager') {
-    showSecurityAlert();
-    return false;
+  if (!currentUserRole) return false;
+  if (currentUserRole === 'manager') return true; // managers access everything
+  if (currentUserRole === 'teacher') {
+    if (TEACHER_PAGES.includes(pageId)) return true;
+    showSecurityAlert(); return false;
   }
-  if (STUDENT_PAGES.includes(pageId) && currentUserRole !== 'student') {
-    // managers can view student pages for reference — allow
+  if (currentUserRole === 'student') {
+    if (MANAGER_PAGES.includes(pageId) || TEACHER_PAGES.includes(pageId)) {
+      showSecurityAlert(); return false;
+    }
     return true;
   }
-  return true;
+  showSecurityAlert(); return false;
 }
 
 // ── RUNTIME PERMISSION GUARDS ──
 function requireManager(action) {
+  if (!window.currentUserEmail || (!isManager(window.currentUserEmail) && !isTeacher(window.currentUserEmail))) {
+    console.warn(`[SECURITY] Unauthorized attempt: ${action} by ${window.currentUserEmail||'unknown'}`);
+    toast('⛔ Access denied.');
+    return false;
+  }
+  return true;
+}
+function requireManagerOnly(action) {
   if (!window.currentUserEmail || !isManager(window.currentUserEmail)) {
     console.warn(`[SECURITY] Unauthorized attempt: ${action} by ${window.currentUserEmail||'unknown'}`);
     toast('⛔ Access denied.');
@@ -1902,11 +1996,21 @@ function showPage(id, btn) {
     case 'mgr-admins':
       renderAdminList();
       renderHouseLeaders();
+      renderTeacherList();
       { const logSec = document.getElementById('log-mgmt-section');
         if (logSec) logSec.style.display = (window.currentUserEmail||'').toLowerCase() === SUPER_ADMIN.toLowerCase() ? '' : 'none'; }
       break;
     case 'mgr-rewards':
-      switchRewardTab('prizes', document.getElementById('rwd-tab-prizes'));
+      if (currentUserRole === 'teacher') {
+        // Hide Prize Settings tab for teachers
+        const prizeTab = document.getElementById('rwd-tab-prizes');
+        if (prizeTab) prizeTab.style.display = 'none';
+        switchRewardTab('points', document.getElementById('rwd-tab-points'));
+      } else {
+        const prizeTab = document.getElementById('rwd-tab-prizes');
+        if (prizeTab) prizeTab.style.display = '';
+        switchRewardTab('prizes', document.getElementById('rwd-tab-prizes'));
+      }
       loadPrizesToAdmin();
       populateStudentSelect();
       break;
@@ -2448,7 +2552,7 @@ async function loadPointsLog() {
 }
 
 function awardPoints() {
-  if (!requireManager('awardPoints')) return;
+  if (!requireManagerOnly('awardPoints')) return;
   const houseRaw = document.getElementById('award-house').value;
   const house = houseRaw.toLowerCase();
   const pts = parseInt(document.getElementById('award-pts').value);
@@ -2475,7 +2579,7 @@ function populateStudentSelect() {
   if (!sel) return;
   loadStudents().then(students => {
     sel.innerHTML = '<option value="">— Select student —</option>' +
-      students.map(s => `<option value="${esc(s.email)}">${s.name||s.email} (${esc(s.house||'Unassigned')})</option>`).join('');
+      students.map(s => `<option value="${esc(s.email)}">${esc(s.name||s.email)} (${esc(s.house||'Unassigned')})</option>`).join('');
   });
 }
 
@@ -2948,7 +3052,7 @@ function loadFeedbacksToMgr() {
         : `<span style="font-size:11px;color:var(--muted);">${fb.studentEmail||'Anonymous'}</span>`;
       const replySection = fb.reply
         ? `<div style="margin-top:10px;padding:10px 12px;background:var(--earth);border-radius:var(--radius-sm);border-left:3px solid var(--earth-deep);">
-             <div style="font-size:11px;color:var(--earth-deep);font-weight:500;margin-bottom:4px;">✓ Replied by ${esc(fb.replyBy||'Manager')} · ${fb.replyAt?.toDate?.()?.toLocaleDateString()||''}</div>
+             <div style="font-size:11px;color:var(--earth-deep);font-weight:500;margin-bottom:4px;">✓ Replied by ${esc(fb.replyBy||'Manager')} · ${esc(fb.replyAt?.toDate?.()?.toLocaleDateString()||'')}</div>
              <div style="font-size:13px;color:var(--earth-text);">${esc(fb.reply)}</div>
              <button class="btn-outline" style="margin-top:8px;font-size:11px;padding:4px 10px;" data-edit="${fb.id}">Edit reply</button>
            </div>`
@@ -3264,7 +3368,7 @@ async function loadCurrentSpinPrice() {
 }
 
 async function saveSpinPrice() {
-  if (!requireManager('saveSpinPrice')) return;
+  if (!requireManagerOnly('saveSpinPrice')) return;
   const inp = document.getElementById('spin-price-input');
   const statusEl = document.getElementById('spin-price-status');
   const price = parseInt(inp?.value);
@@ -3287,7 +3391,7 @@ async function saveSpinPrice() {
 }
 
 function addPrize() {
-  if (!requireManager('addPrize')) return;
+  if (!requireManagerOnly('addPrize')) return;
   const name = document.getElementById('prize-name-input').value.trim().slice(0, 100);
   const prob = parseFloat(document.getElementById('prize-prob-input').value);
   const desc = document.getElementById('prize-desc-input').value.trim().slice(0, 200);
@@ -3378,7 +3482,7 @@ function loadPrizesToAdmin() {
 }
 
 function saveProbability(id) {
-  if (!requireManager('saveProbability')) return;
+  if (!requireManagerOnly('saveProbability')) return;
   const inp = document.getElementById('prob-inp-'+id);
   const val = parseFloat(inp?.value);
   if (isNaN(val) || val <= 0) { toast('Enter a valid weight (e.g. 30)!'); return; }
@@ -3779,7 +3883,7 @@ function renderHouseLeaders() {
     loadStudents().then(students => {
       const studentOpts = students
         .filter(s => s.house && s.house !== 'Unassigned')
-        .map(s => `<option value="${esc(s.email)}">${s.name||s.email} (${s.house})</option>`)
+        .map(s => `<option value="${esc(s.email)}">${esc(s.name||s.email)} (${esc(s.house)})</option>`)
         .join('');
       const houses = ['earth','water','air','fire'];
       list.innerHTML = houses.map(h => {
@@ -3789,7 +3893,7 @@ function renderHouseLeaders() {
         const currentLabel = currentStudent ? `${currentStudent.name} (${currentStudent.email})` : (currentEmail || '— None —');
         // Filter to only this house's students
         const houseStudents = students.filter(s => s.house && s.house.toLowerCase() === h);
-        const houseOpts = houseStudents.map(s => `<option value="${esc(s.email)}" ${s.email.toLowerCase()===currentEmail.toLowerCase()?'selected':''}>${s.name||s.email}</option>`).join('');
+        const houseOpts = houseStudents.map(s => `<option value="${esc(s.email)}" ${s.email.toLowerCase()===currentEmail.toLowerCase()?'selected':''}>${esc(s.name||s.email)}</option>`).join('');
         return `
           <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${info.bg};border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid ${info.border};">
             <div style="font-size:24px;">${info.emoji}</div>
@@ -3820,6 +3924,60 @@ function renderHouseLeaders() {
         });
       });
     });
+  });
+}
+
+// ── TEACHER MANAGEMENT ──
+async function addTeacher() {
+  if (!requireHeadAdmin('addTeacher')) return;
+  const emailInput = document.getElementById('new-teacher-email');
+  const nameInput = document.getElementById('new-teacher-name');
+  const errEl = document.getElementById('add-teacher-error');
+  const email = emailInput.value.trim().toLowerCase();
+  const name = nameInput.value.trim();
+  if (!email || !email.includes('@') || !email.includes('.')) { errEl.style.display='block'; return; }
+  errEl.style.display = 'none';
+  if (TEACHER_EMAILS.map(e=>e.toLowerCase()).includes(email)) { toast('Already a teacher!'); return; }
+  if (isManager(email)) { toast('This person is already an admin.'); return; }
+  TEACHER_EMAILS.push(email);
+  if (name) teacherNames[email] = name;
+  await saveTeacherEmailsToFirestore();
+  emailInput.value = ''; nameInput.value = '';
+  renderTeacherList();
+  toast(`${name || email} added as teacher ✓`);
+}
+
+async function removeTeacher(email) {
+  if (!requireHeadAdmin('removeTeacher')) return;
+  TEACHER_EMAILS = TEACHER_EMAILS.filter(e => e.toLowerCase() !== email.toLowerCase());
+  delete teacherNames[email.toLowerCase()];
+  await saveTeacherEmailsToFirestore();
+  renderTeacherList();
+  toast('Teacher removed.');
+}
+
+function renderTeacherList() {
+  const list = document.getElementById('teacher-list');
+  if (!list) return;
+  if (TEACHER_EMAILS.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.75rem 0;">No teachers added yet.</div>';
+    return;
+  }
+  list.innerHTML = TEACHER_EMAILS.map(email => {
+    const name = teacherNames[email.toLowerCase()] || email.split('@')[0];
+    const initials = name.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2)||'?';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--water);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid rgba(90,143,200,0.25);">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--water-deep);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;">${esc(initials)}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;">${esc(name)}</div>
+        <div style="font-size:11px;color:var(--muted);">${esc(email)}</div>
+      </div>
+      <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--water-deep);color:white;">Teacher</span>
+      <button class="btn-danger" style="font-size:11px;padding:5px 10px;" data-temail="${esc(email)}">Remove</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('[data-temail]').forEach(btn => {
+    btn.addEventListener('click', () => removeTeacher(btn.dataset.temail));
   });
 }
 
