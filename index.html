@@ -85,6 +85,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);line-height:1;}
 .modal-section{margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
 .modal-section:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+.avatar-img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.avatar-upload-ring{position:relative;cursor:pointer;border-radius:50%;display:inline-flex;}
+.avatar-upload-ring:hover .avatar-upload-overlay{opacity:1;}
+.avatar-upload-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.18s;font-size:18px;}
 
 .nav-label{font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;padding:0 0.5rem;margin-bottom:5px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;color:var(--muted);font-weight:400;transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
@@ -419,7 +423,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
   <div class="sidebar-bottom">
     <div class="user-row" id="user-row-profile" onclick="openProfileModal()" style="cursor:pointer;border-radius:var(--radius-sm);transition:background 0.12s;" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
-      <div class="avatar" id="user-avatar" style="background:#1A6FA8;">?</div>
+      <div class="avatar" id="user-avatar" style="background:#1A6FA8;overflow:hidden;">?</div>
       <div style="flex:1;min-width:0;">
         <div class="user-name" id="user-name">Loading...</div>
         <div class="user-role" id="user-role">Signing in</div>
@@ -1716,6 +1720,9 @@ function handleLogin(account) {
 
   document.getElementById('user-name').textContent = fullName;
   document.getElementById('user-avatar').textContent = initials;
+
+  // Load profile photo asynchronously (replaces initials if set)
+  loadProfilePhoto(email);
 
   const now = new Date();
   const hour = now.getHours();
@@ -3965,18 +3972,26 @@ function openProfileModal() {
   const email = window.currentUserEmail || '';
   const role = document.getElementById('role-badge')?.textContent || '';
   const initials = name.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2) || '?';
-  document.getElementById('profile-modal-avatar').textContent = initials;
-  document.getElementById('profile-modal-avatar').style.background = document.getElementById('user-avatar')?.style.background || '#1A6FA8';
+  const avatarEl = document.getElementById('profile-modal-avatar');
+  const bgColor = document.getElementById('user-avatar')?.style.background || '#1A6FA8';
+
+  // Show saved photo or initials
+  if (window._profilePhotoUrl) {
+    avatarEl.innerHTML = `<img src="${window._profilePhotoUrl}" class="avatar-img" />`;
+    avatarEl.style.background = 'transparent';
+  } else {
+    avatarEl.textContent = initials;
+    avatarEl.style.background = bgColor;
+  }
+
   document.getElementById('profile-modal-name').textContent = name || email;
   document.getElementById('profile-modal-email').textContent = email;
   document.getElementById('profile-modal-role').textContent = role;
   document.getElementById('profile-name-input').value = name;
-  // Hide password section for Microsoft/MSAL users (no Firebase password)
   const isEmailUser = auth?.currentUser?.providerData?.[0]?.providerId === 'password';
   const pwSection = document.getElementById('profile-pw-section');
   if (pwSection) pwSection.style.display = isEmailUser ? '' : 'none';
-  // Clear statuses
-  ['profile-name-status','profile-pw-status'].forEach(id => {
+  ['profile-name-status','profile-pw-status','avatar-upload-status'].forEach(id => {
     const el = document.getElementById(id); if (el) el.textContent = '';
   });
   ['profile-pw-current','profile-pw-new','profile-pw-confirm'].forEach(id => {
@@ -3990,6 +4005,89 @@ function closeProfileModal() {
   if (modal) modal.style.display = 'none';
 }
 
+// ── PROFILE PHOTO ──
+async function handleAvatarUpload(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const statusEl = document.getElementById('avatar-upload-status');
+
+  // Validate
+  if (!file.type.startsWith('image/')) {
+    if (statusEl) { statusEl.style.color='var(--fire-deep)'; statusEl.textContent='Please select an image file.'; }
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    if (statusEl) { statusEl.style.color='var(--fire-deep)'; statusEl.textContent='Image too large. Max 2 MB.'; }
+    return;
+  }
+  if (statusEl) { statusEl.style.color='var(--muted)'; statusEl.textContent='Uploading...'; }
+
+  try {
+    // Resize & convert to base64 via canvas (max 200×200)
+    const dataUrl = await resizeImageToDataUrl(file, 200);
+
+    // Save to Firestore under userProfiles/{email}
+    const email = (window.currentUserEmail || '').toLowerCase();
+    await db.collection('userProfiles').doc(email).set({ photoUrl: dataUrl }, { merge: true });
+
+    window._profilePhotoUrl = dataUrl;
+    applyAvatarToUI(dataUrl);
+    if (statusEl) { statusEl.style.color='var(--earth-deep)'; statusEl.textContent='✓ Photo updated!'; }
+    toast('Profile photo updated ✓');
+  } catch(e) {
+    console.error('handleAvatarUpload:', e);
+    if (statusEl) { statusEl.style.color='var(--fire-deep)'; statusEl.textContent=`Failed: ${e.message}`; }
+  }
+  input.value = ''; // reset file input
+}
+
+function resizeImageToDataUrl(file, maxSize) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function applyAvatarToUI(dataUrl) {
+  // Sidebar avatar
+  const sidebarAvatar = document.getElementById('user-avatar');
+  if (sidebarAvatar) {
+    sidebarAvatar.innerHTML = `<img src="${dataUrl}" class="avatar-img" />`;
+    sidebarAvatar.style.background = 'transparent';
+  }
+  // Modal avatar
+  const modalAvatar = document.getElementById('profile-modal-avatar');
+  if (modalAvatar) {
+    modalAvatar.innerHTML = `<img src="${dataUrl}" class="avatar-img" />`;
+    modalAvatar.style.background = 'transparent';
+  }
+}
+
+async function loadProfilePhoto(email) {
+  if (!email || !db) return;
+  try {
+    const doc = await db.collection('userProfiles').doc(email.toLowerCase()).get();
+    if (doc.exists && doc.data().photoUrl) {
+      window._profilePhotoUrl = doc.data().photoUrl;
+      applyAvatarToUI(doc.data().photoUrl);
+    }
+  } catch(e) { console.warn('loadProfilePhoto:', e); }
+}
+
 async function saveProfileName() {
   const newName = document.getElementById('profile-name-input').value.trim();
   const statusEl = document.getElementById('profile-name-status');
@@ -3999,9 +4097,12 @@ async function saveProfileName() {
     window.currentUserName = newName;
     document.getElementById('user-name').textContent = newName;
     document.getElementById('profile-modal-name').textContent = newName;
-    const initials = newName.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2) || '?';
-    document.getElementById('user-avatar').textContent = initials;
-    document.getElementById('profile-modal-avatar').textContent = initials;
+    // Only update initials if no photo set
+    if (!window._profilePhotoUrl) {
+      const initials = newName.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().slice(0,2) || '?';
+      document.getElementById('user-avatar').textContent = initials;
+      document.getElementById('profile-modal-avatar').textContent = initials;
+    }
     if (statusEl) { statusEl.style.color='var(--earth-deep)'; statusEl.textContent='✓ Name updated!'; }
     toast('Display name updated ✓');
   } catch(e) {
@@ -4086,13 +4187,20 @@ function _tryInit() {
   <div class="modal-box">
     <button class="modal-close" onclick="closeProfileModal()">✕</button>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;">
-      <div class="avatar" id="profile-modal-avatar" style="width:52px;height:52px;font-size:16px;background:#1A6FA8;flex-shrink:0;">?</div>
+      <!-- Clickable avatar -->
+      <div class="avatar-upload-ring" onclick="document.getElementById('avatar-file-input').click()" title="Click to change photo">
+        <div class="avatar" id="profile-modal-avatar" style="width:64px;height:64px;font-size:18px;background:#1A6FA8;flex-shrink:0;overflow:hidden;">?</div>
+        <div class="avatar-upload-overlay">📷</div>
+      </div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
       <div>
         <div style="font-size:15px;font-weight:600;" id="profile-modal-name">—</div>
         <div style="font-size:12px;color:var(--muted);" id="profile-modal-email">—</div>
         <div style="font-size:11px;font-weight:600;margin-top:3px;" id="profile-modal-role">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">📷 Click photo to change</div>
       </div>
     </div>
+    <div id="avatar-upload-status" style="font-size:11px;margin-bottom:10px;min-height:14px;text-align:center;"></div>
     <!-- Change display name -->
     <div class="modal-section">
       <div style="font-size:13px;font-weight:500;margin-bottom:10px;">✏️ Change display name</div>
