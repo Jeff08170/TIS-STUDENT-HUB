@@ -1333,13 +1333,21 @@ async function saveManagerEmailsToFirestore() {
 async function loadTeacherEmails() {
   try {
     const doc = await db.collection('settings').doc('teachers').get();
-    if (doc.exists) return doc.data().emails || [];
+    if (doc.exists) {
+      const data = doc.data();
+      // Restore names into global teacherNames map
+      if (data.names) Object.assign(teacherNames, data.names);
+      return data.emails || [];
+    }
     return [];
   } catch(e) { return []; }
 }
 async function saveTeacherEmailsToFirestore() {
   try {
-    await db.collection('settings').doc('teachers').set({ emails: TEACHER_EMAILS });
+    await db.collection('settings').doc('teachers').set({
+      emails: TEACHER_EMAILS,
+      names: teacherNames
+    });
   } catch(e) { console.error('saveTeachers:', e); }
 }
 let teacherNames = {};
@@ -1806,6 +1814,7 @@ function handleLogin(account) {
     document.getElementById('role-badge').className = isOwner ? 'role-badge owner' : 'role-badge manager';
     document.getElementById('nav-student').style.display = 'none';
     document.getElementById('nav-manager').style.display = '';
+    document.getElementById('nav-teacher').style.display = 'none';
     document.getElementById('user-role').textContent = (isOwner ? 'Owner' : isHead ? 'Head Admin' : 'Admin') + ' · TIS Eagles';
     document.getElementById('user-avatar').style.background = isOwner ? '#7c3aed' : '#C04A10';
     document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
@@ -1845,6 +1854,7 @@ function handleLogin(account) {
     document.getElementById('role-badge').className = 'role-badge student';
     document.getElementById('nav-student').style.display = '';
     document.getElementById('nav-manager').style.display = 'none';
+    document.getElementById('nav-teacher').style.display = 'none';
     document.getElementById('user-avatar').style.background = '#1A6FA8';
     document.getElementById('dash-greeting').textContent = greeting + ', ' + firstName + '!';
     showPage('dashboard', null);
@@ -3933,18 +3943,27 @@ async function addTeacher() {
   const emailInput = document.getElementById('new-teacher-email');
   const nameInput = document.getElementById('new-teacher-name');
   const errEl = document.getElementById('add-teacher-error');
+  const btn = document.querySelector('#new-teacher-email')?.closest('.mgr-section')?.querySelector('.btn-primary');
   const email = emailInput.value.trim().toLowerCase();
   const name = nameInput.value.trim();
   if (!email || !email.includes('@') || !email.includes('.')) { errEl.style.display='block'; return; }
   errEl.style.display = 'none';
   if (TEACHER_EMAILS.map(e=>e.toLowerCase()).includes(email)) { toast('Already a teacher!'); return; }
   if (isManager(email)) { toast('This person is already an admin.'); return; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
   TEACHER_EMAILS.push(email);
   if (name) teacherNames[email] = name;
-  await saveTeacherEmailsToFirestore();
-  emailInput.value = ''; nameInput.value = '';
-  renderTeacherList();
-  toast(`${name || email} added as teacher ✓`);
+  try {
+    await saveTeacherEmailsToFirestore();
+    emailInput.value = ''; nameInput.value = '';
+    await renderTeacherList();
+    toast(`${name || email} added as teacher ✓`);
+  } catch(e) {
+    TEACHER_EMAILS.pop(); // rollback
+    toast('Failed to save. Check connection.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Add teacher'; }
+  }
 }
 
 async function removeTeacher(email) {
@@ -3956,9 +3975,12 @@ async function removeTeacher(email) {
   toast('Teacher removed.');
 }
 
-function renderTeacherList() {
+async function renderTeacherList() {
   const list = document.getElementById('teacher-list');
   if (!list) return;
+  list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;">Loading...</div>';
+  // Always reload from Firestore to get latest list
+  TEACHER_EMAILS = await loadTeacherEmails().catch(() => TEACHER_EMAILS);
   if (TEACHER_EMAILS.length === 0) {
     list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.75rem 0;">No teachers added yet.</div>';
     return;
