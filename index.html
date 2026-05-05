@@ -1097,6 +1097,17 @@ function initFirebase() {
     if (window._loginHandled) return; // MSAL already handled login
     if (!fbUser) return;
     if (fbUser.providerData[0]?.providerId !== 'password') return; // only email/pass
+
+    // Only proceed if the user explicitly signed in or just created an account.
+    // This prevents a persisted Firebase session from auto-logging in on page load
+    // when the user hasn't actively chosen to sign in.
+    const explicitAction = window._signedInViaForm || window._createdViaSignup;
+    if (!explicitAction) {
+      // Sign them out silently — they must use the login form
+      auth.signOut();
+      return;
+    }
+
     // Email/password user — load managers/leaders then login
     const fbManagers = await loadManagerEmails().catch(() => []);
     fbManagers.forEach(e => {
@@ -1356,6 +1367,9 @@ async function signIn() {
 
 async function signOut() {
   currentUserRole = null;
+  window._signedInViaForm = false;
+  window._createdViaSignup = false;
+  window._loginHandled = false;
   // Sign out Firebase (email/password users)
   if (auth && auth.currentUser) {
     await auth.signOut().catch(() => {});
@@ -1481,6 +1495,21 @@ async function signUpWithEmail() {
   // Verify invite code against Firestore (never hardcode in client)
   const btn = document.querySelector('#form-signup .btn-primary');
   if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
+  // Check if this email already exists in Firebase (any provider)
+  try {
+    const methods = await auth.fetchSignInMethodsForEmail(email);
+    if (methods.length > 0 && !methods.includes('password')) {
+      showLoginError('This email is registered with Microsoft. Please use the Microsoft sign-in button.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+      return;
+    }
+    if (methods.includes('password')) {
+      showLoginError('An account with this email already exists. Please sign in instead.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+      return;
+    }
+  } catch(e) { /* fetchSignInMethods might fail on some configs — proceed */ }
+
   let codeValid = false;
   try {
     const codeDoc = await db.collection('settings').doc('inviteCode').get();
@@ -1496,10 +1525,12 @@ async function signUpWithEmail() {
     if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
     return;
   }
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pw);
     await cred.user.updateProfile({ displayName: name });
-    // No email verification needed — invite code was used
+    // Mark that this login came from explicit Create Account — not a persisted session
+    window._createdViaSignup = true;
     // onAuthStateChanged will handle login automatically
   } catch(e) {
     console.error('signUpWithEmail error:', e.code, e.message);
@@ -1529,6 +1560,7 @@ async function signInWithEmail() {
   try {
     await auth.signInWithEmailAndPassword(email, pw);
     sessionStorage.removeItem(rlKey);
+    window._signedInViaForm = true; // explicit sign-in — allow onAuthStateChanged
     // onAuthStateChanged handles the rest
   } catch(e) {
     const msgs = {
