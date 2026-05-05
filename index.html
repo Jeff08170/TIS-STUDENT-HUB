@@ -774,7 +774,6 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
       <button class="fpill active" id="rwd-tab-prizes" onclick="switchRewardTab('prizes',this)">🎁 Prize Settings</button>
       <button class="fpill" id="rwd-tab-points" onclick="switchRewardTab('points',this)">⭐ Student Points</button>
-      <button class="fpill" id="rwd-tab-log" onclick="switchRewardTab('log',this)">📋 Points Log</button>
       <button class="fpill" id="rwd-tab-draws" onclick="switchRewardTab('draws',this)">🎰 Draw History</button>
     </div>
 
@@ -869,18 +868,11 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
         <div id="student-leaderboard"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
       </div>
+      <!-- Points log merged here -->
     </div>
 
-    <!-- ── Points Log tab ── -->
-    <div id="rwd-panel-log" style="display:none;">
-      <div class="mgr-section">
-        <div class="mgr-section-title" style="justify-content:space-between;">
-          <span>📋 House points log</span>
-          <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPointsLog()">↻ Refresh</button>
-        </div>
-        <div id="pts-log-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading log...</div></div>
-      </div>
-    </div>
+    <!-- ── Points Log tab (removed — merged into Student Points) ── -->
+    <div id="rwd-panel-log" style="display:none;"></div>
 
     <!-- ── Draw History tab ── -->
     <div id="rwd-panel-draws" style="display:none;">
@@ -2817,14 +2809,16 @@ async function saveSpinPriceDB(price) {
 
 // ── REWARDS UI ──
 function switchRewardTab(tab, btn) {
-  ['prizes','points','log','draws'].forEach(t => {
+  ['prizes','points','draws'].forEach(t => {
     const panel = document.getElementById('rwd-panel-'+t);
     const tabBtn = document.getElementById('rwd-tab-'+t);
     if (panel) panel.style.display = t === tab ? '' : 'none';
     if (tabBtn) tabBtn.classList.remove('active');
   });
+  // also hide the legacy log panel
+  const logPanel = document.getElementById('rwd-panel-log');
+  if (logPanel) logPanel.style.display = 'none';
   if (btn) btn.classList.add('active');
-  if (tab === 'log') loadPointsLog();
   if (tab === 'draws') loadAdminDrawHistory();
   if (tab === 'points') { populateStudentSelect(); loadStudentLeaderboard(); }
   if (tab === 'prizes') { loadPrizesToAdmin(); loadCurrentSpinPrice(); }
@@ -3059,19 +3053,30 @@ async function loadStudentRewardsPage() {
 
 async function loadMyDrawHistory(email) {
   const el = document.getElementById('student-draw-history');
-  if (!el || !email) return;
+  if (!el) { console.warn('student-draw-history element not found'); return; }
+  if (!email) { console.warn('loadMyDrawHistory: no email'); el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Not logged in.</div>'; return; }
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Loading your draw history...</div>';
   try {
+    console.log('Loading draw history for:', email.toLowerCase());
     const snap = await db.collection('drawResults')
       .where('studentEmail', '==', email.toLowerCase())
-      .orderBy('drawnAt', 'desc')
-      .limit(30)
       .get();
+    console.log('Draw history docs found:', snap.size);
     if (snap.empty) {
       el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">No draws yet. Try your luck!</div>';
       return;
     }
-    el.innerHTML = snap.docs.map(d => {
-      const r = d.data();
+    // Sort by drawnAt descending in JS (avoids needing a Firestore composite index)
+    const docs = snap.docs
+      .map(d => ({id: d.id, ...d.data()}))
+      .sort((a, b) => {
+        const ta = a.drawnAt?.toDate?.()?.getTime() || 0;
+        const tb = b.drawnAt?.toDate?.()?.getTime() || 0;
+        return tb - ta;
+      })
+      .slice(0, 30);
+
+    el.innerHTML = docs.map(r => {
       const date = r.drawnAt?.toDate?.()?.toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) || 'Recent';
       return `
         <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);">
@@ -3090,7 +3095,8 @@ async function loadMyDrawHistory(email) {
         </div>`;
     }).join('');
   } catch(e) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load history. Try refreshing.</div>';
+    console.error('loadMyDrawHistory error:', e);
+    el.innerHTML = `<div style="color:var(--muted);font-size:13px;">Error: ${e.message || e.code || 'Could not load history.'}</div>`;
   }
 }
 
