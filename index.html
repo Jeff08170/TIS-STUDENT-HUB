@@ -2514,8 +2514,8 @@ async function loadPointsLog() {
     ]);
 
     const rows = [];
-    houseSnap.docs.forEach(d => rows.push({ ...d.data(), _type: 'house' }));
-    studentSnap.docs.forEach(d => rows.push({ ...d.data(), _type: 'student' }));
+    houseSnap.docs.forEach(d => rows.push({ ...d.data(), _type: 'house', _id: d.id }));
+    studentSnap.docs.forEach(d => rows.push({ ...d.data(), _type: 'student', _id: d.id }));
     rows.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
 
     if (rows.length === 0) {
@@ -2528,6 +2528,11 @@ async function loadPointsLog() {
     const totalDeducted = rows.reduce((s, r) => s + (r.delta < 0 ? r.delta : 0), 0);
 
     const houseColors = { earth:'var(--earth-deep)', water:'var(--water-deep)', air:'var(--air-deep)', fire:'var(--fire-deep)' };
+
+    // Determine if current user is Head Admin or Owner (only they can delete log entries)
+    const _email = (window.currentUserEmail || '').toLowerCase();
+    const _isOwner = _email === SUPER_ADMIN.toLowerCase();
+    const _isHead = _isOwner || (window._headAdmins || []).includes(_email);
 
     el.innerHTML = `
       <div style="display:flex;gap:10px;margin-bottom:1rem;">
@@ -2545,7 +2550,7 @@ async function loadPointsLog() {
         </div>
       </div>
       <table class="mgr-table">
-        <thead><tr><th>Time</th><th>Type</th><th>Recipient</th><th>Pts</th><th>Reason</th><th>Admin</th></tr></thead>
+        <thead><tr><th>Time</th><th>Type</th><th>Recipient</th><th>Pts</th><th>Reason</th><th>Admin</th>${_isHead ? '<th style="width:60px;">Action</th>' : ''}</tr></thead>
         <tbody>
           ${rows.map(log => {
             const pts = log.delta;
@@ -2564,6 +2569,10 @@ async function loadPointsLog() {
               : `<div style="font-size:12px;font-weight:600;">${esc(log.studentName || log.email?.split('@')[0] || '?')}</div>
                  <div style="font-size:10px;color:var(--muted);">${esc(log.email)}</div>`;
             const adminName = esc(log.by || 'Admin');
+            const collectionName = isHouse ? 'pointsLog' : 'studentPointsLog';
+            const deleteCell = _isHead
+              ? `<td><button class="btn-danger" style="font-size:10px;padding:4px 8px;" data-del-log="${esc(log._id)}" data-del-coll="${collectionName}" title="Delete this log entry (does not reverse the points)">🗑</button></td>`
+              : '';
             return `<tr>
               <td style="font-size:11px;color:var(--muted);white-space:nowrap;">${date}</td>
               <td>${typeBadge}</td>
@@ -2571,13 +2580,44 @@ async function loadPointsLog() {
               <td><span style="font-weight:700;color:${color};font-family:monospace;font-size:13px;padding:2px 7px;border-radius:6px;background:${bg};">${sign}${pts}</span></td>
               <td style="font-size:12px;color:var(--text);max-width:180px;">${esc(log.reason||'—')}</td>
               <td style="font-size:11px;color:var(--muted);">${adminName}</td>
+              ${deleteCell}
             </tr>`;
           }).join('')}
         </tbody>
       </table>`;
+
+    // Wire up delete buttons (Head Admin only — also enforced server-side via requireHeadAdmin)
+    if (_isHead) {
+      el.querySelectorAll('[data-del-log]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const docId = btn.dataset.delLog;
+          const coll = btn.dataset.delColl;
+          deletePointsLogEntry(coll, docId);
+        });
+      });
+    }
   } catch(e) {
     console.error('loadPointsLog:', e);
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;">Could not load log.</div>';
+  }
+}
+
+// Delete a single points log entry — Head Admin / Owner only
+// Note: this only deletes the audit record; it does NOT reverse the points change.
+async function deletePointsLogEntry(collectionName, docId) {
+  if (!requireHeadAdmin('deletePointsLogEntry')) return;
+  if (collectionName !== 'pointsLog' && collectionName !== 'studentPointsLog') {
+    toast('Invalid log collection.');
+    return;
+  }
+  if (!confirm('Delete this log entry?\n\nNote: This only removes the audit record — it does NOT reverse the points that were awarded or deducted.')) return;
+  try {
+    await db.collection(collectionName).doc(docId).delete();
+    toast('Log entry deleted.');
+    loadPointsLog();
+  } catch(e) {
+    console.error('deletePointsLogEntry:', e);
+    toast('Failed to delete log entry.');
   }
 }
 
