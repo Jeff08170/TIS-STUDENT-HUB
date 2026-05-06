@@ -1388,6 +1388,8 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Permanently delete log records from Firestore. This cannot be undone.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn-danger" onclick="clearLog('pointsLog','Points log')">🗑 Clear points log</button>
+        <button class="btn-danger" onclick="clearLog('studentPointsLog','Student points log')">🗑 Clear student points log</button>
+        <button class="btn-danger" onclick="clearLog('studentXPLog','XP log')">🗑 Clear XP log</button>
         <button class="btn-danger" onclick="clearLog('drawResults','Draw history')">🗑 Clear draw history</button>
         <button class="btn-danger" onclick="clearLog('prizeLogs','Prize settings log')">🗑 Clear prize settings log</button>
       </div>
@@ -2165,14 +2167,29 @@ function handleLogin(account) {
     // Load house leaders too
     loadHouseLeaders().then(leaders => { Object.assign(HOUSE_LEADERS, leaders); });
     loadStudentPolls(email);
-    // Load student points for display
+    // Load student points for display (spendable currency)
     getStudentPoints(email).then(pts => {
       const mpd = document.getElementById('my-points-display');
       if (mpd) mpd.textContent = pts.toLocaleString();
       const badge = document.getElementById('my-pts-badge');
       if (badge) badge.textContent = pts.toLocaleString() + ' pts';
-      // Update gamified hero quest banner
-      updateHeroXp(pts);
+    });
+    // Claim daily login XP (once per day) then refresh the hero banner
+    claimDailyLoginXP(email, fullName).then(result => {
+      if (result.granted) {
+        // Show a fun toast — bigger if level-up
+        if (result.levelUp) {
+          toast(`🎉 LEVEL UP! +${result.xp} XP daily bonus`);
+          fireConfetti(50);
+        } else {
+          toast(`✨ +${result.xp} XP daily login bonus!`);
+        }
+      }
+      // Use the up-to-date total (whether granted or not)
+      updateHeroXp(result.totalXp || 0);
+    }).catch(() => {
+      // If anything fails, fall back to just showing current XP
+      getStudentXP(email).then(xp => updateHeroXp(xp));
     });
     // Animate count-up for announcement/poll counters once data loads
     loadAnnouncements().then(anns => {
@@ -2331,6 +2348,13 @@ function showPage(id, btn) {
       break;
     case 'rewards':
       loadStudentRewardsPage();
+      break;
+    case 'dashboard':
+      // Refresh hero XP and house standings when student returns
+      if (window.currentUserEmail) {
+        getStudentXP(window.currentUserEmail).then(xp => updateHeroXp(xp));
+        loadStudentHousePoints();
+      }
       break;
     case 'announcements':
       loadAnnouncementsToStudent();
@@ -2896,6 +2920,15 @@ async function updateStudentPoints(email, delta, reason, by, studentName) {
       by: by || 'Admin',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    // Grant 10x XP on POSITIVE awards only (deductions don't reduce XP)
+    if (delta > 0) {
+      await addStudentXP(
+        email,
+        delta * POINTS_TO_XP_MULTIPLIER,
+        `Points awarded: ${reason || 'manual award'}`,
+        studentName
+      );
+    }
   } catch(e) { console.error('updateStudentPoints:', e); throw e; }
 }
 async function loadAllStudentPoints() {
@@ -2903,6 +2936,99 @@ async function loadAllStudentPoints() {
     const snap = await db.collection('studentPoints').orderBy('points','desc').get();
     return snap.docs.map(d => d.data());
   } catch(e) { return []; }
+}
+
+// ── STUDENT XP SYSTEM ──
+// XP is separate from spendable points. XP only goes UP (gamified levels).
+// Sources: daily login (+10), point awards (10x positive delta).
+// Storage: studentXP/{email} = { xp, lastLoginDate }
+// Audit:   studentXPLog/{auto} = { email, delta, reason, createdAt }
+
+const DAILY_LOGIN_XP = 10;
+const POINTS_TO_XP_MULTIPLIER = 10;
+
+// Returns 'YYYY-MM-DD' for today in the student's local time
+function _todayKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+async function getStudentXP(email) {
+  if (!email || !db) return 0;
+  try {
+    const doc = await db.collection('studentXP').doc(email.toLowerCase()).get();
+    return doc.exists ? (doc.data().xp || 0) : 0;
+  } catch(e) { console.warn('getStudentXP:', e); return 0; }
+}
+
+// Grant XP and write an audit log entry. Never deducts (delta clamped to >= 0).
+async function addStudentXP(email, delta, reason, studentName) {
+  if (!email || !db) return;
+  const safeDelta = Math.max(0, Math.floor(delta));
+  if (safeDelta === 0) return;
+  const ref = db.collection('studentXP').doc(email.toLowerCase());
+  try {
+    await db.runTransaction(async tx => {
+      const doc = await tx.get(ref);
+      const current = doc.exists ? (doc.data().xp || 0) : 0;
+      tx.set(ref, {
+        email: email.toLowerCase(),
+        xp: current + safeDelta
+      }, { merge: true });
+    });
+    await db.collection('studentXPLog').add({
+      email: email.toLowerCase(),
+      studentName: studentName || email.split('@')[0],
+      delta: safeDelta,
+      reason: reason || 'XP granted',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.error('addStudentXP:', e); }
+}
+
+// Claims the daily-login XP bonus if the student hasn't logged in today.
+// Returns { granted: boolean, xp: number, totalXp: number, levelUp: boolean }
+async function claimDailyLoginXP(email, studentName) {
+  if (!email || !db) return { granted: false };
+  const ref = db.collection('studentXP').doc(email.toLowerCase());
+  const todayKey = _todayKey();
+  try {
+    const result = await db.runTransaction(async tx => {
+      const doc = await tx.get(ref);
+      const data = doc.exists ? doc.data() : {};
+      const lastLogin = data.lastLoginDate || '';
+      if (lastLogin === todayKey) {
+        // Already claimed today
+        return { granted: false, xp: 0, totalXp: data.xp || 0 };
+      }
+      const oldXp = data.xp || 0;
+      const newXp = oldXp + DAILY_LOGIN_XP;
+      tx.set(ref, {
+        email: email.toLowerCase(),
+        xp: newXp,
+        lastLoginDate: todayKey
+      }, { merge: true });
+      return { granted: true, xp: DAILY_LOGIN_XP, totalXp: newXp, oldXp };
+    });
+    if (result.granted) {
+      // Detect level-up
+      const before = getLevelInfo(result.oldXp).current.lvl;
+      const after  = getLevelInfo(result.totalXp).current.lvl;
+      result.levelUp = after > before;
+      // Audit log
+      await db.collection('studentXPLog').add({
+        email: email.toLowerCase(),
+        studentName: studentName || email.split('@')[0],
+        delta: DAILY_LOGIN_XP,
+        reason: 'Daily login bonus',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    return result;
+  } catch(e) { console.error('claimDailyLoginXP:', e); return { granted: false }; }
 }
 
 async function loadPointsLog() {
