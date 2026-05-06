@@ -252,6 +252,204 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 .fb-rc-body{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
 .fb-rc-reply{background:var(--bg);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--text);border-left:3px solid var(--air-deep);margin-bottom:8px;}
 .fb-stars{color:#F5C747;font-size:12px;}
+
+/* ═══════════════════════════════════════════════
+   GAMIFIED UI — XP, levels, achievements
+   ═══════════════════════════════════════════════ */
+
+/* Hero quest banner */
+.quest-hero{
+  position:relative;
+  background:linear-gradient(135deg,#1E5FA8 0%,#2B7DC9 50%,#3B96E0 100%);
+  border-radius:24px;
+  padding:2rem 2.25rem;
+  margin-bottom:1.75rem;
+  color:white;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(30,79,140,0.25);
+}
+.quest-hero::before{
+  content:'';position:absolute;top:-50%;right:-20%;width:60%;height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.18) 0%,transparent 60%);
+  pointer-events:none;
+}
+.quest-hero::after{
+  content:'';position:absolute;bottom:-40%;left:-10%;width:50%;height:150%;
+  background:radial-gradient(circle,rgba(255,255,255,0.10) 0%,transparent 60%);
+  pointer-events:none;
+}
+.quest-hero-content{position:relative;z-index:1;}
+.quest-greeting{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.1;margin-bottom:6px;}
+.quest-sub{font-size:13px;opacity:0.85;margin-bottom:1.25rem;}
+.quest-stats-row{display:flex;flex-wrap:wrap;gap:18px;align-items:center;}
+.quest-stat{display:flex;align-items:center;gap:10px;}
+.quest-stat-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.quest-stat-num{font-size:22px;font-weight:700;line-height:1;}
+.quest-stat-label{font-size:10px;opacity:0.8;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+
+/* Level badge */
+.level-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.20);backdrop-filter:blur(10px);
+  padding:6px 14px;border-radius:99px;
+  font-size:12px;font-weight:600;
+  border:1px solid rgba(255,255,255,0.30);
+}
+.level-badge-emoji{font-size:14px;}
+
+/* XP progress bar */
+.xp-bar-wrap{margin-top:1.25rem;}
+.xp-bar-labels{display:flex;justify-content:space-between;font-size:11px;opacity:0.85;margin-bottom:6px;font-weight:500;}
+.xp-bar{height:10px;background:rgba(255,255,255,0.18);border-radius:99px;overflow:hidden;position:relative;}
+.xp-bar-fill{
+  height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#FFD86B 0%,#FFA947 100%);
+  box-shadow:0 0 12px rgba(255,193,71,0.5);
+  transition:width 1s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+}
+.xp-bar-fill::after{
+  content:'';position:absolute;inset:0;border-radius:99px;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.4) 50%,transparent 100%);
+  animation:xp-shimmer 2s infinite;
+}
+@keyframes xp-shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+/* Achievement-style stat cards (replaces flat stat-card on dashboards) */
+.ach-card{
+  position:relative;
+  background:var(--surface);
+  border-radius:18px;
+  padding:1.25rem;
+  border:1px solid var(--border);
+  overflow:hidden;
+  transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s;
+  cursor:pointer;
+}
+.ach-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--primary) 0%,#3B96E0 100%);
+  transform:scaleX(0);transform-origin:left;transition:transform 0.3s;
+}
+.ach-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(30,79,140,0.15);}
+.ach-card:hover::before{transform:scaleX(1);}
+.ach-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary-soft) 0%,#D5E5F5 100%);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  margin-bottom:12px;
+}
+.ach-num{font-size:30px;font-weight:700;letter-spacing:-1px;color:var(--text);font-family:'DM Sans',sans-serif;}
+.ach-label{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;letter-spacing:0.02em;text-transform:uppercase;}
+.ach-trend{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;
+  margin-top:6px;
+}
+.ach-trend.up{background:var(--earth);color:var(--earth-text);}
+
+/* House team banner — energetic redesign */
+.team-banner{
+  position:relative;
+  border-radius:18px;
+  padding:1.5rem 1.25rem;
+  cursor:pointer;
+  overflow:hidden;
+  transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s;
+  border:none;
+}
+.team-banner::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(circle at top right,rgba(255,255,255,0.4) 0%,transparent 60%);
+  pointer-events:none;
+}
+.team-banner:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,0.12);}
+.team-rank{
+  position:absolute;top:12px;right:12px;
+  font-size:11px;font-weight:700;
+  background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);
+  padding:4px 9px;border-radius:99px;
+  display:flex;align-items:center;gap:4px;
+}
+.team-emoji{font-size:34px;display:block;margin-bottom:4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));}
+.team-name{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;}
+.team-pts{font-size:32px;font-weight:700;letter-spacing:-1px;line-height:1;}
+.team-pts-label{font-size:11px;opacity:0.7;margin-top:2px;font-weight:500;}
+
+/* Bouncy buttons */
+.btn-primary,.btn-outline,.btn-danger{transition:transform 0.15s,background 0.15s,box-shadow 0.15s;}
+.btn-primary:active,.btn-outline:active,.btn-danger:active{transform:scale(0.96);}
+.btn-primary{box-shadow:0 2px 8px rgba(30,79,140,0.25);}
+.btn-primary:hover{box-shadow:0 4px 14px rgba(30,79,140,0.35);transform:translateY(-1px);}
+
+/* Page transitions — slide instead of fade */
+.page{animation:none;}
+.page.active{animation:slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(20px) scale(0.99);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* Animated number counter */
+.count-up{display:inline-block;font-variant-numeric:tabular-nums;}
+
+/* Card stagger entrance */
+.stagger > *{opacity:0;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+.stagger > *:nth-child(1){animation-delay:0.05s;}
+.stagger > *:nth-child(2){animation-delay:0.12s;}
+.stagger > *:nth-child(3){animation-delay:0.19s;}
+.stagger > *:nth-child(4){animation-delay:0.26s;}
+.stagger > *:nth-child(5){animation-delay:0.33s;}
+.stagger > *:nth-child(6){animation-delay:0.40s;}
+@keyframes popIn{
+  from{opacity:0;transform:translateY(16px) scale(0.95);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* Confetti */
+.confetti-piece{
+  position:fixed;width:10px;height:14px;top:-20px;
+  z-index:10000;pointer-events:none;
+  animation:confetti-fall 3s ease-in forwards;
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(0) rotate(0deg);opacity:1;}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+
+/* Streak / level pip */
+.tier-pip{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;
+  margin-left:6px;vertical-align:middle;
+}
+.tier-rookie{background:#E8F1FA;color:#1E5FA8;}
+.tier-bronze{background:#FCE9D9;color:#A05A30;}
+.tier-silver{background:#E8EAEE;color:#4A5260;}
+.tier-gold{background:#FCF3D6;color:#9A7011;}
+.tier-platinum{background:linear-gradient(135deg,#E0F0FF,#F4E4FF);color:#6B3FA0;}
+.tier-legend{background:linear-gradient(135deg,#FFE9C7,#FFCDD8);color:#A6394E;}
+
+/* Spin button — gamified pulse when ready */
+#spin-btn:not(:disabled){
+  animation:pulse-glow 2s infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(45,122,31,0.4);}
+  50%{box-shadow:0 0 0 12px rgba(45,122,31,0);}
+}
+
+/* Quest hero responsive */
+@media (max-width: 600px){
+  .quest-hero{padding:1.5rem 1.25rem;}
+  .quest-greeting{font-size:24px;}
+  .quest-stats-row{gap:12px;}
+  .quest-stat-num{font-size:18px;}
+}
 </style>
 </head>
 <body>
@@ -266,9 +464,9 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-card">
-      <div class="login-eagle">🦅</div>
-      <div class="login-title">ClassRoom</div>
-      <div class="login-sub" id="login-subtitle">TIS Eagles Student Portal</div>
+      <div class="login-eagle" style="font-size:60px;animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1);">🦅</div>
+      <div class="login-title" style="font-size:32px;background:linear-gradient(135deg,#1E5FA8 0%,#3B96E0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ClassRoom</div>
+      <div class="login-sub" id="login-subtitle">Welcome to TIS Eagles · Begin your quest</div>
 
       <!-- Login method tabs -->
       <div style="display:flex;gap:0;margin:1.2rem 0 1.4rem;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
@@ -465,39 +663,121 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
   <!-- Student: Dashboard -->
   <div id="page-dashboard" class="page active">
-    <div class="page-header">
-      <div><h1 class="page-title" id="dash-greeting">Good morning!</h1><p class="page-sub" id="dash-date"></p></div>
-      <span class="hdr-badge">Week 32</span>
+    <!-- Quest Hero Banner -->
+    <div class="quest-hero">
+      <div class="quest-hero-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;opacity:0.8;margin-bottom:4px;">Welcome back, hero</div>
+            <h1 class="quest-greeting" id="dash-greeting">Good morning!</h1>
+            <div class="quest-sub" id="dash-date"></div>
+          </div>
+          <div class="level-badge" id="dash-level-badge">
+            <span class="level-badge-emoji">⭐</span>
+            <span id="dash-level-text">Rookie · Lv 1</span>
+          </div>
+        </div>
+
+        <div class="quest-stats-row">
+          <div class="quest-stat">
+            <div class="quest-stat-icon">⚡</div>
+            <div>
+              <div class="quest-stat-num"><span class="count-up" id="dash-my-pts" data-target="0">0</span></div>
+              <div class="quest-stat-label">My XP</div>
+            </div>
+          </div>
+          <div class="quest-stat">
+            <div class="quest-stat-icon">🏰</div>
+            <div>
+              <div class="quest-stat-num" id="dash-house-name">—</div>
+              <div class="quest-stat-label">My House</div>
+            </div>
+          </div>
+          <div class="quest-stat">
+            <div class="quest-stat-icon">🏆</div>
+            <div>
+              <div class="quest-stat-num" id="dash-house-rank">—</div>
+              <div class="quest-stat-label">House Rank</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XP progress to next level -->
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-labels">
+            <span id="dash-xp-current">0 XP</span>
+            <span id="dash-xp-next">to Level 2</span>
+          </div>
+          <div class="xp-bar"><div class="xp-bar-fill" id="dash-xp-fill" style="width:0%;"></div></div>
+        </div>
+      </div>
     </div>
-    <div class="g3">
-      <div class="card card-hover" onclick="showPage('announcements',null)" style="display:flex;flex-direction:column;gap:10px;">
-        <div class="d-icon" style="background:var(--air);"><svg viewBox="0 0 24 24" style="stroke:var(--air-deep);width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div>
-        <div class="d-title">Announcements</div><div class="d-sub">3 new today</div>
+
+    <!-- Quick action achievement cards -->
+    <div class="g3 stagger">
+      <div class="ach-card" onclick="showPage('announcements',null)">
+        <div class="ach-icon">📢</div>
+        <div class="ach-num" id="dash-ann-num">—</div>
+        <div class="ach-label">Announcements</div>
+        <span class="ach-trend up" id="dash-ann-trend" style="display:none;">NEW</span>
       </div>
-      <div class="card card-hover" onclick="showPage('voting',null)" style="display:flex;flex-direction:column;gap:10px;">
-        <div class="d-icon" style="background:var(--earth);"><svg viewBox="0 0 24 24" style="stroke:var(--earth-deep);width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-        <div class="d-title">Voting</div><div class="d-sub">1 poll active</div>
+      <div class="ach-card" onclick="showPage('voting',null)">
+        <div class="ach-icon">🗳️</div>
+        <div class="ach-num" id="dash-poll-num">—</div>
+        <div class="ach-label">Active polls</div>
       </div>
-      <div class="card card-hover" onclick="showPage('feedbacks',null)" style="display:flex;flex-direction:column;gap:10px;">
-        <div class="d-icon" style="background:var(--water);"><svg viewBox="0 0 24 24" style="stroke:var(--water-deep);width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-        <div class="d-title">Feedbacks</div><div class="d-sub">Share your thoughts</div>
+      <div class="ach-card" onclick="showPage('rewards',null)">
+        <div class="ach-icon">🎁</div>
+        <div class="ach-num">Spin</div>
+        <div class="ach-label">Win prizes</div>
       </div>
     </div>
+
     <div class="g2">
       <div class="card">
-        <div class="section-label">Latest announcements</div>
+        <div class="section-label">📰 Latest announcements</div>
         <div id="dash-ann-preview"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
       </div>
       <div class="card">
-        <div class="section-label">Active poll</div>
+        <div class="section-label">🗳️ Active poll</div>
         <div id="dash-poll-preview"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
       </div>
     </div>
-    <div class="g4">
-      <div class="house-sm" style="background:var(--air);border-color:rgba(107,184,232,0.3);"><div class="h-emoji">💨</div><div class="h-name" style="color:var(--air-text);">Air</div><div class="h-pts" id="dash-pts-air" style="color:var(--air-deep);">—</div><div class="h-sub" style="color:var(--air-text);">points</div></div>
-      <div class="house-sm" style="background:var(--earth);border-color:rgba(114,181,90,0.3);"><div class="h-emoji">🌿</div><div class="h-name" style="color:var(--earth-text);">Earth</div><div class="h-pts" id="dash-pts-earth" style="color:var(--earth-deep);">—</div><div class="h-sub" style="color:var(--earth-text);">points</div></div>
-      <div class="house-sm" style="background:var(--water);border-color:rgba(90,143,200,0.3);"><div class="h-emoji">🌊</div><div class="h-name" style="color:var(--water-text);">Water</div><div class="h-pts" id="dash-pts-water" style="color:var(--water-deep);">—</div><div class="h-sub" style="color:var(--water-text);">points</div></div>
-      <div class="house-sm" style="background:var(--fire);border-color:rgba(232,135,74,0.3);"><div class="h-emoji">🔥</div><div class="h-name" style="color:var(--fire-text);">Fire</div><div class="h-pts" id="dash-pts-fire" style="color:var(--fire-deep);">—</div><div class="h-sub" style="color:var(--fire-text);">points</div></div>
+
+    <!-- House team banners -->
+    <div style="margin-top:1.25rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline;">
+      <div class="section-label" style="margin-bottom:0;">🏆 House Standings</div>
+      <span style="font-size:11px;color:var(--muted);">Tap a house to see details</span>
+    </div>
+    <div class="g4 stagger">
+      <div class="team-banner" style="background:linear-gradient(135deg,#E8F4FD 0%,#C8E4F8 100%);color:var(--air-text);" onclick="showPage('houses',null)">
+        <span class="team-rank" id="dash-rank-air">—</span>
+        <span class="team-emoji">💨</span>
+        <div class="team-name" style="color:var(--air-deep);">Air</div>
+        <div class="team-pts" id="dash-pts-air" style="color:var(--air-deep);">—</div>
+        <div class="team-pts-label">XP earned</div>
+      </div>
+      <div class="team-banner" style="background:linear-gradient(135deg,#EAF2E3 0%,#CDDFC0 100%);color:var(--earth-text);" onclick="showPage('houses',null)">
+        <span class="team-rank" id="dash-rank-earth">—</span>
+        <span class="team-emoji">🌿</span>
+        <div class="team-name" style="color:var(--earth-deep);">Earth</div>
+        <div class="team-pts" id="dash-pts-earth" style="color:var(--earth-deep);">—</div>
+        <div class="team-pts-label">XP earned</div>
+      </div>
+      <div class="team-banner" style="background:linear-gradient(135deg,#E3EEF8 0%,#BCD4EC 100%);color:var(--water-text);" onclick="showPage('houses',null)">
+        <span class="team-rank" id="dash-rank-water">—</span>
+        <span class="team-emoji">🌊</span>
+        <div class="team-name" style="color:var(--water-deep);">Water</div>
+        <div class="team-pts" id="dash-pts-water" style="color:var(--water-deep);">—</div>
+        <div class="team-pts-label">XP earned</div>
+      </div>
+      <div class="team-banner" style="background:linear-gradient(135deg,#FDF0E3 0%,#F8D5B5 100%);color:var(--fire-text);" onclick="showPage('houses',null)">
+        <span class="team-rank" id="dash-rank-fire">—</span>
+        <span class="team-emoji">🔥</span>
+        <div class="team-name" style="color:var(--fire-deep);">Fire</div>
+        <div class="team-pts" id="dash-pts-fire" style="color:var(--fire-deep);">—</div>
+        <div class="team-pts-label">XP earned</div>
+      </div>
     </div>
   </div>
 
@@ -1877,6 +2157,8 @@ function handleLogin(account) {
       document.getElementById('user-role').textContent = 'House ' + house + ' · TIS Eagles';
       // Re-render my house page once house is known
       renderMyHousePage();
+      // Refresh hero quest banner now that we know which house is theirs
+      loadStudentHousePoints();
     }).catch(() => {
       document.getElementById('user-role').textContent = 'TIS Eagles';
     });
@@ -1889,6 +2171,20 @@ function handleLogin(account) {
       if (mpd) mpd.textContent = pts.toLocaleString();
       const badge = document.getElementById('my-pts-badge');
       if (badge) badge.textContent = pts.toLocaleString() + ' pts';
+      // Update gamified hero quest banner
+      updateHeroXp(pts);
+    });
+    // Animate count-up for announcement/poll counters once data loads
+    loadAnnouncements().then(anns => {
+      const annNum = document.getElementById('dash-ann-num');
+      if (annNum) animateCount(annNum, anns.length);
+      const trend = document.getElementById('dash-ann-trend');
+      if (trend && anns.length > 0) trend.style.display = 'inline-flex';
+    });
+    loadPolls().then(polls => {
+      const pollNum = document.getElementById('dash-poll-num');
+      const active = polls.filter(p => p.status !== 'closed').length;
+      if (pollNum) animateCount(pollNum, active);
     });
   }
 }
@@ -2061,16 +2357,121 @@ function showPage(id, btn) {
 }
 
 // ── STUDENT HOUSE POINTS LOADER ──
+// ── GAMIFICATION HELPERS ──
+const XP_LEVELS = [
+  { lvl:1,  min:0,    name:'Rookie',     emoji:'⭐', tier:'rookie' },
+  { lvl:2,  min:50,   name:'Apprentice', emoji:'🌱', tier:'rookie' },
+  { lvl:3,  min:150,  name:'Explorer',   emoji:'🧭', tier:'bronze' },
+  { lvl:4,  min:300,  name:'Adventurer', emoji:'🗡️', tier:'bronze' },
+  { lvl:5,  min:500,  name:'Champion',   emoji:'🛡️', tier:'silver' },
+  { lvl:6,  min:800,  name:'Hero',       emoji:'⚔️', tier:'silver' },
+  { lvl:7,  min:1200, name:'Master',     emoji:'👑', tier:'gold'   },
+  { lvl:8,  min:1700, name:'Grandmaster',emoji:'💎', tier:'gold'   },
+  { lvl:9,  min:2500, name:'Mythic',     emoji:'🌟', tier:'platinum'},
+  { lvl:10, min:4000, name:'Legend',     emoji:'🔥', tier:'legend' },
+];
+function getLevelInfo(xp) {
+  let cur = XP_LEVELS[0];
+  for (const lvl of XP_LEVELS) { if (xp >= lvl.min) cur = lvl; else break; }
+  const next = XP_LEVELS[cur.lvl] || null; // next level (level index = lvl since 0-indexed)
+  const progress = next ? Math.min(100, Math.round(((xp - cur.min) / (next.min - cur.min)) * 100)) : 100;
+  const toNext = next ? next.min - xp : 0;
+  return { current: cur, next, progress, toNext };
+}
+
+// Animate a number from 0 to target
+function animateCount(el, target, duration = 900) {
+  if (!el) return;
+  const start = parseFloat(el.dataset.current || '0');
+  const startTime = performance.now();
+  const isInt = Number.isInteger(target);
+  function tick(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const value = start + (target - start) * eased;
+    el.textContent = (isInt ? Math.round(value) : value).toLocaleString();
+    if (t < 1) requestAnimationFrame(tick);
+    else el.dataset.current = target;
+  }
+  requestAnimationFrame(tick);
+}
+
+// Confetti — used after winning a draw
+function fireConfetti(count = 60) {
+  const colors = ['#1E5FA8','#3B96E0','#FFD86B','#FFA947','#72B55A','#E8874A','#A56FE0'];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+    piece.style.animationDelay = (Math.random() * 0.4) + 's';
+    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 4500);
+  }
+}
+
 function loadStudentHousePoints() {
   loadHousePoints().then(pts => {
     Object.assign(housePts, pts);
-    // Update dashboard preview pts
+
+    // Compute house rankings
+    const ranked = ['air','earth','water','fire']
+      .map(h => ({ name: h, pts: housePts[h] || 0 }))
+      .sort((a,b) => b.pts - a.pts);
+    const rankMap = {};
+    ranked.forEach((h, i) => { rankMap[h.name] = i + 1; });
+    const medals = { 1:'🥇', 2:'🥈', 3:'🥉', 4:'4th' };
+
+    // Update dashboard team banner pts + rank
     ['air','earth','water','fire'].forEach(h => {
-      const el = document.getElementById('dash-pts-'+h);
-      if (el) el.textContent = housePts[h].toLocaleString();
+      const ptsEl = document.getElementById('dash-pts-'+h);
+      if (ptsEl) animateCount(ptsEl, housePts[h] || 0);
+      const rankEl = document.getElementById('dash-rank-'+h);
+      if (rankEl) rankEl.innerHTML = medals[rankMap[h]] || `#${rankMap[h]}`;
     });
+
+    // Update hero quest stats — house name & rank for current user
+    const myHouse = (window.currentUserHouse || '').toLowerCase();
+    const houseNameEl = document.getElementById('dash-house-name');
+    const houseRankEl = document.getElementById('dash-house-rank');
+    if (houseNameEl) {
+      if (HOUSE_INFO[myHouse]) {
+        houseNameEl.innerHTML = `${HOUSE_INFO[myHouse].emoji} ${HOUSE_INFO[myHouse].name}`;
+      } else {
+        houseNameEl.textContent = 'None yet';
+      }
+    }
+    if (houseRankEl) {
+      houseRankEl.textContent = HOUSE_INFO[myHouse] ? (medals[rankMap[myHouse]] || `#${rankMap[myHouse]}`) : '—';
+    }
+
     // Render the user's own house only on Houses page
     renderMyHousePage();
+  });
+}
+
+// Update hero stats from the student's own XP (called after we have their points)
+function updateHeroXp(xp) {
+  const info = getLevelInfo(xp);
+  const ptsEl = document.getElementById('dash-my-pts');
+  if (ptsEl) animateCount(ptsEl, xp);
+  const lvlText = document.getElementById('dash-level-text');
+  const lvlBadge = document.getElementById('dash-level-badge');
+  if (lvlText) lvlText.textContent = `${info.current.name} · Lv ${info.current.lvl}`;
+  if (lvlBadge) {
+    const emojiEl = lvlBadge.querySelector('.level-badge-emoji');
+    if (emojiEl) emojiEl.textContent = info.current.emoji;
+  }
+  const xpCur = document.getElementById('dash-xp-current');
+  const xpNext = document.getElementById('dash-xp-next');
+  const xpFill = document.getElementById('dash-xp-fill');
+  if (xpCur) xpCur.textContent = `${xp} XP`;
+  if (xpNext) xpNext.textContent = info.next ? `${info.toNext} XP to ${info.next.name}` : 'MAX LEVEL ✨';
+  // Use rAF so the bar animates from 0
+  requestAnimationFrame(() => {
+    if (xpFill) xpFill.style.width = info.progress + '%';
   });
 }
 
@@ -3838,6 +4239,9 @@ function showSpinResult(prize, serial, pointsSpent) {
   btn.innerHTML = '🎰 &nbsp;Draw again!';
   btn.disabled = false;
   if (statusEl) statusEl.innerHTML = `<span style="color:var(--fire-deep);">−${pointsSpent} pts spent</span>`;
+
+  // 🎊 Confetti celebration!
+  fireConfetti(80);
 }
 
 // ── ADMIN DRAW HISTORY ──
