@@ -536,7 +536,6 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   </div>
 
   <!-- Student: Feedbacks -->
-  <!-- Student: Feedbacks -->
   <div id="page-feedbacks" class="page">
     <div class="page-header">
       <div><h1 class="page-title">Feedbacks</h1><p class="page-sub">Share your thoughts</p></div>
@@ -1051,7 +1050,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
   <!-- Manager: Students -->
   <div id="page-mgr-students" class="page">
-    <div class="page-header"><div><h1 class="page-title">Students</h1><p class="page-sub">Assign students to houses</p></div><span class="hdr-badge">103 students</span></div>
+    <div class="page-header"><div><h1 class="page-title">Students</h1><p class="page-sub">Assign students to houses</p></div><span class="hdr-badge">Loading...</span></div>
     <div class="mgr-section">
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
         <input class="fb-input" style="flex:1;margin-bottom:0;min-width:200px;" placeholder="Search by name or email..." oninput="filterStudents(this.value)" />
@@ -1195,6 +1194,7 @@ function initFirebase() {
     const leaders = await loadHouseLeaders().catch(() => null);
     if (leaders) Object.assign(HOUSE_LEADERS, leaders);
     await loadHeadAdmins().catch(() => {});
+    await loadAdminNames().catch(() => {});
     TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
     window._loginHandled = true;
     handleLogin({ username: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
@@ -1208,7 +1208,7 @@ async function loadStudents() {
   try {
     const snap = await db.collection('students').orderBy('joinedAt','desc').get();
     return snap.docs.map(d => ({id: d.id, ...d.data()}));
-  } catch(e) { console.error('loadStudents:', e); return JSON.parse(localStorage.getItem('classroom_students')||'[]'); }
+  } catch(e) { console.error('loadStudents:', e); return []; }
 }
 async function saveStudent(student) {
   try {
@@ -1528,6 +1528,7 @@ async function init() {
       const leaders = await loadHouseLeaders().catch(() => null);
       if (leaders) Object.assign(HOUSE_LEADERS, leaders);
       await loadHeadAdmins().catch(() => {});
+      await loadAdminNames().catch(() => {});
       TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
       handleLogin(response.account);
       return;
@@ -1543,6 +1544,7 @@ async function init() {
       const leaders = await loadHouseLeaders().catch(() => null);
       if (leaders) Object.assign(HOUSE_LEADERS, leaders);
       await loadHeadAdmins().catch(() => {});
+      await loadAdminNames().catch(() => {});
       TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
       handleLogin(accounts[0]);
       return;
@@ -1641,10 +1643,16 @@ async function signUpWithEmail() {
     if (codeDoc.exists) {
       codeValid = codeDoc.data().code === invite;
     } else {
-      // Fallback: first-time setup — accept and store hash
-      codeValid = invite === '0817';
+      // No invite code configured — show a clear error rather than allowing a hardcoded fallback
+      showLoginError('Registration is not yet configured. Please contact an admin.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+      return;
     }
-  } catch(e) { codeValid = invite === '0817'; } // offline fallback
+  } catch(e) {
+    showLoginError('Could not verify registration code. Please check your connection and try again.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+    return;
+  }
   if (!codeValid) {
     showLoginError('Invalid registration code. Please check with your teacher.');
     if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
@@ -2247,7 +2255,7 @@ function loadDashboardPollPreview(userEmail) {
   });
 }
 function filterAnn(tag, btn) {
-  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#page-announcements .fpill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('#ann-list .ann-card').forEach(c => {
     c.style.display = (tag === 'all' || c.dataset.tag === tag) ? '' : 'none';
@@ -2318,7 +2326,19 @@ function loadStudentPolls(userEmail) {
 }
 
 async function castVoteDB(pollId, optionIndex, userEmail, el) {
+  // If called from dashboard preview (el is null), redirect to voting page
+  if (!el) {
+    const success = await castVoteFirestore(pollId, optionIndex, userEmail);
+    if (!success) { toast('You have already voted on this poll!'); return; }
+    toast('Vote submitted! ✓');
+    // Refresh dashboard preview
+    if (typeof loadDashboardPollPreview === 'function') {
+      loadDashboardPollPreview(userEmail);
+    }
+    return;
+  }
   const card = el.closest('.poll-card');
+  if (!card) { toast('Could not find poll card.'); return; }
   const opts = card.querySelectorAll('.poll-opt');
   opts.forEach(o => o.style.pointerEvents = 'none');
   const success = await castVoteFirestore(pollId, optionIndex, userEmail);
@@ -2653,7 +2673,7 @@ function registerStudent(email, name) {
     name: name || email.split('@')[0],
     email: email.toLowerCase(),
     house: 'Unassigned',
-    joinedAt: new Date().toLocaleDateString()
+    joinedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
   db.collection('students').doc(email.toLowerCase()).get()
     .then(doc => {
@@ -2691,7 +2711,7 @@ function renderStudents() {
       row.dataset.email = (s.email||'').toLowerCase();
       row.dataset.house = s.house||'Unassigned';
       row.innerHTML = `
-        <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt)}</div></td>
+        <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt?.toDate?.()?.toLocaleDateString() || s.joinedAt || 'Recently')}</div></td>
         <td style="color:var(--muted);font-size:12px;">${esc(s.email)}</td>
         <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${esc(s.house||'Unassigned')}</span></td>
         <td><select class="house-select" onchange="assignHouse(this,'${esc(s.email)}')">
@@ -3883,7 +3903,21 @@ async function toggleRedeem(btn, docId, current) {
 }
 
 
-let adminNames = JSON.parse(localStorage.getItem('admin_names') || '{}');
+// Admin names — loaded from Firestore (not localStorage, to prevent client-side tampering)
+let adminNames = {};
+
+async function loadAdminNames() {
+  try {
+    const doc = await db.collection('settings').doc('adminNames').get();
+    if (doc.exists) adminNames = doc.data() || {};
+  } catch(e) { console.warn('loadAdminNames:', e); }
+}
+
+async function saveAdminNamesToFirestore() {
+  try {
+    await db.collection('settings').doc('adminNames').set(adminNames);
+  } catch(e) { console.warn('saveAdminNames:', e); }
+}
 
 function renderHouseLeaders() {
   const list = document.getElementById('house-leaders-list');
@@ -4103,7 +4137,7 @@ function addAdmin() {
   MANAGER_EMAILS.push(email);
   if (name) adminNames[email.toLowerCase()] = name;
   saveManagers();
-  // adminNames persisted to Firestore via saveManagers → saveManagerEmailsToFirestore
+  saveAdminNamesToFirestore();
 
   emailInput.value = '';
   nameInput.value = '';
@@ -4116,6 +4150,7 @@ function removeAdmin(email) {
   MANAGER_EMAILS = MANAGER_EMAILS.filter(e => e.toLowerCase() !== email.toLowerCase());
   delete adminNames[email.toLowerCase()];
   saveManagers();
+  saveAdminNamesToFirestore();
   renderAdminList();
   toast('Admin removed.');
 }
