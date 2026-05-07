@@ -450,6 +450,51 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   .quest-stats-row{gap:12px;}
   .quest-stat-num{font-size:18px;}
 }
+
+/* ── RANKING PAGE ── */
+.rank-podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:2rem;}
+.podium-slot{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:130px;}
+.podium-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;position:relative;box-shadow:0 4px 14px rgba(0,0,0,0.15);}
+.podium-crown{position:absolute;top:-16px;font-size:20px;}
+.podium-block{width:100%;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:rgba(0,0,0,0.2);}
+.podium-name{font-size:12px;font-weight:600;text-align:center;color:var(--text);max-width:110px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.podium-xp{font-size:11px;color:var(--muted);}
+.rank-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--border);margin-bottom:8px;transition:transform 0.2s,box-shadow 0.2s;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;}
+.rank-row:hover{transform:translateX(4px);box-shadow:0 4px 14px rgba(30,79,140,0.10);}
+.rank-row.is-me{border-color:var(--primary);background:linear-gradient(135deg,var(--primary-soft) 0%,white 100%);box-shadow:0 0 0 2px rgba(30,95,168,0.15);}
+.rank-num{width:28px;text-align:center;font-size:15px;font-weight:700;flex-shrink:0;}
+.rank-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;flex-shrink:0;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-badge-row{display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap;}
+.rank-xp{font-size:12px;font-weight:700;color:var(--primary);}
+.rank-pts{font-size:11px;color:var(--muted);}
+.rank-bar-wrap{width:80px;flex-shrink:0;}
+.rank-bar{height:5px;background:var(--bg);border-radius:99px;overflow:hidden;}
+.rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary) 0%,#3B96E0 100%);border-radius:99px;}
+
+/* ── COMMUNITY BOARD ── */
+.board-composer{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.25rem;margin-bottom:1.25rem;}
+.board-composer-row{display:flex;gap:10px;align-items:flex-start;}
+.board-composer-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white;background:linear-gradient(135deg,var(--primary) 0%,#3B96E0 100%);}
+.board-composer-box{flex:1;border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);resize:vertical;min-height:70px;outline:none;transition:border-color 0.2s;width:100%;}
+.board-composer-box:focus{border-color:var(--primary);}
+.board-composer-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px;}
+.board-lvl-toggle{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;}
+.board-lvl-toggle input{accent-color:var(--primary);}
+.board-post{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.25rem;margin-bottom:10px;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;transition:box-shadow 0.2s;}
+.board-post:hover{box-shadow:0 4px 16px rgba(30,79,140,0.08);}
+.board-post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.board-post-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+.board-post-meta{flex:1;min-width:0;}
+.board-post-name{font-size:13px;font-weight:600;color:var(--text);}
+.board-post-time{font-size:11px;color:var(--muted);}
+.board-post-body{font-size:13px;color:var(--text);line-height:1.6;word-break:break-word;}
+.board-post-footer{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.board-like-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--border);transition:all 0.2s;}
+.board-like-btn:hover,.board-like-btn.liked{background:var(--primary-soft);color:var(--primary);border-color:var(--primary);}
+.board-delete-btn{margin-left:auto;font-size:11px;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:8px;border:none;background:transparent;transition:color 0.2s,background 0.2s;}
+.board-delete-btn:hover{color:var(--fire-deep);background:var(--fire);}
 </style>
 </head>
 <body>
@@ -574,6 +619,12 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       </button>
       <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+      </button>
+      <button class="nav-item" id="nav-ranking-btn" onclick="showPage('ranking',this)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Rankings
+      </button>
+      <button class="nav-item" id="nav-board-btn" onclick="showPage('board',this)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Community
       </button>
     </div>
     <div class="nav-section">
@@ -884,6 +935,72 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div id="my-points-display" style="font-size:32px;font-weight:300;color:var(--air-deep);">—</div>
       <div style="font-size:13px;color:var(--muted);margin-top:4px;">Individual points awarded by admins</div>
     </div>
+  </div>
+
+  <!-- Student: Ranking -->
+  <div id="page-ranking" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">🏆 Rankings</h1><p class="page-sub">Compete with your fellow students</p></div>
+      <button class="btn-outline" style="font-size:11px;padding:6px 14px;" onclick="loadRankingPage()">↻ Refresh</button>
+    </div>
+
+    <!-- Filter pills -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;" id="rank-filter-row">
+      <button class="fpill active" onclick="setRankFilter('xp',this)">⚡ XP Rank</button>
+      <button class="fpill" onclick="setRankFilter('points',this)">🪙 Points Rank</button>
+      <button class="fpill" onclick="setRankFilter('house-air',this)">💨 Air</button>
+      <button class="fpill" onclick="setRankFilter('house-earth',this)">🌿 Earth</button>
+      <button class="fpill" onclick="setRankFilter('house-water',this)">🌊 Water</button>
+      <button class="fpill" onclick="setRankFilter('house-fire',this)">🔥 Fire</button>
+    </div>
+
+    <!-- Podium top 3 -->
+    <div class="rank-podium" id="rank-podium"></div>
+
+    <!-- Full list -->
+    <div id="rank-list"></div>
+
+    <!-- My position sticky footer -->
+    <div id="rank-my-position" style="display:none;
+      position:sticky;bottom:20px;z-index:50;
+      background:linear-gradient(135deg,var(--primary) 0%,#2978C8 100%);
+      color:white;border-radius:14px;padding:12px 18px;
+      display:flex;align-items:center;gap:12px;box-shadow:0 6px 20px rgba(30,79,140,0.30);
+      margin-top:12px;">
+      <span style="font-size:22px;" id="rank-my-pos-num">—</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Your Position</div>
+        <div style="font-size:11px;opacity:0.8;" id="rank-my-pos-sub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student: Community Board -->
+  <div id="page-board" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">💬 Community Board</h1><p class="page-sub">Share your ideas with everyone</p></div>
+    </div>
+
+    <!-- Composer -->
+    <div class="board-composer">
+      <div class="board-composer-row">
+        <div class="board-composer-avatar" id="board-my-avatar">?</div>
+        <textarea class="board-composer-box" id="board-input" placeholder="Share an idea, question, or shout-out… 🎉" maxlength="500"></textarea>
+      </div>
+      <div class="board-composer-footer">
+        <label class="board-lvl-toggle">
+          <input type="checkbox" id="board-show-level" checked onchange="saveLevelVisibility(this.checked)">
+          Show my level badge on posts
+        </label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--muted);" id="board-char-count">0/500</span>
+          <button class="btn-primary" onclick="postBoardMessage()" style="padding:8px 20px;">Post 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div id="board-feed"><div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Loading posts...</div></div>
   </div>
 
   <!-- Manager: Dashboard -->
@@ -1221,7 +1338,25 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="sp-reason" type="text" placeholder="e.g. Best quiz score" style="margin-bottom:0;" maxlength="200" /></div>
           <button class="btn-primary" style="flex-shrink:0;" onclick="awardStudentPoints()">Award & Save</button>
         </div>
-        <div style="font-size:11px;color:var(--muted);">💡 Negative values deduct points from the student.</div>
+        <div style="font-size:11px;color:var(--muted);">💡 Negative values deduct points. Positive awards also grant 10× XP automatically.</div>
+      </div>
+
+      <!-- XP-only grant — Head Admin + above only -->
+      <div class="mgr-section" id="xp-grant-section" style="display:none;border-color:rgba(165,111,224,0.25);background:linear-gradient(135deg,#F6F0FF 0%,#FFF 100%);">
+        <div class="mgr-section-title" style="color:#6B3FA0;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Grant XP only (no points)
+        </div>
+        <p style="font-size:12px;color:#6B3FA0;opacity:0.8;margin-bottom:12px;">Awards XP directly to a student's level bar without giving spendable points. Head Admin and Owner only.</p>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
+          <div style="flex:2;min-width:180px;">
+            <label class="fb-label">Student</label>
+            <select class="fb-input" id="xp-grant-student" style="margin-bottom:0;"><option value="">— Select student —</option></select>
+          </div>
+          <div style="width:120px;"><label class="fb-label">XP amount</label><input class="fb-input" id="xp-grant-amount" type="number" value="50" min="1" style="margin-bottom:0;" /></div>
+          <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="xp-grant-reason" type="text" placeholder="e.g. Special achievement" style="margin-bottom:0;" maxlength="200" /></div>
+          <button class="btn-primary" style="flex-shrink:0;background:#6B3FA0;" onclick="grantXpOnly()">⚡ Grant XP</button>
+        </div>
       </div>
       <div class="mgr-section">
         <div class="mgr-section-title" style="justify-content:space-between;">
@@ -1394,6 +1529,39 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <button class="btn-danger" onclick="clearLog('prizeLogs','Prize settings log')">🗑 Clear prize settings log</button>
       </div>
       <div id="log-mgmt-status" style="font-size:12px;color:var(--muted);margin-top:10px;min-height:16px;"></div>
+    </div>
+
+    <!-- Feature Flags — Head Admin + above -->
+    <div class="mgr-section" id="feature-flags-section">
+      <div class="mgr-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Feature flags
+        <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--air);color:var(--air-text);">Head Admin+</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Toggle which tabs and features are visible to students. Changes apply immediately for all users.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">🏆 Rankings tab</div>
+            <div style="font-size:11px;color:var(--muted);">Student leaderboard with XP & points ranking</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-ranking-label">Loading...</span>
+            <input type="checkbox" id="ff-ranking" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('ranking',this.checked)">
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">💬 Community Board tab</div>
+            <div style="font-size:11px;color:var(--muted);">Public message board where students share ideas</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-board-label">Loading...</span>
+            <input type="checkbox" id="ff-board" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('board',this.checked)">
+          </div>
+        </label>
+      </div>
+      <div id="ff-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
     </div>
 
     <!-- Teacher Management -->
@@ -2167,6 +2335,8 @@ function handleLogin(account) {
     // Load house leaders too
     loadHouseLeaders().then(leaders => { Object.assign(HOUSE_LEADERS, leaders); });
     loadStudentPolls(email);
+    // Load feature flags so student nav shows correct tabs
+    loadFeatureFlags();
     // Load student points for display (spendable currency)
     getStudentPoints(email).then(pts => {
       const mpd = document.getElementById('my-points-display');
@@ -2208,7 +2378,7 @@ function handleLogin(account) {
 
 // ── SECURITY ──
 const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
-const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards'];
+const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards','ranking','board'];
 const TEACHER_PAGES = ['mgr-announcements','mgr-voting','mgr-feedbacks','mgr-rewards'];
 let currentUserRole = null; // set on login
 
@@ -2329,6 +2499,7 @@ function showPage(id, btn) {
       renderAdminList();
       renderHouseLeaders();
       renderTeacherList();
+      loadFeatureFlags();
       { const logSec = document.getElementById('log-mgmt-section');
         if (logSec) logSec.style.display = (window.currentUserEmail||'').toLowerCase() === SUPER_ADMIN.toLowerCase() ? '' : 'none'; }
       break;
@@ -2345,6 +2516,19 @@ function showPage(id, btn) {
       }
       loadPrizesToAdmin();
       populateStudentSelect();
+      populateXpGrantSelect();
+      // Show XP grant section for Head Admin+
+      const xpSection = document.getElementById('xp-grant-section');
+      if (xpSection) {
+        const isHead = MANAGER_EMAILS.includes(email) && (window._headAdmins||[]).includes(email.toLowerCase());
+        const isOwner = email.toLowerCase() === (SUPER_ADMIN||'').toLowerCase();
+        xpSection.style.display = (isHead || isOwner) ? '' : 'none';
+      }
+      // Feature flags section visible to Head Admin+
+      const ffSection = document.getElementById('feature-flags-section');
+      if (ffSection) ffSection.style.display = ''; // requireHeadAdmin guards writes; UI always shown
+      // Load feature flags
+      loadFeatureFlags();
       break;
     case 'rewards':
       loadStudentRewardsPage();
@@ -2355,6 +2539,14 @@ function showPage(id, btn) {
         getStudentXP(window.currentUserEmail).then(xp => updateHeroXp(xp));
         loadStudentHousePoints();
       }
+      break;
+    case 'ranking':
+      loadRankingPage();
+      break;
+    case 'board':
+      loadLevelVisibility();
+      updateBoardComposerAvatar();
+      loadBoardFeed();
       break;
     case 'announcements':
       loadAnnouncementsToStudent();
@@ -2383,24 +2575,59 @@ function showPage(id, btn) {
 // ── STUDENT HOUSE POINTS LOADER ──
 // ── GAMIFICATION HELPERS ──
 const XP_LEVELS = [
-  { lvl:1,  min:0,    name:'Rookie',     emoji:'⭐', tier:'rookie' },
-  { lvl:2,  min:50,   name:'Apprentice', emoji:'🌱', tier:'rookie' },
-  { lvl:3,  min:150,  name:'Explorer',   emoji:'🧭', tier:'bronze' },
-  { lvl:4,  min:300,  name:'Adventurer', emoji:'🗡️', tier:'bronze' },
-  { lvl:5,  min:500,  name:'Champion',   emoji:'🛡️', tier:'silver' },
-  { lvl:6,  min:800,  name:'Hero',       emoji:'⚔️', tier:'silver' },
-  { lvl:7,  min:1200, name:'Master',     emoji:'👑', tier:'gold'   },
-  { lvl:8,  min:1700, name:'Grandmaster',emoji:'💎', tier:'gold'   },
-  { lvl:9,  min:2500, name:'Mythic',     emoji:'🌟', tier:'platinum'},
-  { lvl:10, min:4000, name:'Legend',     emoji:'🔥', tier:'legend' },
+  { lvl:1,  min:0,    name:'Rookie',     emoji:'⭐', tier:'rookie'   },
+  { lvl:2,  min:50,   name:'Apprentice', emoji:'🌱', tier:'rookie'   },
+  { lvl:3,  min:150,  name:'Explorer',   emoji:'🧭', tier:'bronze'   },
+  { lvl:4,  min:300,  name:'Adventurer', emoji:'🗡️', tier:'bronze'   },
+  { lvl:5,  min:500,  name:'Champion',   emoji:'🛡️', tier:'silver'   },
+  { lvl:6,  min:800,  name:'Hero',       emoji:'⚔️', tier:'silver'   },
+  { lvl:7,  min:1200, name:'Master',     emoji:'👑', tier:'gold'     },
+  { lvl:8,  min:1700, name:'Grandmaster',emoji:'💎', tier:'gold'     },
+  { lvl:9,  min:2500, name:'Mythic',     emoji:'🌟', tier:'platinum' },
+  { lvl:10, min:4000, name:'Legend',     emoji:'🔥', tier:'legend'   },
 ];
+// Infinite level system: each level beyond 10 requires 1.1× the XP gap of the previous level
+function _buildLevelThreshold(lvl) {
+  // lvl 1–10 are in XP_LEVELS. For lvl > 10, compute recursively (cached).
+  if (lvl <= 10) return XP_LEVELS[lvl - 1].min;
+  if (_levelCache[lvl] !== undefined) return _levelCache[lvl];
+  const prev = _buildLevelThreshold(lvl - 1);
+  const prevPrev = _buildLevelThreshold(lvl - 2);
+  const gap = (prev - prevPrev) * 1.1;
+  _levelCache[lvl] = Math.round(prev + gap);
+  return _levelCache[lvl];
+}
+const _levelCache = {};
+
 function getLevelInfo(xp) {
-  let cur = XP_LEVELS[0];
-  for (const lvl of XP_LEVELS) { if (xp >= lvl.min) cur = lvl; else break; }
-  const next = XP_LEVELS[cur.lvl] || null; // next level (level index = lvl since 0-indexed)
-  const progress = next ? Math.min(100, Math.round(((xp - cur.min) / (next.min - cur.min)) * 100)) : 100;
-  const toNext = next ? next.min - xp : 0;
-  return { current: cur, next, progress, toNext };
+  // Find the current level by walking upward until threshold exceeds xp
+  let lvl = 1;
+  while (true) {
+    const nextMin = _buildLevelThreshold(lvl + 1);
+    if (xp < nextMin) break;
+    lvl++;
+  }
+  const curMin = _buildLevelThreshold(lvl);
+  const nextMin = _buildLevelThreshold(lvl + 1);
+  const progress = Math.min(100, Math.round(((xp - curMin) / (nextMin - curMin)) * 100));
+  const toNext = nextMin - xp;
+  // Name / emoji for levels beyond 10
+  let name, emoji, tier;
+  if (lvl <= 10) {
+    ({ name, emoji, tier } = XP_LEVELS[lvl - 1]);
+  } else {
+    const suffixes = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+    const suf = suffixes[(lvl - 11) % suffixes.length] || '';
+    name  = `Legend ${suf}`;
+    emoji = ['🔥','💥','⚡','🌈','🎆'][(lvl - 11) % 5];
+    tier  = 'legend';
+  }
+  return {
+    current: { lvl, min: curMin, name, emoji, tier },
+    next: { lvl: lvl + 1, min: nextMin },
+    progress,
+    toNext
+  };
 }
 
 // Animate a number from 0 to target
@@ -3029,6 +3256,401 @@ async function claimDailyLoginXP(email, studentName) {
     }
     return result;
   } catch(e) { console.error('claimDailyLoginXP:', e); return { granted: false }; }
+}
+
+// ── FEATURE FLAGS ──
+// Stored in Firestore: settings/features = { ranking: bool, board: bool }
+let _featureFlags = { ranking: false, board: false };
+
+async function loadFeatureFlags() {
+  try {
+    const doc = await db.collection('settings').doc('features').get();
+    if (doc.exists) _featureFlags = { ranking: false, board: false, ...doc.data() };
+  } catch(e) { console.warn('loadFeatureFlags:', e); }
+  applyFeatureFlags();
+}
+
+function applyFeatureFlags() {
+  // Ranking nav button
+  const rankBtn = document.getElementById('nav-ranking-btn');
+  if (rankBtn) rankBtn.style.display = _featureFlags.ranking ? '' : 'none';
+  // Board nav button
+  const boardBtn = document.getElementById('nav-board-btn');
+  if (boardBtn) boardBtn.style.display = _featureFlags.board ? '' : 'none';
+  // Sync admin toggle checkboxes
+  const ffRanking = document.getElementById('ff-ranking');
+  if (ffRanking) {
+    ffRanking.checked = !!_featureFlags.ranking;
+    const lbl = document.getElementById('ff-ranking-label');
+    if (lbl) lbl.textContent = _featureFlags.ranking ? '✅ Enabled' : '❌ Disabled';
+  }
+  const ffBoard = document.getElementById('ff-board');
+  if (ffBoard) {
+    ffBoard.checked = !!_featureFlags.board;
+    const lbl = document.getElementById('ff-board-label');
+    if (lbl) lbl.textContent = _featureFlags.board ? '✅ Enabled' : '❌ Disabled';
+  }
+}
+
+async function setFeatureFlag(flag, value) {
+  if (!requireHeadAdmin('setFeatureFlag')) return;
+  _featureFlags[flag] = value;
+  applyFeatureFlags();
+  const statusEl = document.getElementById('ff-status');
+  if (statusEl) statusEl.textContent = 'Saving...';
+  try {
+    await db.collection('settings').doc('features').set(_featureFlags, { merge: true });
+    if (statusEl) {
+      statusEl.textContent = `✅ "${flag}" ${value ? 'enabled' : 'disabled'} for all students.`;
+      setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+    }
+  } catch(e) {
+    console.error('setFeatureFlag:', e);
+    if (statusEl) statusEl.textContent = '❌ Failed to save. Check permissions.';
+  }
+}
+
+// ── XP-ONLY GRANT (Head Admin+) ──
+async function grantXpOnly() {
+  if (!requireHeadAdmin('grantXpOnly')) return;
+  const sel = document.getElementById('xp-grant-student');
+  const amt = parseInt(document.getElementById('xp-grant-amount').value);
+  const reason = (document.getElementById('xp-grant-reason').value.trim()) || 'Admin XP grant';
+  if (!sel || !sel.value) { toast('Please select a student.'); return; }
+  if (!amt || amt < 1) { toast('XP amount must be at least 1.'); return; }
+  const [email, name] = sel.value.split('|||');
+  try {
+    await addStudentXP(email, amt, reason, name);
+    toast(`⚡ +${amt} XP granted to ${name || email}!`);
+    document.getElementById('xp-grant-amount').value = 50;
+    document.getElementById('xp-grant-reason').value = '';
+  } catch(e) {
+    console.error('grantXpOnly:', e);
+    toast('Failed to grant XP.');
+  }
+}
+
+// ── RANKING PAGE ──
+let _rankFilter = 'xp';
+let _rankData   = []; // { email, name, house, xp, points }
+
+// Avatar color from initials
+function avatarColor(name) {
+  const colors = ['#1E5FA8','#2D7A1F','#1E4F8C','#A05A30','#6B3FA0','#C04A10'];
+  let h = 0; for (const c of (name||'?')) h = (h * 31 + c.charCodeAt(0)) % colors.length;
+  return colors[h];
+}
+function initials(name) {
+  const parts = (name || '?').trim().split(' ');
+  return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+}
+
+async function loadRankingPage() {
+  const listEl = document.getElementById('rank-list');
+  const podiumEl = document.getElementById('rank-podium');
+  if (!listEl) return;
+  listEl.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Loading rankings...</div>';
+  podiumEl.innerHTML = '';
+
+  try {
+    // Fetch all students, their points, and their XP in parallel
+    const [students, pointsSnap, xpSnap] = await Promise.all([
+      loadStudents(),
+      db.collection('studentPoints').get(),
+      db.collection('studentXP').get()
+    ]);
+    const pointsMap = {};
+    pointsSnap.docs.forEach(d => { pointsMap[d.id] = d.data().points || 0; });
+    const xpMap = {};
+    xpSnap.docs.forEach(d => { xpMap[d.id] = d.data().xp || 0; });
+
+    _rankData = students.map(s => ({
+      email: (s.email || '').toLowerCase(),
+      name: s.name || s.email?.split('@')[0] || 'Unknown',
+      house: (s.house || 'Unassigned').toLowerCase(),
+      xp: xpMap[(s.email||'').toLowerCase()] || 0,
+      points: pointsMap[(s.email||'').toLowerCase()] || 0
+    }));
+    renderRanking();
+  } catch(e) {
+    console.error('loadRankingPage:', e);
+    listEl.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Failed to load rankings.</div>';
+  }
+}
+
+function setRankFilter(filter, btn) {
+  _rankFilter = filter;
+  document.querySelectorAll('#rank-filter-row .fpill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderRanking();
+}
+
+function renderRanking() {
+  const listEl = document.getElementById('rank-list');
+  const podiumEl = document.getElementById('rank-podium');
+  if (!listEl) return;
+
+  let data = [..._rankData];
+
+  // House filter
+  if (_rankFilter.startsWith('house-')) {
+    const house = _rankFilter.replace('house-', '');
+    data = data.filter(s => s.house === house);
+  }
+
+  // Sort
+  const sortKey = _rankFilter === 'points' ? 'points' : 'xp';
+  data.sort((a, b) => b[sortKey] - a[sortKey]);
+
+  const myEmail = (window.currentUserEmail || '').toLowerCase();
+  const myRank  = data.findIndex(s => s.email === myEmail) + 1;
+
+  // Render podium (top 3)
+  const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd visually
+  const podiumHeights = { 0: 90, 1: 120, 2: 70 };
+  const podiumColors  = { 0: '#C89A10', 1: '#888', 2: '#A05A30' };
+  const podiumBg      = { 0: 'linear-gradient(135deg,#F5C747,#E0A020)', 1: 'linear-gradient(135deg,#C0C0C0,#909090)', 2: 'linear-gradient(135deg,#CD7F32,#A05A20)' };
+  const crowns        = ['🥇','🥈','🥉'];
+
+  podiumEl.innerHTML = podiumOrder.filter(i => data[i]).map(i => {
+    const s = data[i];
+    const info = getLevelInfo(s[sortKey]);
+    const col  = avatarColor(s.name);
+    const ini  = initials(s.name);
+    const isFirst = i === 0;
+    return `<div class="podium-slot">
+      <div class="podium-avatar" style="background:${col};${isFirst ? 'width:64px;height:64px;font-size:26px;' : ''}">
+        ${ini}
+        ${isFirst ? `<span class="podium-crown">👑</span>` : `<span class="podium-crown" style="font-size:14px;">${crowns[i]}</span>`}
+      </div>
+      <div class="podium-name" title="${esc(s.name)}">${esc(s.name)}</div>
+      <div class="podium-xp">${s[sortKey].toLocaleString()} ${sortKey.toUpperCase()}</div>
+      <div class="podium-block" style="background:${podiumBg[i]};height:${podiumHeights[i]}px;">${i+1}</div>
+    </div>`;
+  }).join('');
+
+  // Render full list (skip top 3 already on podium)
+  const rest = data.slice(3);
+  if (data.length === 0) {
+    listEl.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">No students found.</div>';
+    return;
+  }
+  const maxVal = data[0]?.[sortKey] || 1;
+  listEl.innerHTML = rest.map((s, i) => {
+    const rank = i + 4;
+    const info = getLevelInfo(s.xp);
+    const isMe = s.email === myEmail;
+    const col  = avatarColor(s.name);
+    const ini  = initials(s.name);
+    const barW = Math.round((s[sortKey] / maxVal) * 100);
+    const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+    return `<div class="rank-row ${isMe ? 'is-me' : ''}" style="animation-delay:${Math.min(i*0.05, 0.6)}s;">
+      <div class="rank-num" style="color:${rank<=3?['#C89A10','#888','#A05A20'][rank-1]:'var(--muted)'};">${rankEmoji}</div>
+      <div class="rank-avatar" style="background:${col};">${ini}</div>
+      <div class="rank-info">
+        <div class="rank-name">${esc(s.name)}${isMe ? ' <span style="font-size:10px;background:var(--primary);color:white;padding:1px 6px;border-radius:99px;vertical-align:middle;">You</span>' : ''}</div>
+        <div class="rank-badge-row">
+          <span class="tier-pip tier-${info.current.tier}">${info.current.emoji} ${info.current.name}</span>
+          <span class="rank-xp">⚡ ${s.xp.toLocaleString()} XP</span>
+          <span class="rank-pts">· ${s.points.toLocaleString()} pts</span>
+        </div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-bar-fill" style="width:${barW}%;"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // My position sticky bar
+  const myPos = document.getElementById('rank-my-position');
+  const myPosNum = document.getElementById('rank-my-pos-num');
+  const myPosSub = document.getElementById('rank-my-pos-sub');
+  if (myPos && myEmail) {
+    if (myRank > 0) {
+      myPos.style.display = 'flex';
+      myPosNum.textContent = `#${myRank}`;
+      const me = data[myRank - 1];
+      if (me) {
+        const info = getLevelInfo(me.xp);
+        myPosSub.textContent = `${info.current.emoji} ${info.current.name} · ${me[sortKey].toLocaleString()} ${sortKey.toUpperCase()}`;
+      }
+    } else {
+      myPos.style.display = 'none';
+    }
+  }
+}
+
+// ── COMMUNITY BOARD ──
+let _boardLevelVisible = true;
+const BOARD_PAGE_SIZE = 30;
+
+function saveLevelVisibility(show) {
+  _boardLevelVisible = show;
+  try { localStorage.setItem('board_show_level', show ? '1' : '0'); } catch(e) {}
+}
+
+function loadLevelVisibility() {
+  try {
+    const v = localStorage.getItem('board_show_level');
+    _boardLevelVisible = (v === null) ? true : v === '1';
+  } catch(e) { _boardLevelVisible = true; }
+  const cb = document.getElementById('board-show-level');
+  if (cb) cb.checked = _boardLevelVisible;
+}
+
+function updateBoardComposerAvatar() {
+  const email = window.currentUserEmail || '';
+  const name  = window.currentUserName || email.split('@')[0];
+  const el = document.getElementById('board-my-avatar');
+  if (el) {
+    el.textContent = initials(name);
+    el.style.background = avatarColor(name);
+  }
+  // char counter
+  const box = document.getElementById('board-input');
+  const ctr = document.getElementById('board-char-count');
+  if (box && ctr) {
+    box.addEventListener('input', () => { ctr.textContent = `${box.value.length}/500`; });
+  }
+}
+
+async function postBoardMessage() {
+  const box = document.getElementById('board-input');
+  const text = box?.value.trim();
+  if (!text) { toast('Write something first! ✍️'); return; }
+  if (text.length > 500) { toast('Max 500 characters.'); return; }
+
+  const email = (window.currentUserEmail || '').toLowerCase();
+  const name  = window.currentUserName || email.split('@')[0];
+  const xp    = await getStudentXP(email);
+  const info  = getLevelInfo(xp);
+
+  const post = {
+    email,
+    name,
+    text,
+    showLevel: _boardLevelVisible,
+    levelName: info.current.name,
+    levelEmoji: info.current.emoji,
+    levelTier: info.current.tier,
+    levelNum: info.current.lvl,
+    xp,
+    likes: [],
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try {
+    await db.collection('communityBoard').add(post);
+    if (box) box.value = '';
+    const ctr = document.getElementById('board-char-count');
+    if (ctr) ctr.textContent = '0/500';
+    toast('Posted! 🚀');
+    loadBoardFeed();
+  } catch(e) {
+    console.error('postBoardMessage:', e);
+    toast('Failed to post. Try again.');
+  }
+}
+
+async function loadBoardFeed() {
+  const el = document.getElementById('board-feed');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Loading...</div>';
+  try {
+    const snap = await db.collection('communityBoard')
+      .orderBy('createdAt', 'desc')
+      .limit(BOARD_PAGE_SIZE)
+      .get();
+    if (snap.empty) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem 0;">No posts yet. Be the first! 👋</div>';
+      return;
+    }
+    const myEmail = (window.currentUserEmail || '').toLowerCase();
+    el.innerHTML = snap.docs.map((doc, i) => {
+      const p = doc.data();
+      const id = doc.id;
+      const time = p.createdAt?.toDate?.()
+        ? p.createdAt.toDate().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+        : 'Just now';
+      const col  = avatarColor(p.name);
+      const ini  = initials(p.name);
+      const isMe = p.email === myEmail;
+      const isAdmin = (window.MANAGER_EMAILS||[]).includes(myEmail) || myEmail === SUPER_ADMIN?.toLowerCase();
+      const likedByMe = (p.likes||[]).includes(myEmail);
+      const likeCount = (p.likes||[]).length;
+      const lvlBadge = p.showLevel
+        ? `<span class="tier-pip tier-${p.levelTier||'rookie'}">${p.levelEmoji||'⭐'} ${p.levelName} Lv${p.levelNum}</span>`
+        : '';
+      return `<div class="board-post" style="animation-delay:${Math.min(i*0.04,0.5)}s;">
+        <div class="board-post-header">
+          <div class="board-post-avatar" style="background:${col};">${ini}</div>
+          <div class="board-post-meta">
+            <div class="board-post-name">${esc(p.name)} ${isMe ? '<span style="font-size:10px;background:var(--primary);color:white;padding:1px 6px;border-radius:99px;">You</span>' : ''}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap;">
+              ${lvlBadge}
+              <span class="board-post-time">${time}</span>
+            </div>
+          </div>
+        </div>
+        <div class="board-post-body">${esc(p.text)}</div>
+        <div class="board-post-footer">
+          <button class="board-like-btn ${likedByMe?'liked':''}" onclick="toggleBoardLike('${id}',this)">
+            ${likedByMe?'❤️':'🤍'} ${likeCount > 0 ? likeCount : 'Like'}
+          </button>
+          ${(isMe || isAdmin) ? `<button class="board-delete-btn" onclick="deleteBoardPost('${id}',this)">🗑 Delete</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('loadBoardFeed:', e);
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Failed to load posts.</div>';
+  }
+}
+
+async function toggleBoardLike(postId, btn) {
+  const myEmail = (window.currentUserEmail || '').toLowerCase();
+  if (!myEmail) return;
+  const ref = db.collection('communityBoard').doc(postId);
+  try {
+    await db.runTransaction(async tx => {
+      const doc = await tx.get(ref);
+      if (!doc.exists) return;
+      const likes = doc.data().likes || [];
+      const already = likes.includes(myEmail);
+      tx.update(ref, {
+        likes: already
+          ? firebase.firestore.FieldValue.arrayRemove(myEmail)
+          : firebase.firestore.FieldValue.arrayUnion(myEmail)
+      });
+      // Optimistic UI
+      const liked = !already;
+      btn.classList.toggle('liked', liked);
+      const newCount = likes.length + (liked ? 1 : -1);
+      btn.innerHTML = `${liked?'❤️':'🤍'} ${newCount > 0 ? newCount : 'Like'}`;
+    });
+  } catch(e) { console.error('toggleBoardLike:', e); toast('Failed to like. Try again.'); }
+}
+
+async function deleteBoardPost(postId, btn) {
+  if (!confirm('Delete this post?')) return;
+  try {
+    await db.collection('communityBoard').doc(postId).delete();
+    const post = btn.closest('.board-post');
+    if (post) { post.style.opacity = '0'; post.style.transform = 'scale(0.95)'; post.style.transition = '0.3s'; setTimeout(() => post.remove(), 300); }
+    toast('Post deleted.');
+  } catch(e) { console.error('deleteBoardPost:', e); toast('Failed to delete.'); }
+}
+
+// Populate XP-grant student select (same pool as award points)
+async function populateXpGrantSelect() {
+  const sel = document.getElementById('xp-grant-student');
+  if (!sel) return;
+  try {
+    const students = await loadStudents();
+    sel.innerHTML = '<option value="">— Select student —</option>' +
+      students.map(s => `<option value="${esc((s.email||'').toLowerCase())}|||${esc(s.name||'')}">
+        ${esc(s.name || s.email)} ${s.house ? `(${s.house})` : ''}
+      </option>`).join('');
+  } catch(e) { console.warn('populateXpGrantSelect:', e); }
 }
 
 async function loadPointsLog() {
@@ -3953,7 +4575,7 @@ function switchRewardTab(tab, btn) {
   if (logPanel) logPanel.style.display = 'none';
   if (btn) btn.classList.add('active');
   if (tab === 'draws') loadAdminDrawHistory();
-  if (tab === 'points') { populateStudentSelect(); loadStudentLeaderboard(); loadPointsLog(); }
+  if (tab === 'points') { populateStudentSelect(); populateXpGrantSelect(); loadStudentLeaderboard(); loadPointsLog(); }
   if (tab === 'prizes') { loadPrizesToAdmin(); loadCurrentSpinPrice(); loadPrizeSettingsLog(); }
 }
 
