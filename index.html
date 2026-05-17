@@ -656,11 +656,11 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Community
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="nav-section-houses">
       <div class="nav-label">My House</div>
       <button class="nav-item" onclick="showPage('houses',this)"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My House</button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="nav-section-rewards">
       <div class="nav-label">Rewards</div>
       <button class="nav-item" onclick="showPage('rewards',this)">
         <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
@@ -765,7 +765,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
 
         <div class="quest-stats-row">
-          <div class="quest-stat">
+          <div class="quest-stat" id="dash-pts-stat">
             <div class="quest-stat-icon">⚡</div>
             <div>
               <div class="quest-stat-num"><span class="count-up" id="dash-my-pts" data-target="0">0</span></div>
@@ -789,7 +789,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
 
         <!-- XP progress to next level -->
-        <div class="xp-bar-wrap">
+        <div class="xp-bar-wrap" id="xp-bar-wrap">
           <div class="xp-bar-labels">
             <span id="dash-xp-current">0 XP</span>
             <span id="dash-xp-next">to Level 2</span>
@@ -1595,6 +1595,46 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             <input type="checkbox" id="ff-board" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('board',this.checked)">
           </div>
         </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">🏠 House tab</div>
+            <div style="font-size:11px;color:var(--muted);">My House page and house standings for students</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-house-label">Loading...</span>
+            <input type="checkbox" id="ff-house" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('house',this.checked)">
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">🎁 Rewards tab</div>
+            <div style="font-size:11px;color:var(--muted);">Prize draws and rewards page for students</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-rewards-label">Loading...</span>
+            <input type="checkbox" id="ff-rewards" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('rewards',this.checked)">
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">⚡ Levels &amp; XP</div>
+            <div style="font-size:11px;color:var(--muted);">Student level badge, XP bar, and rank display</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-levels-label">Loading...</span>
+            <input type="checkbox" id="ff-levels" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('levels',this.checked)">
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">🪙 Points display</div>
+            <div style="font-size:11px;color:var(--muted);">My XP / points stat shown on the dashboard</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-points-label">Loading...</span>
+            <input type="checkbox" id="ff-points" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('points',this.checked)">
+          </div>
+        </label>
       </div>
       <div id="ff-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
     </div>
@@ -2361,8 +2401,7 @@ function handleLogin(account) {
       document.getElementById('nav-admins-btn').style.display = '';
       renderAdminList();
       renderHouseLeaders();
-    }
-    if (isOwner) {
+      // Head admins get full control — show log section too
       const logSection = document.getElementById('log-mgmt-section');
       if (logSection) logSection.style.display = '';
     }
@@ -2581,7 +2620,9 @@ function showPage(id, btn) {
       renderTeacherList();
       loadFeatureFlags();
       { const logSec = document.getElementById('log-mgmt-section');
-        if (logSec) logSec.style.display = (window.currentUserEmail||'').toLowerCase() === SUPER_ADMIN.toLowerCase() ? '' : 'none'; }
+        const _ce = (window.currentUserEmail||'').toLowerCase();
+        const _isHeadOrOwner = _ce === SUPER_ADMIN.toLowerCase() || (window._headAdmins||[]).includes(_ce);
+        if (logSec) logSec.style.display = _isHeadOrOwner ? '' : 'none'; }
       break;
     case 'mgr-rewards':
       if (currentUserRole === 'teacher') {
@@ -3343,35 +3384,68 @@ async function claimDailyLoginXP(email, studentName) {
 
 // ── FEATURE FLAGS ──
 // Stored in Firestore: settings/features = { ranking: bool, board: bool }
-let _featureFlags = { ranking: false, board: false };
+let _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true };
 
 async function loadFeatureFlags() {
   try {
     const doc = await db.collection('settings').doc('features').get();
-    if (doc.exists) _featureFlags = { ranking: false, board: false, ...doc.data() };
+    if (doc.exists) _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ...doc.data() };
   } catch(e) { console.warn('loadFeatureFlags:', e); }
   applyFeatureFlags();
 }
 
 function applyFeatureFlags() {
-  // Ranking nav button
-  const rankBtn = document.getElementById('nav-ranking-btn');
-  if (rankBtn) rankBtn.style.display = _featureFlags.ranking ? '' : 'none';
-  // Board nav button
-  const boardBtn = document.getElementById('nav-board-btn');
-  if (boardBtn) boardBtn.style.display = _featureFlags.board ? '' : 'none';
-  // Sync admin toggle checkboxes
-  const ffRanking = document.getElementById('ff-ranking');
-  if (ffRanking) {
-    ffRanking.checked = !!_featureFlags.ranking;
-    const lbl = document.getElementById('ff-ranking-label');
-    if (lbl) lbl.textContent = _featureFlags.ranking ? '✅ Enabled' : '❌ Disabled';
+  // helper: toggle visibility + sync checkbox + label
+  function applyFlag(flag, elIds, checkboxId) {
+    const on = !!_featureFlags[flag];
+    elIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = on ? '' : 'none';
+    });
+    const cb = document.getElementById(checkboxId);
+    if (cb) {
+      cb.checked = on;
+      const lbl = document.getElementById(checkboxId + '-label');
+      if (lbl) lbl.textContent = on ? '✅ Enabled' : '❌ Disabled';
+    }
   }
-  const ffBoard = document.getElementById('ff-board');
-  if (ffBoard) {
-    ffBoard.checked = !!_featureFlags.board;
-    const lbl = document.getElementById('ff-board-label');
-    if (lbl) lbl.textContent = _featureFlags.board ? '✅ Enabled' : '❌ Disabled';
+
+  // Rankings tab
+  applyFlag('ranking', ['nav-ranking-btn'], 'ff-ranking');
+
+  // Community Board tab
+  applyFlag('board', ['nav-board-btn'], 'ff-board');
+
+  // My House tab + nav section
+  applyFlag('house', ['nav-section-houses', 'page-houses'], 'ff-house');
+
+  // Rewards tab + nav section
+  applyFlag('rewards', ['nav-section-rewards', 'page-rewards'], 'ff-rewards');
+
+  // Levels & XP — topbar level, dashboard level badge, XP bar
+  const levelsOn = !!_featureFlags.levels;
+  ['dash-level-badge', 'xp-bar-wrap', 'tb-lvl-wrap'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = levelsOn ? '' : 'none';
+  });
+  // Also hide topbar level item via class
+  document.querySelectorAll('.tb-lvl').forEach(el => el.style.display = levelsOn ? '' : 'none');
+  const ffLevels = document.getElementById('ff-levels');
+  if (ffLevels) {
+    ffLevels.checked = levelsOn;
+    const lbl = document.getElementById('ff-levels-label');
+    if (lbl) lbl.textContent = levelsOn ? '✅ Enabled' : '❌ Disabled';
+  }
+
+  // Points display — My XP stat on dashboard
+  const pointsOn = !!_featureFlags.points;
+  const ptsStat = document.getElementById('dash-pts-stat');
+  if (ptsStat) ptsStat.style.display = pointsOn ? '' : 'none';
+  const ffPoints = document.getElementById('ff-points');
+  if (ffPoints) {
+    ffPoints.checked = pointsOn;
+    const lbl = document.getElementById('ff-points-label');
+    if (lbl) lbl.textContent = pointsOn ? '✅ Enabled' : '❌ Disabled';
   }
 }
 
@@ -5346,7 +5420,10 @@ function renderAdminList() {
     const isHead = headAdmins.includes(email.toLowerCase());
     const row = document.createElement('div');
     row.style.cssText = `display:flex;align-items:center;gap:12px;padding:12px;background:${isHead?'var(--fire)':'var(--bg)'};border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid ${isHead?'rgba(232,135,74,0.3)':'var(--border)'};`;
-    const promoteBtn = currentIsOwner
+    const currentEmail = (window.currentUserEmail || '').toLowerCase();
+    const currentIsHead = currentIsOwner || (window._headAdmins||[]).includes(currentEmail);
+    const isSelf = email.toLowerCase() === currentEmail;
+    const promoteBtn = currentIsHead && !isSelf
       ? `<button class="btn-outline" style="font-size:11px;padding:4px 10px;white-space:nowrap;" data-action="promote">${isHead ? '↓ Demote' : '↑ Make Head'}</button>`
       : '';
     row.innerHTML = `
@@ -5357,9 +5434,9 @@ function renderAdminList() {
       </div>
       <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:${isHead?'var(--fire-deep)':'var(--air)'};color:${isHead?'white':'var(--air-text)'};">${isHead?'Head Admin':'Admin'}</span>
       ${promoteBtn}
-      ${currentIsOwner ? `<button class="btn-danger" data-action="remove">Remove</button>` : ''}`;
+      ${currentIsHead && !isSelf ? `<button class="btn-danger" data-action="remove">Remove</button>` : ''}`;
     // Use event listeners (not inline onclick) to avoid injection via name/email
-    if (currentIsOwner) {
+    if (currentIsHead && !isSelf) {
       row.querySelector('[data-action="remove"]')?.addEventListener('click', () => removeAdmin(email));
       row.querySelector('[data-action="promote"]')?.addEventListener('click', () => toggleHeadAdmin(email, name));
     }
@@ -5368,7 +5445,7 @@ function renderAdminList() {
 }
 
 async function toggleHeadAdmin(email, name) {
-  if (!requireOwner('toggleHeadAdmin')) return;
+  if (!requireHeadAdmin('toggleHeadAdmin')) return;
   const headAdmins = window._headAdmins || [];
   const lc = email.toLowerCase();
   if (headAdmins.includes(lc)) {
@@ -5422,7 +5499,7 @@ function addAdmin() {
 }
 
 function removeAdmin(email) {
-  if (!requireOwner('removeAdmin')) return;
+  if (!requireHeadAdmin('removeAdmin')) return;
   MANAGER_EMAILS = MANAGER_EMAILS.filter(e => e.toLowerCase() !== email.toLowerCase());
   delete adminNames[email.toLowerCase()];
   saveManagers();
@@ -5432,7 +5509,7 @@ function removeAdmin(email) {
 }
 
 async function clearLog(collection, label) {
-  if (!requireOwner('clearLog')) return;
+  if (!requireHeadAdmin('clearLog')) return;
   if (!confirm(`Delete ALL records in "${label}"? This cannot be undone.`)) return;
   const statusEl = document.getElementById('log-mgmt-status');
   if (statusEl) statusEl.textContent = `Deleting ${label}...`;
@@ -5725,7 +5802,7 @@ function _tryInit() {
 // Calls Claude API directly from the browser. No Cloud Function needed.
 
 // ▼▼▼ PUT YOUR CLAUDE API KEY HERE ▼▼▼
-const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE';
+const CLAUDE_API_KEY = 'sk-xGN8iZooxlAeaKWnQyw9Kah1jvJHmq75JTg4As5D2FMJc9RA';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
