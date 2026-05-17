@@ -1501,14 +1501,22 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
   <!-- Manager: Students -->
   <div id="page-mgr-students" class="page">
-    <div class="page-header"><div><h1 class="page-title">Students</h1><p class="page-sub">Assign students to houses</p></div><span class="hdr-badge">Loading...</span></div>
+    <div class="page-header"><div><h1 class="page-title">All Users</h1><p class="page-sub">Students, teachers, and admins</p></div><span class="hdr-badge">Loading...</span></div>
     <div class="mgr-section">
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
         <input class="fb-input" style="flex:1;margin-bottom:0;min-width:200px;" placeholder="Search by name or email..." oninput="filterStudents(this.value)" />
         <select class="fb-input" style="width:140px;margin-bottom:0;" onchange="filterByHouse(this.value)"><option value="">All houses</option><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option><option>Unassigned</option></select>
+        <select class="fb-input" style="width:140px;margin-bottom:0;" onchange="filterByRole(this.value)">
+          <option value="">All roles</option>
+          <option value="owner">Owner</option>
+          <option value="headadmin">Head Admin</option>
+          <option value="admin">Admin</option>
+          <option value="teacher">Teacher</option>
+          <option value="student">Student</option>
+        </select>
       </div>
       <table class="mgr-table">
-        <thead><tr><th>Student</th><th>Email</th><th>House</th><th>Assign</th><th>Action</th></tr></thead>
+        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>House</th><th>Assign</th><th>Action</th></tr></thead>
         <tbody id="student-tbody"></tbody>
       </table>
     </div>
@@ -1637,6 +1645,47 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
       </div>
       <div id="ff-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
+    </div>
+
+    <!-- AI Data Sources -->
+    <div class="mgr-section" id="ai-config-section">
+      <div class="mgr-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07"/></svg>
+        Eagle AI — Data Sources
+        <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--air);color:var(--air-text);">Head Admin+</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Set the URLs Eagle AI fetches for announcements and lunch menu. Changes apply immediately for all users.</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">📢 Announcements URL</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Page Eagle AI reads to get school announcements</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="fb-input" id="ai-url-announcements" type="url" placeholder="https://tiseagles.com/announcements" style="margin-bottom:0;flex:1;font-size:12px;" />
+            <button class="btn-primary" style="flex-shrink:0;font-size:12px;padding:8px 14px;" onclick="saveAiConfig()">Save</button>
+          </div>
+        </div>
+
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🍱 Lunch Menu URL</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Page Eagle AI reads to get today's lunch menu</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="fb-input" id="ai-url-lunch" type="url" placeholder="https://tiseagles.com/lunch" style="margin-bottom:0;flex:1;font-size:12px;" />
+            <button class="btn-primary" style="flex-shrink:0;font-size:12px;padding:8px 14px;" onclick="saveAiConfig()">Save</button>
+          </div>
+        </div>
+
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🌐 General School Website</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Main school website Eagle AI also reads for context</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="fb-input" id="ai-url-main" type="url" placeholder="https://tiseagles.com" style="margin-bottom:0;flex:1;font-size:12px;" />
+            <button class="btn-primary" style="flex-shrink:0;font-size:12px;padding:8px 14px;" onclick="saveAiConfig()">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="ai-config-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
     </div>
 
     <!-- Teacher Management -->
@@ -2623,6 +2672,7 @@ function showPage(id, btn) {
       renderHouseLeaders();
       renderTeacherList();
       loadFeatureFlags();
+      loadAiConfig();
       { const logSec = document.getElementById('log-mgmt-section');
         const _ce = (window.currentUserEmail||'').toLowerCase();
         const _isHeadOrOwner = _ce === SUPER_ADMIN.toLowerCase() || (window._headAdmins||[]).includes(_ce);
@@ -4042,47 +4092,109 @@ function registerStudent(email, name) {
 }
 
 function renderStudents() {
-  loadStudents().then(list => {
+  loadStudents().then(students => {
     const tbody = document.getElementById('student-tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
-    if (list.length === 0) {
+
+    const hc = { Air:'var(--air-deep)', Earth:'var(--earth-deep)', Water:'var(--water-deep)', Fire:'var(--fire-deep)', Unassigned:'var(--muted)' };
+
+    // Role badge styles
+    const roleBadge = {
+      owner:     { label:'Owner',      bg:'linear-gradient(135deg,#7c3aed,#c026d3)', color:'white' },
+      headadmin: { label:'Head Admin', bg:'var(--fire-deep)',   color:'white' },
+      admin:     { label:'Admin',      bg:'var(--air)',         color:'var(--air-text)' },
+      teacher:   { label:'Teacher',    bg:'var(--water)',       color:'var(--water-text)' },
+      student:   { label:'Student',    bg:'var(--earth)',       color:'var(--earth-text)' },
+    };
+
+    function badge(roleKey) {
+      const b = roleBadge[roleKey] || roleBadge.student;
+      return `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:${b.bg};color:${b.color};white-space:nowrap;">${b.label}</span>`;
+    }
+
+    // Build full user list: admins + teachers + students
+    const headAdmins = (window._headAdmins || []).map(e => e.toLowerCase());
+    const ownerEmail = (SUPER_ADMIN || '').toLowerCase();
+    const allRows = [];
+
+    // Add admins (owner + head admins + regular admins)
+    MANAGER_EMAILS.forEach(email => {
+      const lc = email.toLowerCase();
+      const roleKey = lc === ownerEmail ? 'owner' : headAdmins.includes(lc) ? 'headadmin' : 'admin';
+      allRows.push({ email: lc, name: adminNames?.[lc] || lc.split('@')[0], house: '—', roleKey, isAdmin: true });
+    });
+
+    // Add teachers
+    (TEACHER_EMAILS || []).forEach(email => {
+      const lc = email.toLowerCase();
+      if (!allRows.find(r => r.email === lc)) {
+        allRows.push({ email: lc, name: lc.split('@')[0], house: '—', roleKey: 'teacher', isAdmin: true });
+      }
+    });
+
+    // Add students
+    students.forEach(s => {
+      const lc = (s.email || '').toLowerCase();
+      if (!allRows.find(r => r.email === lc)) {
+        allRows.push({ ...s, email: lc, roleKey: 'student', isAdmin: false });
+      }
+    });
+
+    if (allRows.length === 0) {
       const row = document.createElement('tr');
-      row.innerHTML = `<td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No students yet. Students will appear here when they sign in.</td>`;
+      row.innerHTML = `<td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No users found.</td>`;
       tbody.appendChild(row);
-      const badge = document.querySelector('#page-mgr-students .hdr-badge');
-      if (badge) badge.textContent = '0 students';
-      const sc = document.getElementById('dash-student-count');
-      if (sc) sc.textContent = '0';
       return;
     }
-    const hc = { Air:'var(--air-deep)', Earth:'var(--earth-deep)', Water:'var(--water-deep)', Fire:'var(--fire-deep)', Unassigned:'var(--muted)' };
-    list.forEach(s => {
+
+    // Sort: owner → head admin → admin → teacher → student
+    const order = { owner:0, headadmin:1, admin:2, teacher:3, student:4 };
+    allRows.sort((a,b) => (order[a.roleKey]||4) - (order[b.roleKey]||4));
+
+    allRows.forEach(s => {
       const row = document.createElement('tr');
-      row.dataset.name = (s.name||'').toLowerCase();
-      row.dataset.email = (s.email||'').toLowerCase();
-      row.dataset.house = s.house||'Unassigned';
+      row.dataset.name  = (s.name||'').toLowerCase();
+      row.dataset.email = s.email;
+      row.dataset.house = s.house || 'Unassigned';
+      row.dataset.role  = s.roleKey;
+
+      const houseColor = hc[s.house] || 'var(--muted)';
+      const houseCell  = s.isAdmin
+        ? `<td style="color:var(--muted);font-size:12px;">—</td><td>—</td>`
+        : `<td><span style="font-size:12px;font-weight:500;color:${houseColor};">${esc(s.house||'Unassigned')}</span></td>
+           <td><select class="house-select" onchange="assignHouse(this,'${esc(s.email)}')">
+             <option ${s.house==='Air'?'selected':''}>Air</option>
+             <option ${s.house==='Earth'?'selected':''}>Earth</option>
+             <option ${s.house==='Water'?'selected':''}>Water</option>
+             <option ${s.house==='Fire'?'selected':''}>Fire</option>
+             <option ${s.house==='Unassigned'?'selected':''}>Unassigned</option>
+           </select></td>`;
+
+      const actionCell = s.isAdmin
+        ? `<td><span style="font-size:11px;color:var(--muted);">Manage in Roles</span></td>`
+        : `<td><button class="btn-danger" data-email="${esc(s.email)}">Remove</button></td>`;
+
+      const joinedDate = s.isAdmin ? '' : `<div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt?.toDate?.()?.toLocaleDateString() || s.joinedAt || 'Recently')}</div>`;
+
       row.innerHTML = `
-        <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt?.toDate?.()?.toLocaleDateString() || s.joinedAt || 'Recently')}</div></td>
+        <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div>${joinedDate}</td>
         <td style="color:var(--muted);font-size:12px;">${esc(s.email)}</td>
-        <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${esc(s.house||'Unassigned')}</span></td>
-        <td><select class="house-select" onchange="assignHouse(this,'${esc(s.email)}')">
-          <option ${s.house==='Air'?'selected':''}>Air</option>
-          <option ${s.house==='Earth'?'selected':''}>Earth</option>
-          <option ${s.house==='Water'?'selected':''}>Water</option>
-          <option ${s.house==='Fire'?'selected':''}>Fire</option>
-          <option ${s.house==='Unassigned'?'selected':''}>Unassigned</option>
-        </select></td>
-        <td><button class="btn-danger" data-email="${esc(s.email)}">Remove</button></td>`;
-      row.querySelector('.btn-danger').addEventListener('click', () => removeStudent(s.email));
+        <td>${badge(s.roleKey)}</td>
+        ${houseCell}
+        ${actionCell}`;
+
+      if (!s.isAdmin) {
+        row.querySelector('.btn-danger')?.addEventListener('click', () => removeStudent(s.email));
+      }
       tbody.appendChild(row);
     });
-    // Sync count everywhere
-    const count = list.length;
-    const badge = document.querySelector('#page-mgr-students .hdr-badge');
-    if (badge) badge.textContent = count + ' students';
+
+    const studentCount = allRows.filter(r => r.roleKey === 'student').length;
+    const badge2 = document.querySelector('#page-mgr-students .hdr-badge');
+    if (badge2) badge2.textContent = `${allRows.length} users · ${studentCount} students`;
     const sc = document.getElementById('dash-student-count');
-    if (sc) sc.textContent = count;
+    if (sc) sc.textContent = studentCount;
   });
 }
 
@@ -4110,6 +4222,13 @@ function filterByHouse(house) {
   document.querySelectorAll('#student-tbody tr').forEach(row => {
     if (!row.dataset.house) return;
     row.style.display = (!house || row.dataset.house === house) ? '' : 'none';
+  });
+}
+
+function filterByRole(role) {
+  document.querySelectorAll('#student-tbody tr').forEach(row => {
+    if (!row.dataset.role) return;
+    row.style.display = (!role || row.dataset.role === role) ? '' : 'none';
   });
 }
 
@@ -5849,34 +5968,104 @@ If asked about unrelated topics (history, math, science, coding, general knowled
 
 ${WAIMAI_CONTEXT}`;
 
-// Live school data fetched from tiseagles.com
+// Live school data fetched from configured URLs
 let _schoolData = '';
 let _schoolDataLoaded = false;
 
-// ── Fetch announcements & lunch menu from tiseagles.com ───────────────────
+// URLs configurable by Head Admin — defaults to tiseagles.com
+let _aiConfig = {
+  urlMain:          'https://tiseagles.com',
+  urlAnnouncements: '',
+  urlLunch:         ''
+};
+
+// ── Load AI config (URLs) from Firebase ───────────────────────────────────
+async function loadAiConfig() {
+  if (!db) return;
+  try {
+    const doc = await db.collection('settings').doc('aiConfig').get();
+    if (doc.exists) {
+      const d = doc.data();
+      _aiConfig.urlMain          = d.urlMain          || 'https://tiseagles.com';
+      _aiConfig.urlAnnouncements = d.urlAnnouncements || '';
+      _aiConfig.urlLunch         = d.urlLunch         || '';
+    }
+    // Populate admin inputs if they're in the DOM
+    const inpMain = document.getElementById('ai-url-main');
+    const inpAnn  = document.getElementById('ai-url-announcements');
+    const inpLunch = document.getElementById('ai-url-lunch');
+    if (inpMain)  inpMain.value  = _aiConfig.urlMain;
+    if (inpAnn)   inpAnn.value   = _aiConfig.urlAnnouncements;
+    if (inpLunch) inpLunch.value = _aiConfig.urlLunch;
+  } catch(e) { console.warn('loadAiConfig:', e); }
+}
+
+// ── Save AI config URLs to Firebase (Head Admin only) ─────────────────────
+async function saveAiConfig() {
+  if (!requireHeadAdmin('saveAiConfig')) return;
+  const urlMain  = (document.getElementById('ai-url-main')?.value  || '').trim();
+  const urlAnn   = (document.getElementById('ai-url-announcements')?.value || '').trim();
+  const urlLunch = (document.getElementById('ai-url-lunch')?.value || '').trim();
+
+  _aiConfig = { urlMain, urlAnnouncements: urlAnn, urlLunch };
+
+  const statusEl = document.getElementById('ai-config-status');
+  if (statusEl) statusEl.textContent = 'Saving...';
+  try {
+    await db.collection('settings').doc('aiConfig').set(_aiConfig);
+    if (statusEl) {
+      statusEl.textContent = '✅ Saved! Eagle AI will use the new URLs next time data is fetched.';
+      setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 4000);
+    }
+    // Re-fetch with new URLs immediately
+    _schoolDataLoaded = false;
+    fetchSchoolData();
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '❌ Failed to save. Check your connection.';
+  }
+}
+
+// ── Fetch school data from all configured URLs ────────────────────────────
 async function fetchSchoolData() {
   const statusEl = document.getElementById('ai-school-status');
   if (statusEl) statusEl.textContent = '🔄 Fetching school data...';
-  try {
-    // Use CORS proxy to fetch tiseagles.com from browser
-    const proxy = 'https://api.allorigins.win/get?url=';
-    const res = await fetch(proxy + encodeURIComponent('https://tiseagles.com'), { cache: 'no-store' });
+
+  // Build list of URLs to fetch (deduplicated, non-empty)
+  const urls = [...new Set([
+    _aiConfig.urlMain,
+    _aiConfig.urlAnnouncements,
+    _aiConfig.urlLunch
+  ].filter(u => u && u.startsWith('http')))];
+
+  if (urls.length === 0) urls.push('https://tiseagles.com');
+
+  const proxy = 'https://api.allorigins.win/get?url=';
+
+  // Helper: fetch one URL through CORS proxy and return clean text
+  async function fetchOne(url) {
+    const res = await fetch(proxy + encodeURIComponent(url), { cache: 'no-store' });
     const data = await res.json();
     const html = data.contents || '';
-
-    // Strip HTML tags and clean whitespace to extract readable text
-    const text = html
+    return html
       .replace(/<script[\s\S]*?<\/script>/gi, '')
       .replace(/<style[\s\S]*?<\/style>/gi, '')
       .replace(/<[^>]+>/g, ' ')
       .replace(/\s{3,}/g, '\n')
       .trim()
-      .slice(0, 4000); // cap to avoid token overflow
+      .slice(0, 2000); // 2000 chars per URL, cap total tokens
+  }
 
-    _schoolData = text;
+  try {
+    const results = await Promise.allSettled(urls.map(u => fetchOne(u)));
+    const parts = results
+      .map((r, i) => r.status === 'fulfilled' && r.value
+        ? `[Source: ${urls[i]}]\n${r.value}` : null)
+      .filter(Boolean);
+
+    _schoolData = parts.join('\n\n');
     _schoolDataLoaded = true;
     if (statusEl) {
-      statusEl.textContent = '✅ School data loaded';
+      statusEl.textContent = `✅ School data loaded (${parts.length} source${parts.length !== 1 ? 's' : ''})`;
       setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
     }
   } catch(e) {
@@ -5887,10 +6076,22 @@ async function fetchSchoolData() {
   }
 }
 
-// Build final system prompt with live school data injected
+// Unrestricted prompt for Head Admin and above
+const CLAUDE_SYSTEM_ADMIN = `You are Eagle AI, a powerful AI assistant for TIS Eagles ClassRoom staff.
+You can answer ANY question on any topic with no restrictions.
+You also have access to TIS Eagles school data (announcements, lunch menu) when provided.
+Be helpful, accurate, and thorough.`;
+
+// Build final system prompt — unrestricted for Head Admin+, restricted for everyone else
 function buildSystemPrompt() {
-  if (!_schoolData) return CLAUDE_SYSTEM_BASE;
-  return `${CLAUDE_SYSTEM_BASE}
+  const email = (window.currentUserEmail || '').toLowerCase();
+  const isOwner = email === (SUPER_ADMIN || '').toLowerCase();
+  const isHead  = isOwner || (window._headAdmins || []).includes(email);
+
+  const base = isHead ? CLAUDE_SYSTEM_ADMIN : CLAUDE_SYSTEM_BASE;
+
+  if (!_schoolData) return base;
+  return `${base}
 
 --- LIVE DATA FROM TISEAGLES.COM (fetched now) ---
 ${_schoolData}
