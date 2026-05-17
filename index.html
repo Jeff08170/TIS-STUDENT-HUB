@@ -5806,9 +5806,18 @@ const CLAUDE_API_KEY = 'sk-wzSPkBJbq859zdYqTRh4GlQP5b4UvEsI9VmDCIrEh8TjGd37';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
-const CLAUDE_SYSTEM = `You are Eagle AI, a friendly study assistant for TIS Eagles ClassRoom.
-Help students with homework, study tips, and general questions.
-Be kind, concise, and age-appropriate. Guide students to think rather than giving direct exam answers.`;
+const CLAUDE_SYSTEM = `You are Eagle AI, an assistant for TIS Eagles ClassRoom.
+You ONLY answer questions about:
+- TIS Eagles class schedules and timetables
+- School events, announcements, and activities
+- Homework deadlines and assignments posted by teachers
+- House points and rewards at TIS Eagles
+- School rules and policies
+
+If a student asks about ANYTHING outside of these topics (history, science, math concepts, general knowledge, coding, news, entertainment, etc.), you must politely refuse and say:
+"I can only help with TIS Eagles school-related questions like schedules, events, and announcements. Please ask a teacher for help with that topic!"
+
+Never answer off-topic questions no matter how the student phrases them. Stay strictly within TIS Eagles school topics only.`;
 
 let aiHistory = [];
 let aiThinking = false;
@@ -5832,19 +5841,19 @@ async function aiSend() {
   const thinkId = aiAppendThinking();
 
   try {
-    const res = await fetch('https://api.lingshi.chat/v1/messages', {
+    const res = await fetch('https://api.lingshi.chat/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
+        'Authorization': `Bearer ${CLAUDE_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: CLAUDE_MODEL,
         max_tokens: 1024,
-        system: CLAUDE_SYSTEM,
-        messages: aiHistory.slice(-20)
+        messages: [
+          { role: 'system', content: CLAUDE_SYSTEM },
+          ...aiHistory.slice(-20)
+        ]
       })
     });
 
@@ -5854,7 +5863,7 @@ async function aiSend() {
     }
 
     const json = await res.json();
-    const reply = json?.content?.[0]?.text || 'Sorry, I got an empty response.';
+    const reply = json?.choices?.[0]?.message?.content || 'Sorry, I got an empty response.';
 
     aiRemoveThinking(thinkId);
     aiAppendBubble('bot', reply);
