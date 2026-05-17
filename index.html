@@ -694,6 +694,18 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
       </button>
     </div>
+    <div class="nav-section">
+      <div class="nav-label">Preview</div>
+      <button class="nav-item" onclick="showPage('dashboard',this)">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Student View
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">AI</div>
+      <button class="nav-item" onclick="showPage('ai',this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>Eagle AI
+      </button>
+    </div>
   </div>
 
   <div id="nav-manager" style="display:none;">
@@ -725,6 +737,18 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       </button>
       <button class="nav-item" id="nav-admins-btn" onclick="showPage('mgr-admins',this)" style="display:none;">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Manage Roles
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Preview</div>
+      <button class="nav-item" onclick="showPage('dashboard',this)">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Student View
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">AI</div>
+      <button class="nav-item" onclick="showPage('ai',this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>Eagle AI
       </button>
     </div>
   </div>
@@ -1647,45 +1671,39 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div id="ff-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
     </div>
 
-    <!-- AI Data Sources -->
+    <!-- AI Info (manual input by Head Admin) -->
     <div class="mgr-section" id="ai-config-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07"/></svg>
-        Eagle AI — Data Sources
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Eagle AI — School Information
         <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--air);color:var(--air-text);">Head Admin+</span>
       </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Set the URLs Eagle AI fetches for announcements and lunch menu. Changes apply immediately for all users.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Write the information Eagle AI will use when answering students. This replaces the school website — type announcements, lunch menu, schedules, or anything else here.</p>
 
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">📢 Announcements URL</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Page Eagle AI reads to get school announcements</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input class="fb-input" id="ai-url-announcements" type="url" placeholder="https://tiseagles.com/announcements" style="margin-bottom:0;flex:1;font-size:12px;" />
-            <button class="btn-primary" style="flex-shrink:0;font-size:12px;padding:8px 14px;" onclick="saveAiConfig()">Save</button>
-          </div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">📢 Announcements</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Current school announcements and events</div>
+          <textarea class="fb-input" id="ai-info-announcements" rows="4" placeholder="e.g. Sports Day is on Friday May 23. Library will be closed on Wednesday..." style="margin-bottom:0;font-size:12px;resize:vertical;"></textarea>
         </div>
 
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🍱 Lunch Menu URL</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Page Eagle AI reads to get today's lunch menu</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input class="fb-input" id="ai-url-lunch" type="url" placeholder="https://tiseagles.com/lunch" style="margin-bottom:0;flex:1;font-size:12px;" />
-            <button class="btn-primary" style="flex-shrink:0;font-size:12px;padding:8px 14px;" onclick="saveAiConfig()">Save</button>
-          </div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🍱 Lunch Menu</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Today's or this week's lunch menu</div>
+          <textarea class="fb-input" id="ai-info-lunch" rows="4" placeholder="e.g. Monday: Fried rice, soup, fruit&#10;Tuesday: Pasta, salad, juice..." style="margin-bottom:0;font-size:12px;resize:vertical;"></textarea>
         </div>
 
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🌐 General School Website</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Main school website Eagle AI also reads for context</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input class="fb-input" id="ai-url-main" type="url" placeholder="https://tiseagles.com" style="margin-bottom:0;flex:1;font-size:12px;" />
-            <button class="btn-primary" style="flex-shrink:0;font-size:12px;padding:8px 14px;" onclick="saveAiConfig()">Save</button>
-          </div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">📅 Schedule & Other Info</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Class schedule, important dates, or any other info for the AI</div>
+          <textarea class="fb-input" id="ai-info-other" rows="4" placeholder="e.g. Class A: Math 8am, English 9am...&#10;No school on June 1 (holiday)" style="margin-bottom:0;font-size:12px;resize:vertical;"></textarea>
         </div>
       </div>
 
-      <div id="ai-config-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+        <button class="btn-primary" onclick="saveAiConfig()" style="padding:10px 24px;">💾 Save &amp; Update AI</button>
+      </div>
+      <div id="ai-config-status" style="font-size:12px;color:var(--earth-deep);margin-top:8px;min-height:16px;"></div>
     </div>
 
     <!-- Teacher Management -->
@@ -1729,8 +1747,6 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <p class="page-sub">Announcements · Lunch menu · Waimai recommendations</p>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <span id="ai-school-status" style="font-size:11px;color:var(--muted);"></span>
-        <button class="ai-clear-btn" onclick="fetchSchoolData()" title="Refresh school data from tiseagles.com">🔄 Refresh</button>
         <button class="ai-clear-btn" onclick="aiClearChat()">Clear chat</button>
       </div>
     </div>
@@ -2725,7 +2741,6 @@ function showPage(id, btn) {
       break;
     case 'ai':
       setTimeout(() => document.getElementById('ai-input')?.focus(), 100);
-      if (!_schoolDataLoaded) fetchSchoolData();
       break;
     case 'announcements':
       loadAnnouncementsToStudent();
@@ -5968,111 +5983,49 @@ If asked about unrelated topics (history, math, science, coding, general knowled
 
 ${WAIMAI_CONTEXT}`;
 
-// Live school data fetched from configured URLs
-let _schoolData = '';
-let _schoolDataLoaded = false;
+// School info manually entered by Head Admin (no web scraping)
+let _aiInfo = { announcements: '', lunch: '', other: '' };
 
-// URLs configurable by Head Admin — defaults to tiseagles.com
-let _aiConfig = {
-  urlMain:          'https://tiseagles.com',
-  urlAnnouncements: '',
-  urlLunch:         ''
-};
-
-// ── Load AI config (URLs) from Firebase ───────────────────────────────────
+// ── Load AI info from Firebase ────────────────────────────────────────────
 async function loadAiConfig() {
   if (!db) return;
   try {
     const doc = await db.collection('settings').doc('aiConfig').get();
     if (doc.exists) {
       const d = doc.data();
-      _aiConfig.urlMain          = d.urlMain          || 'https://tiseagles.com';
-      _aiConfig.urlAnnouncements = d.urlAnnouncements || '';
-      _aiConfig.urlLunch         = d.urlLunch         || '';
+      _aiInfo = {
+        announcements: d.announcements || '',
+        lunch:         d.lunch         || '',
+        other:         d.other         || ''
+      };
     }
-    // Populate admin inputs if they're in the DOM
-    const inpMain = document.getElementById('ai-url-main');
-    const inpAnn  = document.getElementById('ai-url-announcements');
-    const inpLunch = document.getElementById('ai-url-lunch');
-    if (inpMain)  inpMain.value  = _aiConfig.urlMain;
-    if (inpAnn)   inpAnn.value   = _aiConfig.urlAnnouncements;
-    if (inpLunch) inpLunch.value = _aiConfig.urlLunch;
+    const taAnn   = document.getElementById('ai-info-announcements');
+    const taLunch = document.getElementById('ai-info-lunch');
+    const taOther = document.getElementById('ai-info-other');
+    if (taAnn)   taAnn.value   = _aiInfo.announcements;
+    if (taLunch) taLunch.value = _aiInfo.lunch;
+    if (taOther) taOther.value = _aiInfo.other;
   } catch(e) { console.warn('loadAiConfig:', e); }
 }
 
-// ── Save AI config URLs to Firebase (Head Admin only) ─────────────────────
+// ── Save AI info to Firebase (Head Admin only) ────────────────────────────
 async function saveAiConfig() {
   if (!requireHeadAdmin('saveAiConfig')) return;
-  const urlMain  = (document.getElementById('ai-url-main')?.value  || '').trim();
-  const urlAnn   = (document.getElementById('ai-url-announcements')?.value || '').trim();
-  const urlLunch = (document.getElementById('ai-url-lunch')?.value || '').trim();
-
-  _aiConfig = { urlMain, urlAnnouncements: urlAnn, urlLunch };
-
+  _aiInfo = {
+    announcements: (document.getElementById('ai-info-announcements')?.value || '').trim(),
+    lunch:         (document.getElementById('ai-info-lunch')?.value         || '').trim(),
+    other:         (document.getElementById('ai-info-other')?.value         || '').trim()
+  };
   const statusEl = document.getElementById('ai-config-status');
   if (statusEl) statusEl.textContent = 'Saving...';
   try {
-    await db.collection('settings').doc('aiConfig').set(_aiConfig);
+    await db.collection('settings').doc('aiConfig').set(_aiInfo);
     if (statusEl) {
-      statusEl.textContent = '✅ Saved! Eagle AI will use the new URLs next time data is fetched.';
+      statusEl.textContent = '✅ Saved! Eagle AI will use this info in future replies.';
       setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 4000);
     }
-    // Re-fetch with new URLs immediately
-    _schoolDataLoaded = false;
-    fetchSchoolData();
   } catch(e) {
     if (statusEl) statusEl.textContent = '❌ Failed to save. Check your connection.';
-  }
-}
-
-// ── Fetch school data from all configured URLs ────────────────────────────
-async function fetchSchoolData() {
-  const statusEl = document.getElementById('ai-school-status');
-  if (statusEl) statusEl.textContent = '🔄 Fetching school data...';
-
-  // Build list of URLs to fetch (deduplicated, non-empty)
-  const urls = [...new Set([
-    _aiConfig.urlMain,
-    _aiConfig.urlAnnouncements,
-    _aiConfig.urlLunch
-  ].filter(u => u && u.startsWith('http')))];
-
-  if (urls.length === 0) urls.push('https://tiseagles.com');
-
-  const proxy = 'https://api.allorigins.win/get?url=';
-
-  // Helper: fetch one URL through CORS proxy and return clean text
-  async function fetchOne(url) {
-    const res = await fetch(proxy + encodeURIComponent(url), { cache: 'no-store' });
-    const data = await res.json();
-    const html = data.contents || '';
-    return html
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s{3,}/g, '\n')
-      .trim()
-      .slice(0, 2000); // 2000 chars per URL, cap total tokens
-  }
-
-  try {
-    const results = await Promise.allSettled(urls.map(u => fetchOne(u)));
-    const parts = results
-      .map((r, i) => r.status === 'fulfilled' && r.value
-        ? `[Source: ${urls[i]}]\n${r.value}` : null)
-      .filter(Boolean);
-
-    _schoolData = parts.join('\n\n');
-    _schoolDataLoaded = true;
-    if (statusEl) {
-      statusEl.textContent = `✅ School data loaded (${parts.length} source${parts.length !== 1 ? 's' : ''})`;
-      setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
-    }
-  } catch(e) {
-    _schoolData = '';
-    _schoolDataLoaded = true;
-    if (statusEl) statusEl.textContent = '⚠️ Could not load school data';
-    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 4000);
   }
 }
 
@@ -6090,14 +6043,19 @@ function buildSystemPrompt() {
 
   const base = isHead ? CLAUDE_SYSTEM_ADMIN : CLAUDE_SYSTEM_BASE;
 
-  if (!_schoolData) return base;
+  const parts = [];
+  if (_aiInfo.announcements) parts.push(`📢 Announcements:\n${_aiInfo.announcements}`);
+  if (_aiInfo.lunch)         parts.push(`🍱 Lunch Menu:\n${_aiInfo.lunch}`);
+  if (_aiInfo.other)         parts.push(`📅 Schedule & Other Info:\n${_aiInfo.other}`);
+
+  if (parts.length === 0) return base;
   return `${base}
 
---- LIVE DATA FROM TISEAGLES.COM (fetched now) ---
-${_schoolData}
---- END OF SCHOOL DATA ---
+--- SCHOOL INFO (provided by Head Admin) ---
+${parts.join('\n\n')}
+--- END OF SCHOOL INFO ---
 
-Use the above live data to answer questions about today's announcements, lunch menu, and events.`;
+Use the above information to answer questions about announcements, lunch, and school schedule.`;
 }
 
 let aiHistory = [];
