@@ -5832,7 +5832,7 @@ async function aiSend() {
   const thinkId = aiAppendThinking();
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.lingshi.chat', {
       method: 'POST',
       headers: {
         'x-api-key': CLAUDE_API_KEY,
