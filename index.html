@@ -26,7 +26,7 @@
   --text:#f0f0f0;--muted:#666;
   --border:rgba(255,255,255,0.07);--radius:14px;--radius-sm:9px;
   --primary:#f0f0f0;--primary-hover:#ffffff;--primary-soft:rgba(255,255,255,0.06);
-  --sidebar-bg:#111;--sidebar-w:64px;
+  --sidebar-bg:#111;--sidebar-w:76px;
   --ms:#0078D4;
 }
 [data-theme="light"]{
@@ -95,102 +95,89 @@ body{
   padding:1rem 0 0.75rem;
   position:fixed;top:0;left:0;bottom:0;z-index:100;
   overflow:hidden;
-  transition:width 0.22s cubic-bezier(0.4,0,0.2,1),background 0.3s,border-color 0.3s;
+  transition:background 0.3s,border-color 0.3s;
 }
-.sidebar:hover{width:220px;}
 
 /* Logo */
 .logo-row{
-  display:flex;align-items:center;gap:10px;
-  padding:0 12px 1rem;border-bottom:1px solid var(--border);
-  margin-bottom:0.75rem;width:100%;min-width:220px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 0 1rem;border-bottom:1px solid var(--border);
+  margin-bottom:0.75rem;width:100%;
 }
 .logo-icon{
-  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
   background:var(--text);
   display:flex;align-items:center;justify-content:center;
 }
-.logo-icon svg{width:17px;height:17px;fill:var(--bg);stroke:none;}
-.logo-name{
-  font-family:'DM Serif Display',serif;font-size:15px;white-space:nowrap;
-  opacity:0;transition:opacity 0.15s 0.05s;flex:1;
-}
-.sidebar:hover .logo-name{opacity:1;}
-.role-badge{
-  font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px;
-  white-space:nowrap;flex-shrink:0;
-  opacity:0;transition:opacity 0.15s 0.05s;
-}
-.sidebar:hover .role-badge{opacity:1;}
+.logo-icon svg{width:19px;height:19px;fill:var(--bg);stroke:none;}
+.logo-name{display:none;}
+.role-badge{display:none;}
 .role-badge.manager{background:rgba(192,74,16,0.2);color:var(--fire-deep);}
 .role-badge.owner{background:linear-gradient(135deg,#7c3aed,#c026d3);color:white;}
 .role-badge.teacher{background:rgba(30,79,140,0.2);color:var(--water-deep);}
 .role-badge.student{background:rgba(26,111,168,0.2);color:var(--air-deep);}
 
 /* Nav */
-.nav-section{width:100%;min-width:220px;margin-bottom:0.25rem;}
-.nav-label{
-  font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);
-  text-transform:uppercase;padding:0 20px;margin-bottom:3px;margin-top:8px;
-  white-space:nowrap;opacity:0;transition:opacity 0.15s;
-}
-.sidebar:hover .nav-label{opacity:1;}
+.nav-section{width:100%;margin-bottom:4px;display:flex;flex-direction:column;align-items:center;}
+.nav-label{display:none;}
 .nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 0 9px 20px;
-  border-radius:var(--radius-sm);cursor:pointer;
-  font-size:0;color:var(--muted);font-weight:400;
-  transition:background 0.12s,color 0.12s,font-size 0.05s;
-  margin:1px 8px;border:none;background:none;
-  width:calc(100% - 16px);text-align:left;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:5px 0;
+  cursor:pointer;font-size:9px;color:var(--muted);font-weight:500;
+  transition:color 0.15s;
+  margin:2px 0;border:none;background:none;
+  width:64px;
   font-family:'DM Sans',sans-serif;white-space:nowrap;
+  letter-spacing:0.01em;
 }
-.sidebar:hover .nav-item{font-size:13px;}
-.nav-item svg{width:16px;height:16px;fill:currentColor;stroke:none;flex-shrink:0;}
-.nav-item:hover{background:var(--primary-soft);color:var(--text);}
-.nav-item.active{background:var(--primary);color:var(--bg);}
-.nav-item.active svg{stroke:var(--bg);}
-[data-theme="light"] .nav-item.active{color:#fff;}
-[data-theme="light"] .nav-item.active svg{stroke:#fff;}
-.nav-section{margin-bottom:0;}
-.nav-badge{
-  margin-left:auto;margin-right:10px;font-size:10px;font-weight:600;
-  padding:1px 7px;border-radius:99px;
-  background:rgba(255,255,255,0.15);color:var(--text);
-  opacity:0;transition:opacity 0.15s;
+.nav-item-icon{
+  width:42px;height:42px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;
+  background:transparent;
 }
-.sidebar:hover .nav-badge{opacity:1;}
-[data-theme="light"] .nav-badge{background:rgba(0,0,0,0.08);color:var(--text);}
+.nav-item svg{width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;}
+.nav-item:hover{color:var(--text);}
+.nav-item:hover .nav-item-icon{background:var(--primary-soft);}
+.nav-item.active{color:var(--text);}
+.nav-item.active .nav-item-icon{background:var(--primary);}
+.nav-item.active .nav-item-icon svg{fill:var(--bg);}
+[data-theme="light"] .nav-item.active .nav-item-icon{background:var(--primary);}
+[data-theme="light"] .nav-item.active .nav-item-icon svg{fill:#fff;}
+.nav-badge{display:none;}
 .house-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
 /* Sidebar bottom */
 .sidebar-bottom{
   margin-top:auto;padding-top:0.75rem;border-top:1px solid var(--border);
-  width:100%;min-width:220px;
+  width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;
 }
-.user-row{display:flex;align-items:center;gap:10px;padding:6px 12px;}
+.user-row{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:5px 0;cursor:pointer;
+  border-radius:12px;transition:background 0.12s;width:56px;
+}
+.user-row:hover{background:var(--primary-soft);}
 .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0;}
-.user-name{font-size:13px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity 0.15s;}
-.user-role{font-size:11px;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity 0.15s;}
-.sidebar:hover .user-name,.sidebar:hover .user-role{opacity:1;}
+.user-name{display:none;}
+.user-role{display:none;}
 .sidebar-actions{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;width:100%;}
 .sidebar-icon-btn{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;border-radius:9px;border:none;
+  width:42px;height:38px;border-radius:11px;border:none;
   background:none;color:var(--muted);cursor:pointer;
-  transition:background 0.12s,color 0.12s;flex-shrink:0;
+  transition:background 0.12s,color 0.12s;
 }
 .sidebar-icon-btn:hover{background:var(--primary-soft);color:var(--text);}
 .sidebar-icon-btn svg{width:15px;height:15px;fill:currentColor;stroke:none;}
 .logout-btn{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 12px;width:calc(100% - 16px);margin:2px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:5px 0;width:64px;
   border:none;background:none;font-family:'DM Sans',sans-serif;
-  font-size:0;color:var(--muted);cursor:pointer;
-  border-radius:var(--radius-sm);transition:background 0.12s,color 0.12s,font-size 0.05s;
-  white-space:nowrap;
+  font-size:9px;color:var(--muted);cursor:pointer;
+  border-radius:11px;transition:background 0.12s,color 0.12s;
+  white-space:nowrap;letter-spacing:0.01em;
 }
-.sidebar:hover .logout-btn{font-size:13px;}
 .logout-btn:hover{background:var(--primary-soft);color:var(--text);}
 .logout-btn svg{width:15px;height:15px;fill:currentColor;stroke:none;flex-shrink:0;}
 
@@ -207,7 +194,7 @@ body{
 .avatar-upload-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.18s;font-size:18px;}
 
 /* Main */
-.main{margin-left:var(--sidebar-w);flex:1;padding:2rem 2.5rem;max-width:calc(100vw - var(--sidebar-w));overflow-y:auto;transition:margin-left 0.22s;}
+.main{margin-left:var(--sidebar-w);flex:1;padding:2rem 2.5rem;max-width:calc(100vw - var(--sidebar-w));overflow-y:auto;}
 .page{display:none;animation:fadeIn 0.2s ease;}
 .page.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
@@ -381,65 +368,64 @@ textarea.fb-input{resize:vertical;min-height:90px;}
    GAMIFIED UI — XP, levels, achievements
    ═══════════════════════════════════════════════ */
 
-/* Hero quest banner */
-.quest-hero{
-  position:relative;
-  background:linear-gradient(135deg,#1a1a1a 0%,#222 50%,#2a2a2a 100%);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:2rem 2.25rem;
-  margin-bottom:1.75rem;
-  color:var(--text);
-  overflow:hidden;
-  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+/* ── Clean dashboard header (replaces quest-hero) ── */
+.dash-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  margin-bottom:1.5rem;
+  padding-bottom:1.5rem;
+  border-bottom:1px solid var(--border);
 }
-[data-theme="light"] .quest-hero{
-  background:linear-gradient(135deg,#1E5FA8 0%,#2B7DC9 50%,#3B96E0 100%);
-  border-color:transparent;
-  color:white;
-  box-shadow:0 10px 30px rgba(30,79,140,0.25);
+.dash-greeting-label{
+  font-size:12px;font-weight:500;color:var(--muted);
+  letter-spacing:0.02em;margin-bottom:4px;
 }
-.quest-hero::before{
-  content:'';position:absolute;top:-50%;right:-20%;width:60%;height:200%;
-  background:radial-gradient(circle,rgba(255,255,255,0.18) 0%,transparent 60%);
-  pointer-events:none;
+.dash-greeting{
+  font-family:'DM Serif Display',serif;font-size:30px;line-height:1.15;
+  margin-bottom:3px;
 }
-.quest-hero::after{
-  content:'';position:absolute;bottom:-40%;left:-10%;width:50%;height:150%;
-  background:radial-gradient(circle,rgba(255,255,255,0.10) 0%,transparent 60%);
-  pointer-events:none;
-}
-.quest-hero-content{position:relative;z-index:1;}
-.quest-greeting{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.1;margin-bottom:6px;}
-.quest-sub{font-size:13px;opacity:0.85;margin-bottom:1.25rem;}
-.quest-stats-row{display:flex;flex-wrap:wrap;gap:18px;align-items:center;}
-.quest-stat{display:flex;align-items:center;gap:10px;}
-.quest-stat-icon{
-  width:38px;height:38px;border-radius:10px;
-  background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-}
-.quest-stat-num{font-size:22px;font-weight:700;line-height:1;}
-.quest-stat-label{font-size:10px;opacity:0.8;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+.dash-date{font-size:13px;color:var(--muted);}
 
-/* Level badge */
+/* Level badge — clean pill */
 .level-badge{
   display:inline-flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,0.20);backdrop-filter:blur(10px);
-  padding:6px 14px;border-radius:99px;
+  background:var(--surface);
+  padding:8px 16px;border-radius:99px;
   font-size:12px;font-weight:600;
-  border:1px solid rgba(255,255,255,0.30);
+  border:1px solid var(--border);
+  color:var(--text);
+  white-space:nowrap;
 }
 .level-badge-emoji{font-size:14px;}
 
+/* Stat pills row */
+.dash-stats-row{
+  display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;
+}
+.dash-stat-pill{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:14px 18px;flex:1;min-width:140px;
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.dash-stat-pill:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+.dash-stat-icon{
+  width:38px;height:38px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.dash-stat-icon svg{width:18px;height:18px;fill:currentColor;stroke:none;}
+.dash-stat-val{font-size:20px;font-weight:700;letter-spacing:-0.5px;line-height:1.1;}
+.dash-stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;font-weight:500;letter-spacing:0.03em;text-transform:uppercase;}
+
 /* XP progress bar */
-.xp-bar-wrap{margin-top:1.25rem;}
-.xp-bar-labels{display:flex;justify-content:space-between;font-size:11px;opacity:0.85;margin-bottom:6px;font-weight:500;}
-.xp-bar{height:10px;background:rgba(255,255,255,0.18);border-radius:99px;overflow:hidden;position:relative;}
+.xp-bar-wrap{margin-bottom:1.75rem;}
+.xp-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+.xp-bar{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;position:relative;}
 .xp-bar-fill{
   height:100%;border-radius:99px;
   background:linear-gradient(90deg,#FFD86B 0%,#FFA947 100%);
-  box-shadow:0 0 12px rgba(255,193,71,0.5);
+  box-shadow:0 0 8px rgba(255,193,71,0.4);
   transition:width 1s cubic-bezier(0.4,0,0.2,1);
   position:relative;
 }
@@ -483,33 +469,41 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 }
 .ach-trend.up{background:var(--earth);color:var(--earth-text);}
 
-/* House team banner — energetic redesign */
+/* House team banner — vibrant Apple-card style */
 .team-banner{
   position:relative;
-  border-radius:18px;
-  padding:1.5rem 1.25rem;
+  border-radius:20px;
+  padding:1.5rem 1.25rem 1.25rem;
   cursor:pointer;
   overflow:hidden;
   transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s;
   border:none;
+  color:white;
 }
 .team-banner::before{
-  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-  background:radial-gradient(circle at top right,rgba(255,255,255,0.4) 0%,transparent 60%);
+  content:'';position:absolute;top:-30%;right:-20%;width:70%;height:70%;
+  background:radial-gradient(circle,rgba(255,255,255,0.3) 0%,transparent 65%);
   pointer-events:none;
+  border-radius:50%;
 }
-.team-banner:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,0.12);}
+.team-banner:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 16px 36px rgba(0,0,0,0.25);}
 .team-rank{
   position:absolute;top:12px;right:12px;
   font-size:11px;font-weight:700;
-  background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);
-  padding:4px 9px;border-radius:99px;
-  display:flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,0.25);backdrop-filter:blur(8px);
+  padding:3px 9px;border-radius:99px;
+  color:white;
+}
+.team-icon-wrap{
+  width:48px;height:48px;border-radius:14px;
+  background:rgba(255,255,255,0.20);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;
 }
 .team-emoji{font-size:34px;display:block;margin-bottom:4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));}
-.team-name{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;}
-.team-pts{font-size:32px;font-weight:700;letter-spacing:-1px;line-height:1;}
-.team-pts-label{font-size:11px;opacity:0.7;margin-top:2px;font-weight:500;}
+.team-name{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:6px;font-weight:400;}
+.team-pts{font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;}
+.team-pts-label{font-size:10px;opacity:0.75;margin-top:3px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;}
 
 /* Bouncy buttons */
 .btn-primary,.btn-outline,.btn-danger{transition:transform 0.15s,background 0.15s,box-shadow 0.15s;}
@@ -574,12 +568,11 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   50%{box-shadow:0 0 0 12px rgba(45,122,31,0);}
 }
 
-/* Quest hero responsive */
+/* Dashboard responsive */
 @media (max-width: 600px){
-  .quest-hero{padding:1.5rem 1.25rem;}
-  .quest-greeting{font-size:24px;}
-  .quest-stats-row{gap:12px;}
-  .quest-stat-num{font-size:18px;}
+  .dash-greeting{font-size:22px;}
+  .dash-stats-row{flex-direction:column;}
+  .g4{grid-template-columns:repeat(2,1fr);}
 }
 
 /* ── RANKING PAGE ── */
@@ -1105,141 +1098,136 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 <nav class="sidebar">
   <div class="logo-row">
     <div class="logo-icon"><svg width="20" height="20" fill="currentColor"><use href="#px-eagle"/></svg></div>
-    <span class="logo-name">Student Hub</span>
-    <span class="role-badge" id="role-badge">Student</span>
   </div>
 
-  <div id="nav-student">
+  <div id="nav-student" style="display:flex;flex-direction:column;align-items:center;width:100%;overflow-y:auto;flex:1;">
     <div class="nav-section">
-      <div class="nav-label">Menu</div>
       <button class="nav-item active" onclick="showPage('dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-grid"/></svg>Dashboard
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-grid"/></svg></div>
+        <span>Home</span>
       </button>
       <button class="nav-item" onclick="showPage('announcements',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
-        <span class="nav-badge">3</span>
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-bell"/></svg></div>
+        <span>News</span>
       </button>
       <button class="nav-item" onclick="showPage('voting',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Voting
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-check"/></svg></div>
+        <span>Vote</span>
       </button>
       <button class="nav-item" onclick="showPage('feedbacks',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-chat"/></svg></div>
+        <span>Feedback</span>
       </button>
       <button class="nav-item" id="nav-ranking-btn" onclick="showPage('ranking',this)" style="display:none;">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-list"/></svg>Rankings
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-list"/></svg></div>
+        <span>Ranks</span>
       </button>
       <button class="nav-item" id="nav-board-btn" onclick="showPage('board',this)" style="display:none;">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-users"/></svg></div>
+        <span>Board</span>
       </button>
     </div>
     <div class="nav-section" id="nav-section-houses">
-      <div class="nav-label">My House</div>
-      <button class="nav-item" onclick="showPage('houses',this)"><svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>My House</button>
+      <button class="nav-item" onclick="showPage('houses',this)">
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-star"/></svg></div>
+        <span>House</span>
+      </button>
     </div>
     <div class="nav-section" id="nav-section-rewards">
-      <div class="nav-label">Rewards</div>
       <button class="nav-item" onclick="showPage('rewards',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-gift"/></svg></div>
+        <span>Rewards</span>
       </button>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">AI</div>
+    <div class="nav-section" id="nav-section-ai">
       <button class="nav-item" id="nav-ai-btn" onclick="showPage('ai',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-robot"/></svg></div>
+        <span>Eagle AI</span>
       </button>
     </div>
   </div>
 
-  <!-- Teacher nav (subset of manager nav) -->
-  <div id="nav-teacher" style="display:none;">
+  <!-- Teacher nav -->
+  <div id="nav-teacher" style="display:none;flex-direction:column;align-items:center;width:100%;overflow-y:auto;flex:1;">
     <div class="nav-section">
-      <div class="nav-label">Manage</div>
       <button class="nav-item" onclick="showPage('mgr-announcements',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-bell"/></svg></div>
+        <span>News</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-voting',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls & Voting
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-check"/></svg></div>
+        <span>Polls</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-chat"/></svg></div>
+        <span>Feedback</span>
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Rewards</div>
       <button class="nav-item" id="nav-teacher-rewards-btn" onclick="showPage('mgr-rewards',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-gift"/></svg></div>
+        <span>Rewards</span>
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Preview</div>
       <button class="nav-item" onclick="showPage('dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-eye"/></svg></div>
+        <span>Preview</span>
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-robot"/></svg></div>
+        <span>Eagle AI</span>
       </button>
     </div>
   </div>
 
-  <div id="nav-manager" style="display:none;">
+  <div id="nav-manager" style="display:none;flex-direction:column;align-items:center;width:100%;overflow-y:auto;flex:1;">
     <div class="nav-section">
-      <div class="nav-label">Overview</div>
       <button class="nav-item active" onclick="showPage('mgr-dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-grid"/></svg>Dashboard
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-grid"/></svg></div>
+        <span>Dashboard</span>
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Manage</div>
       <button class="nav-item" onclick="showPage('mgr-announcements',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-bell"/></svg></div>
+        <span>News</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-voting',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls & Voting
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-check"/></svg></div>
+        <span>Polls</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-chat"/></svg></div>
+        <span>Feedback</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-houses',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>Houses & Points
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-star"/></svg></div>
+        <span>Houses</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-students',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Students
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-users"/></svg></div>
+        <span>Students</span>
       </button>
       <button class="nav-item" onclick="showPage('mgr-rewards',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-gift"/></svg></div>
+        <span>Rewards</span>
       </button>
       <button class="nav-item" id="nav-admins-btn" onclick="showPage('mgr-admins',this)" style="display:none;">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-shield"/></svg>Manage Roles
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-shield"/></svg></div>
+        <span>Roles</span>
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Preview</div>
       <button class="nav-item" onclick="showPage('dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-eye"/></svg></div>
+        <span>Preview</span>
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
+        <div class="nav-item-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-robot"/></svg></div>
+        <span>Eagle AI</span>
       </button>
     </div>
   </div>
 
   <div class="sidebar-bottom">
-    <div class="user-row" id="user-row-profile" onclick="openProfileModal()" style="cursor:pointer;border-radius:var(--radius-sm);transition:background 0.12s;" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+    <div class="user-row" id="user-row-profile" onclick="openProfileModal()" title="Profile">
       <div class="avatar" id="user-avatar" style="background:#1A6FA8;overflow:hidden;">?</div>
-      <div style="flex:1;min-width:0;">
-        <div class="user-name" id="user-name">Loading...</div>
-        <div class="user-role" id="user-role">Signing in</div>
-      </div>
-      <svg width="13" height="13" fill="var(--muted)" style="flex-shrink:0;"><use href="#px-user"/></svg>
     </div>
     <div class="sidebar-actions">
-      <button class="sidebar-icon-btn" onclick="toggleTheme()" id="theme-toggle-btn" title="Toggle dark/light mode">
+      <button class="sidebar-icon-btn" onclick="toggleTheme()" id="theme-toggle-btn" title="Toggle theme">
         <svg id="theme-icon-dark" width="15" height="15" fill="currentColor"><use href="#px-moon"/></svg>
         <svg id="theme-icon-light" width="15" height="15" fill="currentColor" style="display:none"><use href="#px-sun"/></svg>
       </button>
@@ -1254,57 +1242,61 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
   <!-- Student: Dashboard -->
   <div id="page-dashboard" class="page active">
-    <!-- Quest Hero Banner -->
-    <div class="quest-hero">
-      <div class="quest-hero-content">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
-          <div>
-            <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;opacity:0.8;margin-bottom:4px;">Welcome back, hero</div>
-            <h1 class="quest-greeting" id="dash-greeting">Good morning!</h1>
-            <div class="quest-sub" id="dash-date"></div>
-          </div>
-          <div class="level-badge" id="dash-level-badge">
-            <span class="level-badge-icon"><svg width="14" height="14" fill="currentColor"><use href="#px-star"/></svg></span>
-            <span id="dash-level-text">Rookie · Lv 1</span>
-          </div>
-        </div>
 
-        <div class="quest-stats-row">
-          <div class="quest-stat" id="dash-pts-stat">
-            <div class="quest-stat-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-bolt"/></svg></div>
-            <div>
-              <div class="quest-stat-num"><span class="count-up" id="dash-my-pts" data-target="0">0</span></div>
-              <div class="quest-stat-label">My XP</div>
-            </div>
-          </div>
-          <div class="quest-stat">
-            <div class="quest-stat-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-home"/></svg></div>
-            <div>
-              <div class="quest-stat-num" id="dash-house-name">—</div>
-              <div class="quest-stat-label">My House</div>
-            </div>
-          </div>
-          <div class="quest-stat">
-            <div class="quest-stat-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-trophy"/></svg></div>
-            <div>
-              <div class="quest-stat-num" id="dash-house-rank">—</div>
-              <div class="quest-stat-label">House Rank</div>
-            </div>
-          </div>
-        </div>
+    <!-- Clean Apple-style header -->
+    <div class="dash-header">
+      <div class="dash-greeting-wrap">
+        <div class="dash-greeting-label" id="dash-greeting">Good morning</div>
+        <h1 class="dash-greeting" id="dash-name-text">Welcome back!</h1>
+        <div class="dash-date" id="dash-date"></div>
+      </div>
+      <div class="level-badge" id="dash-level-badge">
+        <span class="level-badge-icon"><svg width="14" height="14" fill="currentColor"><use href="#px-star"/></svg></span>
+        <span id="dash-level-text">Rookie · Lv 1</span>
+      </div>
+    </div>
 
-        <!-- XP progress to next level -->
-        <div class="xp-bar-wrap" id="xp-bar-wrap">
-          <div class="xp-bar-labels">
-            <span id="dash-xp-current">0 XP</span>
-            <span id="dash-xp-next">to Level 2</span>
-          </div>
-          <div class="xp-bar"><div class="xp-bar-fill" id="dash-xp-fill" style="width:0%;"></div></div>
+    <!-- Stat pills -->
+    <div class="dash-stats-row">
+      <div class="dash-stat-pill" id="dash-pts-stat">
+        <div class="dash-stat-icon" style="background:rgba(255,193,71,0.15);color:#D4930A;">
+          <svg width="18" height="18" fill="currentColor"><use href="#px-bolt"/></svg>
+        </div>
+        <div>
+          <div class="dash-stat-val"><span class="count-up" id="dash-my-pts" data-target="0">0</span></div>
+          <div class="dash-stat-lbl">My XP</div>
+        </div>
+      </div>
+      <div class="dash-stat-pill">
+        <div class="dash-stat-icon" style="background:rgba(74,160,216,0.15);color:var(--air-deep);">
+          <svg width="18" height="18" fill="currentColor"><use href="#px-home"/></svg>
+        </div>
+        <div>
+          <div class="dash-stat-val" id="dash-house-name">—</div>
+          <div class="dash-stat-lbl">My House</div>
+        </div>
+      </div>
+      <div class="dash-stat-pill">
+        <div class="dash-stat-icon" style="background:rgba(200,154,16,0.15);color:#B88C0C;">
+          <svg width="18" height="18" fill="currentColor"><use href="#px-trophy"/></svg>
+        </div>
+        <div>
+          <div class="dash-stat-val" id="dash-house-rank">—</div>
+          <div class="dash-stat-lbl">House Rank</div>
         </div>
       </div>
     </div>
 
-    <!-- Quick action achievement cards -->
+    <!-- XP bar -->
+    <div class="xp-bar-wrap" id="xp-bar-wrap">
+      <div class="xp-bar-labels">
+        <span id="dash-xp-current">0 XP</span>
+        <span id="dash-xp-next">to Level 2</span>
+      </div>
+      <div class="xp-bar"><div class="xp-bar-fill" id="dash-xp-fill" style="width:0%;"></div></div>
+    </div>
+
+    <!-- Quick actions -->
     <div class="g3 stagger">
       <div class="ach-card" onclick="showPage('announcements',null)">
         <div class="ach-icon"><svg width="22" height="22" fill="currentColor"><use href="#px-bell"/></svg></div>
@@ -1317,7 +1309,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div class="ach-num" id="dash-poll-num">—</div>
         <div class="ach-label">Active polls</div>
       </div>
-      <div class="ach-card" onclick="showPage('rewards',null)">
+      <div class="ach-card" id="dash-rewards-card" onclick="showPage('rewards',null)">
         <div class="ach-icon"><svg width="22" height="22" fill="currentColor"><use href="#px-gift"/></svg></div>
         <div class="ach-num">Spin</div>
         <div class="ach-label">Win prizes</div>
@@ -1335,38 +1327,61 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       </div>
     </div>
 
-    <!-- House team banners -->
-    <div style="margin-top:1.25rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline;">
+    <!-- House Standings -->
+    <div style="margin-top:1.5rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;">
       <div class="section-label" style="margin-bottom:0;">House Standings</div>
       <span style="font-size:11px;color:var(--muted);">Tap a house to see details</span>
     </div>
     <div class="g4 stagger">
-      <div class="team-banner" style="background:linear-gradient(135deg,#E8F4FD 0%,#C8E4F8 100%);color:var(--air-text);" onclick="showPage('houses',null)">
+      <div class="team-banner" style="background:linear-gradient(145deg,#2B7FBF 0%,#1A5C9A 100%);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-air">—</span>
-        <div class="team-icon" style="color:var(--air-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-wind"/></svg></div>
-        <div class="team-name" style="color:var(--air-deep);">Air</div>
-        <div class="team-pts" id="dash-pts-air" style="color:var(--air-deep);">—</div>
+        <div class="team-icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 40 40">
+            <path d="M6 22 Q12 10 20 16 Q28 22 36 10" stroke="white" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+            <path d="M4 30 Q12 18 22 24 Q32 30 38 20" stroke="rgba(255,255,255,0.6)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="team-name">Air</div>
+        <div class="team-pts" id="dash-pts-air">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
-      <div class="team-banner" style="background:linear-gradient(135deg,#EAF2E3 0%,#CDDFC0 100%);color:var(--earth-text);" onclick="showPage('houses',null)">
+      <div class="team-banner" style="background:linear-gradient(145deg,#2E8B2E 0%,#1A5C1A 100%);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-earth">—</span>
-        <div class="team-icon" style="color:var(--earth-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-leaf"/></svg></div>
-        <div class="team-name" style="color:var(--earth-deep);">Earth</div>
-        <div class="team-pts" id="dash-pts-earth" style="color:var(--earth-deep);">—</div>
+        <div class="team-icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 40 40">
+            <path d="M4 32 L14 14 L20 22 L26 12 L36 32 Z" fill="white" opacity="0.9"/>
+            <path d="M2 32 L38 32" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="team-name">Earth</div>
+        <div class="team-pts" id="dash-pts-earth">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
-      <div class="team-banner" style="background:linear-gradient(135deg,#E3EEF8 0%,#BCD4EC 100%);color:var(--water-text);" onclick="showPage('houses',null)">
+      <div class="team-banner" style="background:linear-gradient(145deg,#7B3FC0 0%,#5A2A9A 100%);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-water">—</span>
-        <div class="team-icon" style="color:var(--water-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-waves"/></svg></div>
-        <div class="team-name" style="color:var(--water-deep);">Water</div>
-        <div class="team-pts" id="dash-pts-water" style="color:var(--water-deep);">—</div>
+        <div class="team-icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 40 40">
+            <path d="M4 24 Q10 18 16 24 Q22 30 28 24 Q34 18 38 24" stroke="white" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+            <path d="M6 32 Q12 26 18 32 Q24 38 30 32 Q34 28 36 30" stroke="rgba(255,255,255,0.6)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <circle cx="14" cy="14" r="2.5" fill="white" opacity="0.8"/>
+            <circle cx="22" cy="10" r="1.8" fill="white" opacity="0.6"/>
+            <circle cx="28" cy="14" r="2" fill="white" opacity="0.7"/>
+          </svg>
+        </div>
+        <div class="team-name">Water</div>
+        <div class="team-pts" id="dash-pts-water">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
-      <div class="team-banner" style="background:linear-gradient(135deg,#FDF0E3 0%,#F8D5B5 100%);color:var(--fire-text);" onclick="showPage('houses',null)">
+      <div class="team-banner" style="background:linear-gradient(145deg,#C04010 0%,#8B2A08 100%);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-fire">—</span>
-        <div class="team-icon" style="color:var(--fire-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-flame"/></svg></div>
-        <div class="team-name" style="color:var(--fire-deep);">Fire</div>
-        <div class="team-pts" id="dash-pts-fire" style="color:var(--fire-deep);">—</div>
+        <div class="team-icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 40 40">
+            <path d="M20 4 C20 4 28 12 28 22 C28 28 24 34 20 36 C16 34 12 28 12 22 C12 12 20 4 20 4Z" fill="white" opacity="0.9"/>
+            <path d="M20 14 C20 14 24 20 22 26 C21 29 20 31 20 31 C20 31 18 28 18 24 C18 19 20 14 20 14Z" fill="rgba(255,150,0,0.7)"/>
+          </svg>
+        </div>
+        <div class="team-name">Fire</div>
+        <div class="team-pts" id="dash-pts-fire">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
     </div>
@@ -2150,6 +2165,16 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:11px;color:var(--muted);" id="ff-points-label">Loading...</span>
             <input type="checkbox" id="ff-points" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('points',this.checked)">
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">Eagle AI</div>
+            <div style="font-size:11px;color:var(--muted);">AI assistant tab and chat — visible to students</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-ai-label">Loading...</span>
+            <input type="checkbox" id="ff-ai" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('ai',this.checked)">
           </div>
         </label>
       </div>
@@ -2949,7 +2974,7 @@ function handleLogin(account) {
     document.getElementById('role-badge').textContent = isOwner ? 'Owner' : isHead ? 'Head Admin' : 'Admin';
     document.getElementById('role-badge').className = isOwner ? 'role-badge owner' : 'role-badge manager';
     document.getElementById('nav-student').style.display = 'none';
-    document.getElementById('nav-manager').style.display = '';
+    document.getElementById('nav-manager').style.display = 'flex';
     document.getElementById('nav-teacher').style.display = 'none';
     document.getElementById('user-role').textContent = (isOwner ? 'Owner' : isHead ? 'Head Admin' : 'Admin') + ' · TIS Eagles';
     document.getElementById('user-avatar').style.background = isOwner ? '#7c3aed' : '#C04A10';
@@ -2974,7 +2999,7 @@ function handleLogin(account) {
     document.getElementById('role-badge').className = 'role-badge teacher';
     document.getElementById('nav-student').style.display = 'none';
     document.getElementById('nav-manager').style.display = 'none';
-    document.getElementById('nav-teacher').style.display = '';
+    document.getElementById('nav-teacher').style.display = 'flex';
     document.getElementById('user-role').textContent = 'Teacher · TIS Eagles';
     document.getElementById('user-avatar').style.background = '#1E4F8C';
     document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
@@ -2987,11 +3012,14 @@ function handleLogin(account) {
     registerStudent(email, fullName);
     document.getElementById('role-badge').textContent = 'Student';
     document.getElementById('role-badge').className = 'role-badge student';
-    document.getElementById('nav-student').style.display = '';
+    document.getElementById('nav-student').style.display = 'flex';
     document.getElementById('nav-manager').style.display = 'none';
     document.getElementById('nav-teacher').style.display = 'none';
     document.getElementById('user-avatar').style.background = '#1A6FA8';
-    document.getElementById('dash-greeting').textContent = greeting + ', ' + firstName + '!';
+    const greetEl = document.getElementById('dash-greeting');
+    if (greetEl) greetEl.textContent = greeting + '!';
+    const nameEl = document.getElementById('dash-name-text');
+    if (nameEl) nameEl.textContent = firstName ? firstName : 'Welcome back';
     showPage('dashboard', null);
     loadAnnouncementsToStudent();
     loadStudentHousePoints();
@@ -3956,12 +3984,12 @@ async function claimDailyLoginXP(email, studentName) {
 
 // ── FEATURE FLAGS ──
 // Stored in Firestore: settings/features = { ranking: bool, board: bool }
-let _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true };
+let _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ai: true };
 
 async function loadFeatureFlags() {
   try {
     const doc = await db.collection('settings').doc('features').get();
-    if (doc.exists) _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ...doc.data() };
+    if (doc.exists) _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ai: true, ...doc.data() };
   } catch(e) { console.warn('loadFeatureFlags:', e); }
   applyFeatureFlags();
 }
@@ -3991,8 +4019,11 @@ function applyFeatureFlags() {
   // My House tab + nav section
   applyFlag('house', ['nav-section-houses', 'page-houses'], 'ff-house');
 
-  // Rewards tab + nav section
-  applyFlag('rewards', ['nav-section-rewards', 'page-rewards'], 'ff-rewards');
+  // Rewards tab + nav section + dashboard spin card
+  applyFlag('rewards', ['nav-section-rewards', 'page-rewards', 'dash-rewards-card'], 'ff-rewards');
+
+  // Eagle AI tab + nav section (student only)
+  applyFlag('ai', ['nav-section-ai', 'nav-ai-btn', 'page-ai'], 'ff-ai');
 
   // Levels & XP — topbar level, dashboard level badge, XP bar
   const levelsOn = !!_featureFlags.levels;
@@ -6468,7 +6499,7 @@ function _tryInit() {
 // Calls Claude API directly from the browser. No Cloud Function needed.
 
 // ▼▼▼ PUT YOUR CLAUDE API KEY HERE ▼▼▼
-const CLAUDE_API_KEY = 'sk-wzSPkBJbq859zdYqTRh4GlQP5b4UvEsI9VmDCIrEh8TjGd37';
+const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 const CLAUDE_MODEL = 'claude-sonnet-4-6';
