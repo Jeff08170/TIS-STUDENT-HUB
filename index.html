@@ -153,6 +153,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);background-image:line
 .t-blue{background:var(--air);color:var(--air-text);}
 .t-green{background:var(--earth);color:var(--earth-text);}
 .t-red{background:var(--fire);color:var(--fire-text);}
+.t-ai{background:#f3e8ff;color:#6b21a8;}
 .t-amber{background:#FDF5E3;color:#7A5005;}
 
 .filter-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;}
@@ -1136,9 +1137,13 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <label class="fb-label">Title</label><input class="fb-input" id="ann-title-input" type="text" placeholder="Announcement title..." maxlength="150" />
       <label class="fb-label">Body</label><textarea class="fb-input" id="ann-body-input" placeholder="Write the full announcement..." style="min-height:100px;" maxlength="2000"></textarea>
       <div class="g2-fb">
-        <div><label class="fb-label">Category</label><select class="fb-input" id="ann-cat"><option value="general">General</option><option value="event">Event</option><option value="urgent">Urgent</option></select></div>
+        <div><label class="fb-label">Category</label><select class="fb-input" id="ann-cat"><option value="general">General</option><option value="event">Event</option><option value="urgent">Urgent</option><option value="ai">🤖 AI Info</option></select></div>
         <div><label class="fb-label">Visible to</label><select class="fb-input"><option>All students</option><option>Air house</option><option>Earth house</option><option>Water house</option><option>Fire house</option></select></div>
       </div>
+      <label style="display:flex;align-items:center;gap:8px;margin:10px 0;cursor:pointer;font-size:13px;user-select:none;">
+        <input type="checkbox" id="ann-ai-only" style="width:15px;height:15px;cursor:pointer;accent-color:#7c3aed;">
+        <span>👁️ <strong>AI &amp; Admin only</strong> — hidden from students, injected into Eagle AI context</span>
+      </label>
       <button class="btn-primary" onclick="postAnnouncement()">Post announcement</button>
     </div>
     <div class="mgr-section">
@@ -2744,6 +2749,8 @@ function showPage(id, btn) {
       break;
     case 'ai':
       setTimeout(() => document.getElementById('ai-input')?.focus(), 100);
+      loadAiConfig();      // refresh announcements + admin notes
+      fetchSchoolData();   // re-scrape tiseagles.com in background
       break;
     case 'announcements':
       loadAnnouncementsToStudent();
@@ -3226,14 +3233,16 @@ function postAnnouncement() {
   const b = document.getElementById('ann-body-input').value.trim();
   if (!t) return;
   const cat = document.getElementById('ann-cat').value;
-  const tagMap = { general:'t-blue', event:'t-green', urgent:'t-red' };
-  const ann = { title: t, body: b, category: cat };
+  const aiOnly = document.getElementById('ann-ai-only').checked;
+  const ann = { title: t, body: b, category: cat, aiOnly };
   saveAnnouncement(ann).then(() => {
     loadAnnouncementsToMgr();
     loadAnnouncementsToStudent();
+    loadAiConfig(); // refresh AI context with new announcement
     document.getElementById('ann-title-input').value = '';
     document.getElementById('ann-body-input').value = '';
-    toast('Announcement posted!');
+    document.getElementById('ann-ai-only').checked = false;
+    toast(aiOnly ? '👁️ AI-only announcement saved!' : 'Announcement posted!');
     updateMgrDashboard();
   });
 }
@@ -4385,17 +4394,17 @@ function loadAnnouncementsToStudent() {
   if (!list) return;
   list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div>';
   loadAnnouncements().then(anns => {
+    const visible = anns.filter(a => !a.aiOnly);
     const badge = document.getElementById('ann-unread-badge');
-    if (badge) badge.textContent = anns.length + ' new';
-    // Also update nav badge
+    if (badge) badge.textContent = visible.length + ' new';
     const navBadge = document.querySelector('.nav-badge');
-    if (navBadge) navBadge.textContent = anns.length;
-    if (anns.length === 0) {
+    if (navBadge) navBadge.textContent = visible.length;
+    if (visible.length === 0) {
       list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">No announcements yet.</div>';
       return;
     }
     list.innerHTML = '';
-    anns.forEach(a => {
+    visible.forEach(a => {
       const div = document.createElement('div');
       div.className = 'ann-card unread';
       div.dataset.tag = a.category || 'general';
@@ -4411,10 +4420,10 @@ function loadAnnouncementsToStudent() {
         <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>`;
       list.appendChild(div);
     });
-    // Update dashboard preview
+    // Update dashboard preview (visible only)
     const preview = document.getElementById('dash-ann-preview');
     if (preview) {
-      preview.innerHTML = anns.slice(0,4).map(a => `
+      preview.innerHTML = visible.slice(0,4).map(a => `
         <div class="ann-row">
           <div class="ann-dot" style="background:var(--air-deep);"></div>
           <div><div class="ann-t">${esc(a.title)}</div>
@@ -4438,9 +4447,13 @@ function loadAnnouncementsToMgr() {
       div.style.cssText = 'display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);';
       div.innerHTML = `
         <div style="flex:1;">
-          <div style="font-size:13px;font-weight:500;">${esc(a.title)}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:13px;font-weight:500;">${esc(a.title)}</span>
+            ${a.aiOnly ? '<span class="tag t-ai" style="font-size:10px;">👁️ AI only</span>' : ''}
+          </div>
           <div style="font-size:11px;color:var(--muted);margin:2px 0 6px;">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
           <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>
+          ${a.aiOnly ? '<span style="font-size:11px;color:#7c3aed;margin-left:6px;">Hidden from students · used by Eagle AI</span>' : ''}
         </div>
         <button class="btn-danger" data-id="${a.id}">Delete</button>`;
       div.querySelector('.btn-danger').addEventListener('click', () => {
@@ -5953,41 +5966,117 @@ const CLAUDE_MODEL = 'claude-sonnet-4-6';
 const WAIMAI_CONTEXT = `
 NEARBY FOOD DELIVERY (外卖) OPTIONS NEAR TIANJIN INTERNATIONAL SCHOOL (TIS):
 TIS address: 4–1 Sishui Dao, Hexi District (河西区四水道4-1号), Tianjin 300222, China.
-Students can order delivery via Meituan (美团) or Eleme (饿了么). Most places in Hexi District deliver in 15–30 min.
+Students order via Meituan (美团) or Eleme (饿了么). Hexi District is central Tianjin — most restaurants deliver in 15–25 min.
 
---- CHINESE FOOD (本地中餐) ---
-- 🥟 Tianjin specialties: Goubuli steamed buns (狗不理包子), Jianbing guozi (煎饼果子), Mahua (麻花 fried dough twists) — iconic local snacks
-- 🍜 Noodles & dumplings: hand-pulled noodles (拉面), knife-cut noodles (刀削面), wonton soup (馄饨), boiled dumplings (水饺)
-- 🍚 Rice box sets (盖饭/便当): braised pork rice (红烧肉饭), egg & tomato rice (番茄鸡蛋饭), kung pao chicken (宫保鸡丁饭) — filling & cheap
-- 🫕 Claypot & braised (砂锅/卤味): claypot rice (砂锅饭), braised chicken feet (卤鸡爪), braised tofu sets
-- 🥬 Home-style stir-fry (家常菜): quick set meals with 2–3 dishes + rice, usually ¥18–30
+When recommending, cite the restaurant name, rating, and monthly sales. Tell students to search the name on Meituan/Eleme.
+Ratings are out of 5.0. Monthly sales (月售) = approximate orders per month on Meituan.
 
---- MALA & SPICY (麻辣) ---
-- 🌶️ Mala hotpot (麻辣火锅): individual mini-hotpot boxes (自助小火锅) — very popular, ~¥25–40
-- 🫙 Mala tang (麻辣烫): customizable spicy soup with skewers of vegetables, tofu, meat — ¥15–30
-- 🍢 Mala skewers (串串香 / 冒菜): cold or hot mala skewers, great variety, ¥20–35
-- 🐟 Sichuan-style spicy fish (水煮鱼/麻辣鱼): rich spicy broth with fish fillets, ¥28–45
-- 🦞 Spicy crawfish (小龙虾): seasonal Meituan favourite in summer, ¥35–60
+=== 🍔 WESTERN FAST FOOD ===
+• KFC 肯德基 (multiple Hexi branches) — ⭐4.8 | 月售 2,000+ | ¥20–40/person | ~20 min
+  Best picks: Zinger burger set, chicken bucket, breakfast wraps
+• McDonald's 麦当劳 (Youyi Lu branch nearby) — ⭐4.7 | 月售 1,800+ | ¥20–38/person | ~20 min
+  Best picks: Big Mac set, McCrispy, McFlurry for dessert
+• Burger King 汉堡王 — ⭐4.6 | 月售 900+ | ¥25–45/person | ~22 min
+  Best picks: Whopper set, chicken royale
+• Tastien 塔斯汀 (Chinese-style burger chain) — ⭐4.7 | 月售 1,500+ | ¥15–28/person | ~18 min
+  Best picks: crayfish burger, beef & scallion burger — very popular with students, affordable
+• Wallace 华莱士 — ⭐4.4 | 月售 1,100+ | ¥12–22/person | ~18 min
+  Best picks: fried chicken set, cheapest fast food option
 
---- DIM SUM & CANTONESE (点心/粤式) ---
-- 🍤 Dim sum delivery: siu mai (烧卖), har gow (虾饺), egg tarts (蛋挞), turnip cake (萝卜糕) — order combos ~¥30–50
-- 🫖 Cantonese congee (广式粥): preserved egg & pork congee (皮蛋瘦肉粥), smooth and light for lunch
-- 🍡 Cheung fun (肠粉): rice noodle rolls with shrimp or beef, ¥18–28
+=== 🍜 NOODLES & CHINESE FAST FOOD ===
+• Hefu Noodle 和府捞面 — ⭐4.8 | 月售 1,600+ | ¥28–45/person | ~20 min
+  Best picks: braised pork noodles, tomato beef noodles — premium but worth it
+• Lao Xiang Ji 老乡鸡 (popular rice & soup chain) — ⭐4.7 | 月售 2,200+ | ¥18–30/person | ~18 min
+  Best picks: steamed chicken set, rice + soup combo — very filling and balanced
+• Yoshinoya 吉野家 — ⭐4.6 | 月售 800+ | ¥22–36/person | ~20 min
+  Best picks: beef rice bowl (牛肉饭), chicken teriyaki bowl
+• Da Niang Dumplings 大娘水饺 — ⭐4.7 | 月售 1,000+ | ¥20–32/person | ~22 min
+  Best picks: pork & cabbage dumplings, corn beef dumplings
 
---- OTHER POPULAR OPTIONS ---
-- 🍔 Western fast food: KFC, McDonald's, Burger King — all available on Meituan in TEDA area, ~20 min delivery
-- 🍣 Japanese: ramen (拉面), donburi rice bowls (丼饭), sushi sets — ¥35–65
-- 🥗 Healthy bowls & salads (轻食沙拉): popular with students watching diet, ¥25–40
-- 🌮 Halal options (清真食品): lamb skewers (羊肉串), hand-pulled beef noodles (牛肉拉面) — widely available
-- 🧋 Bubble tea & desserts: Mixue (蜜雪冰城), Chagee (霸王茶姬), Nayuki — ¥10–22, great after-lunch treat
+=== 🌶️ MALA & SPICY ===
+• Yang Guo Fu Mala Tang 杨国福麻辣烫 — ⭐4.7 | 月售 3,000+ | ¥18–30/person | ~15 min
+  Best picks: customise your own skewers — tofu, beef, veggies in spicy broth
+• Zhang Liang Mala Tang 张亮麻辣烫 — ⭐4.6 | 月售 2,500+ | ¥16–28/person | ~15 min
+  Best picks: cold mala (凉拌麻辣烫), cheaper than Yang Guo Fu
+• Xiao Long Kan 小龙坎 mini hotpot — ⭐4.8 | 月售 1,200+ | ¥30–50/person | ~25 min
+  Best picks: individual self-service hotpot box (自助小火锅) — great for a treat
+• Mao Cai 冒菜 (local stalls on Meituan) — ⭐4.5–4.7 | 月售 800–1,500 | ¥15–25/person | ~18 min
+  Best picks: mixed skewers in mala broth, very cheap and fast
 
---- ORDERING TIPS ---
-1. Check today's school lunch menu first — suggest something different from what's being served
-2. Budget range: ¥15–35 is typical for a student lunch delivery
-3. Order before 11:30 AM to ensure delivery arrives within the lunch break (~12:00–13:00)
-4. Mala tang and rice box sets are the fastest to prepare (usually 15–20 min)
-5. On rainy or cold days, hotpot and noodle soups are especially popular
-6. For groups, mala hotpot boxes or claypot rice sets are easy to order in bulk
+=== 🥟 TIANJIN LOCAL & DIM SUM ===
+• Goubuli 狗不理 (Tianjin icon) — ⭐4.7 | 月售 600+ | ¥35–60/person | ~25 min
+  Best picks: pork steamed buns (猪肉包), mixed bun set — authentic Tianjin flavour
+• Jianbing Guozi stalls (煎饼果子) on Meituan — ⭐4.6 | 月售 1,800+ | ¥8–14/person | ~15 min
+  Best picks: classic egg jianbing — best value breakfast/snack in Tianjin
+• Cantonese Cheung Fun 肠粉 shops — ⭐4.6 | 月售 700+ | ¥18–28/person | ~20 min
+  Best picks: shrimp cheung fun, beef cheung fun with sweet soy sauce
+
+=== 🥗 HEALTHY & LIGHT ===
+• Wagas 沃歌斯 (if available in Hexi) — ⭐4.7 | 月售 500+ | ¥40–65/person | ~25 min
+  Best picks: Caesar salad, avocado toast, grain bowls
+• Local 轻食沙拉 salad shops on Meituan — ⭐4.5–4.7 | 月售 400–900 | ¥22–38/person | ~20 min
+  Best picks: protein bowls with chicken, quinoa salad boxes
+
+=== 🍣 JAPANESE FOOD ===
+• Yoshinoya 吉野家 — ⭐4.6 | 月售 800+ | ¥22–36/person | ~20 min
+  Best picks: beef rice bowl (牛肉饭), chicken teriyaki bowl (照烧鸡腿饭) — fast and filling
+• Sukiya 食其家 — ⭐4.6 | 月售 700+ | ¥18–30/person | ~20 min
+  Best picks: gyudon beef bowl, cheese curry beef bowl — cheaper than Yoshinoya
+• Ajisen Ramen 味千拉面 — ⭐4.7 | 月售 900+ | ¥28–45/person | ~22 min
+  Best picks: signature tonkotsu ramen (豚骨拉面), black garlic ramen — rich broth, very popular
+• Hanamaru Udon 花丸うどん — ⭐4.7 | 月售 600+ | ¥25–40/person | ~22 min
+  Best picks: kake udon, tempura udon set — light and chewy noodles
+• Sushi chains on Meituan (conveyor belt style / delivery boxes) — ⭐4.5–4.7 | 月售 500–1,000 | ¥30–60/person | ~25 min
+  Best picks: salmon sushi set, mixed maki rolls, salmon sashimi bowl (海鲜丼)
+• Japanese curry shops (日式咖喱) on Meituan — ⭐4.6 | 月售 600+ | ¥25–38/person | ~20 min
+  Best picks: katsu curry rice (炸猪排咖喱饭), chicken curry — mild and filling
+• Japanese ramen specialty shops 日式拉面馆 — ⭐4.7–4.8 | 月售 800+ | ¥32–55/person | ~22 min
+  Best picks: shoyu ramen (酱油拉面), miso ramen (味噌拉面), spicy tan tan men (担担面)
+• Matsuya 松屋 (if available in Hexi) — ⭐4.5 | 月售 500+ | ¥18–28/person | ~20 min
+  Best picks: gyudon set with miso soup, most budget-friendly Japanese option
+
+=== 🇰🇷 KOREAN FOOD ===
+• Korean BBQ delivery boxes 韩式烤肉便当 (Meituan local shops) — ⭐4.6–4.8 | 月售 600–1,200 | ¥30–55/person | ~22 min
+  Best picks: bulgogi beef box (韩式烤牛肉饭), samgyeopsal pork belly set (五花肉套餐) — comes with rice + kimchi sides
+• Korean fried chicken 韩式炸鸡 shops — ⭐4.7 | 月售 1,000+ | ¥28–50/person | ~20 min
+  Best picks: soy garlic crispy chicken (蒜香酱油炸鸡), spicy Korean chicken (辣椒酱炸鸡), half-half combos
+• BHC Chicken / 네네치킨 style chains on Meituan — ⭐4.7 | 月售 800+ | ¥32–55/person | ~22 min
+  Best picks: fried chicken + tteokbokki combo (炸鸡+年糕套餐) — very popular with students
+• Bibimbap 비빔밥 shops 韩式拌饭 — ⭐4.6 | 月售 700+ | ¥22–35/person | ~18 min
+  Best picks: stone pot bibimbap (石锅拌饭), tuna bibimbap, beef bulgogi bibimbap — healthy and colourful
+• Tteokbokki & Korean snacks 炒年糕专门店 — ⭐4.6 | 月售 900+ | ¥18–30/person | ~18 min
+  Best picks: spicy tteokbokki (辣炒年糕), fish cake soup (鱼饼汤), fried dumplings (煎饺) combo
+• Korean ramen & ramyeon 韩式拉面 shops — ⭐4.5 | 月售 600+ | ¥15–25/person | ~18 min
+  Best picks: Shin Ramyeon-style spicy ramen (辛拉面), army stew (部队锅) delivery box
+• Kimchi stew & jjigae 韩式泡菜锅/大酱汤 — ⭐4.7 | 月售 500+ | ¥28–42/person | ~22 min
+  Best picks: kimchi jjigae with pork (泡菜猪肉锅), doenjang jjigae (大酱汤) + rice set — great on cold days
+• Korean gimbap 韩式紫菜包饭 shops — ⭐4.6 | 月售 1,100+ | ¥12–22/person | ~15 min
+  Best picks: tuna gimbap (金枪鱼紫菜卷), beef gimbap, spicy squid gimbap — fastest and cheapest Korean option
+
+=== 🧋 BUBBLE TEA & DRINKS (great add-on) ===
+• Mixue Ice Cream & Tea 蜜雪冰城 — ⭐4.9 | 月售 5,000+ | ¥4–14 | ~15 min  ← #1 most ordered
+  Best picks: lemon water, strawberry ice cream — cheapest drinks in China
+• Chagee 霸王茶姬 — ⭐4.8 | 月售 2,500+ | ¥16–25 | ~18 min
+  Best picks: Boya Juexian jasmine milk tea, ice cream latte
+• COCO 都可 — ⭐4.7 | 月售 2,200+ | ¥10–20 | ~18 min
+  Best picks: taro milk tea, brown sugar boba
+• Nayuki 奈雪的茶 — ⭐4.7 | 月售 1,200+ | ¥18–30 | ~20 min
+  Best picks: fresh fruit teas, soft bread combos
+
+=== 🍱 TOP PICKS FOR QUICK LUNCH (rank by value + speed) ===
+1. Tastien 塔斯汀 — cheapest hot meal, fast, high rating (⭐4.7)
+2. Yang Guo Fu 杨国福 — most ordered mala tang, customisable (⭐4.7, 月售3000+)
+3. Lao Xiang Ji 老乡鸡 — most balanced meal, best for daily lunch (⭐4.7, 月售2200+)
+4. KFC — reliable, fast, students know the menu (⭐4.8)
+5. Mao Cai 冒菜 — cheapest hot spicy food, great budget option
+
+=== 📌 ORDERING TIPS ===
+1. Compare today's school lunch first — recommend something different
+2. Budget: ¥15–35 per person is typical for student lunch
+3. Order before 11:30 AM for on-time delivery during lunch break (12:00–13:00)
+4. On cold/rainy days: mala tang, hotpot boxes, or noodles are most popular
+5. For groups: Lao Xiang Ji sets or mala tang are easiest to bulk order
+6. Tip: search by distance on Meituan — sort by "综合" (overall) or "销量" (sales) to find top-rated nearby spots
 `;
 
 // Base system prompt (school data injected dynamically)
@@ -6006,14 +6095,41 @@ If asked about unrelated topics (history, math, science, coding, general knowled
 
 ${WAIMAI_CONTEXT}`;
 
-// School info manually entered by Head Admin (no web scraping)
+// School info manually entered by Head Admin
 let _aiInfo = { announcements: '', lunch: '', other: '' };
+// Announcements from ClassRoom split by visibility
+let _aiAnnouncements = [];   // aiOnly — hidden from students, shown to AI
+let _visibleAnnouncements = []; // regular announcements (also fed to AI as context)
+// Scraped content from tiseagles.com
+let _schoolScrapedData = '';
 
-// ── Load AI info from Firebase ────────────────────────────────────────────
+// ── Fetch tiseagles.com in background ────────────────────────────────────
+async function fetchSchoolData() {
+  try {
+    const proxy = 'https://api.allorigins.win/get?url=';
+    const res = await fetch(proxy + encodeURIComponent('https://tiseagles.com'), { cache: 'no-store' });
+    const data = await res.json();
+    const html = data.contents || '';
+    _schoolScrapedData = html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s{3,}/g, '\n')
+      .trim()
+      .slice(0, 3000);
+  } catch(e) {
+    _schoolScrapedData = '';
+  }
+}
+
+// ── Load AI info from Firebase + pull all announcements ───────────────────
 async function loadAiConfig() {
   if (!db) return;
   try {
-    const doc = await db.collection('settings').doc('aiConfig').get();
+    const [doc, anns] = await Promise.all([
+      db.collection('settings').doc('aiConfig').get(),
+      loadAnnouncements()
+    ]);
     if (doc.exists) {
       const d = doc.data();
       _aiInfo = {
@@ -6022,6 +6138,9 @@ async function loadAiConfig() {
         other:         d.other         || ''
       };
     }
+    _aiAnnouncements    = anns.filter(a => a.aiOnly);
+    _visibleAnnouncements = anns.filter(a => !a.aiOnly);
+
     const taAnn   = document.getElementById('ai-info-announcements');
     const taLunch = document.getElementById('ai-info-lunch');
     const taOther = document.getElementById('ai-info-other');
@@ -6067,18 +6186,37 @@ function buildSystemPrompt() {
   const base = isHead ? CLAUDE_SYSTEM_ADMIN : CLAUDE_SYSTEM_BASE;
 
   const parts = [];
-  if (_aiInfo.announcements) parts.push(`📢 Announcements:\n${_aiInfo.announcements}`);
-  if (_aiInfo.lunch)         parts.push(`🍱 Lunch Menu:\n${_aiInfo.lunch}`);
-  if (_aiInfo.other)         parts.push(`📅 Schedule & Other Info:\n${_aiInfo.other}`);
+
+  // Manual info saved by Head Admin in settings
+  if (_aiInfo.announcements) parts.push(`📢 School Announcements (admin note):\n${_aiInfo.announcements}`);
+  if (_aiInfo.lunch)         parts.push(`🍱 Lunch Menu (admin note):\n${_aiInfo.lunch}`);
+  if (_aiInfo.other)         parts.push(`📅 Schedule & Other Info (admin note):\n${_aiInfo.other}`);
+
+  // AI-only invisible announcements posted in ClassRoom
+  if (_aiAnnouncements.length > 0) {
+    const lines = _aiAnnouncements.map(a => `• ${a.title}${a.body ? ': ' + a.body : ''}`).join('\n');
+    parts.push(`🔒 Hidden AI Context (posted by admin, not visible to students):\n${lines}`);
+  }
+
+  // Regular visible announcements from ClassRoom (give AI awareness of what students see)
+  if (_visibleAnnouncements.length > 0) {
+    const lines = _visibleAnnouncements.slice(0, 6).map(a => `• ${a.title}${a.body ? ': ' + a.body : ''}`).join('\n');
+    parts.push(`📋 Current ClassRoom Announcements (visible to all students):\n${lines}`);
+  }
+
+  // Live content scraped from tiseagles.com
+  if (_schoolScrapedData) {
+    parts.push(`🌐 TIS Eagles Website (tiseagles.com live content):\n${_schoolScrapedData}`);
+  }
 
   if (parts.length === 0) return base;
   return `${base}
 
---- SCHOOL INFO (provided by Head Admin) ---
+--- SCHOOL INFO ---
 ${parts.join('\n\n')}
 --- END OF SCHOOL INFO ---
 
-Use the above information to answer questions about announcements, lunch, and school schedule.`;
+Use the above to answer questions about announcements, today's lunch, schedule, and school events.`;
 }
 
 let aiHistory = [];
