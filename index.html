@@ -110,7 +110,7 @@ body{
   background:var(--text);
   display:flex;align-items:center;justify-content:center;
 }
-.logo-icon svg{width:17px;height:17px;stroke:var(--bg);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.logo-icon svg{width:17px;height:17px;fill:var(--bg);stroke:none;}
 .logo-name{
   font-family:'DM Serif Display',serif;font-size:15px;white-space:nowrap;
   opacity:0;transition:opacity 0.15s 0.05s;flex:1;
@@ -146,7 +146,7 @@ body{
   font-family:'DM Sans',sans-serif;white-space:nowrap;
 }
 .sidebar:hover .nav-item{font-size:13px;}
-.nav-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.nav-item svg{width:16px;height:16px;fill:currentColor;stroke:none;flex-shrink:0;}
 .nav-item:hover{background:var(--primary-soft);color:var(--text);}
 .nav-item.active{background:var(--primary);color:var(--bg);}
 .nav-item.active svg{stroke:var(--bg);}
@@ -181,7 +181,7 @@ body{
   transition:background 0.12s,color 0.12s;flex-shrink:0;
 }
 .sidebar-icon-btn:hover{background:var(--primary-soft);color:var(--text);}
-.sidebar-icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-icon-btn svg{width:15px;height:15px;fill:currentColor;stroke:none;}
 .logout-btn{
   display:flex;align-items:center;gap:10px;
   padding:8px 12px;width:calc(100% - 16px);margin:2px 8px;
@@ -192,7 +192,7 @@ body{
 }
 .sidebar:hover .logout-btn{font-size:13px;}
 .logout-btn:hover{background:var(--primary-soft);color:var(--text);}
-.logout-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.logout-btn svg{width:15px;height:15px;fill:currentColor;stroke:none;flex-shrink:0;}
 
 /* Profile modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;}
@@ -228,7 +228,7 @@ body{
 .g4-stat{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
 
 .d-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
-.d-icon svg{width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.d-icon svg{width:22px;height:22px;fill:currentColor;stroke:none;}
 .d-title{font-size:14px;font-weight:500;}
 .d-sub{font-size:12px;color:var(--muted);}
 
@@ -328,7 +328,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 /* Manager */
 .mgr-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:16px;}
 .mgr-section-title{font-size:15px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.mgr-section-title svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.mgr-section-title svg{width:16px;height:16px;fill:currentColor;stroke:none;}
 .mgr-table{width:100%;border-collapse:collapse;font-size:13px;}
 .mgr-table th{text-align:left;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--border);}
 .mgr-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
@@ -353,10 +353,9 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 .fb-rc-reply{background:var(--bg);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--text);border-left:3px solid var(--air-deep);margin-bottom:8px;}
 .fb-stars{color:#F5C747;font-size:12px;}
 
-/* ── DOT-GRID ICON CONTAINERS ── */
+/* ── PIXEL-ART ICON CONTAINERS ── */
 .ach-icon svg,.quest-stat-icon svg,.d-icon svg,.team-icon svg{
-  width:22px;height:22px;fill:none;stroke:currentColor;
-  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+  width:22px;height:22px;fill:currentColor;stroke:none;
 }
 .quest-stat-icon svg{width:18px;height:18px;}
 .team-icon{
@@ -374,9 +373,9 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 [data-theme="light"] .ach-icon{
   background-image:radial-gradient(circle,rgba(0,0,0,0.07) 1.5px,transparent 1.5px);
 }
-.level-badge-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.level-badge-icon svg{width:14px;height:14px;fill:currentColor;stroke:none;}
 .eye-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);background:none;border:none;padding:2px;display:flex;align-items:center;}
-.eye-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.eye-toggle svg{width:16px;height:16px;fill:currentColor;stroke:none;}
 
 /* ═══════════════════════════════════════════════
    GAMIFIED UI — XP, levels, achievements
@@ -653,13 +652,355 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 .ai-send-btn{width:42px;height:42px;border-radius:50%;background:var(--primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;}
 .ai-send-btn:hover{background:var(--primary-hover);}
 .ai-send-btn:disabled{background:var(--border);cursor:not-allowed;}
-.ai-send-btn svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.ai-send-btn svg{width:18px;height:18px;fill:white;stroke:none;}
 .ai-error-bar{background:#FCEBEB;color:#791F1F;border-radius:var(--radius-sm);padding:9px 14px;font-size:12px;margin-top:8px;display:none;}
 .ai-clear-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all 0.12s;}
 .ai-clear-btn:hover{background:var(--bg);color:var(--text);}
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════
+     PIXEL-ART ICON SPRITES  (32×32 viewBox, 4×4 px blocks)
+     Usage: <svg width="W" height="H" fill="currentColor"><use href="#px-NAME"/></svg>
+     ═══════════════════════════════════════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+
+<!-- BOLT: XP / lightning -->
+<symbol id="px-bolt" viewBox="0 0 32 32">
+  <rect x="18" y="2" width="6" height="4"/><rect x="14" y="6" width="6" height="4"/>
+  <rect x="10" y="10" width="6" height="4"/>
+  <rect x="2" y="14" width="16" height="4"/><rect x="8" y="18" width="16" height="4"/>
+  <rect x="14" y="22" width="6" height="4"/><rect x="10" y="26" width="6" height="4"/>
+</symbol>
+
+<!-- HOME: house points -->
+<symbol id="px-home" viewBox="0 0 32 32">
+  <rect x="12" y="0" width="4" height="4"/>
+  <rect x="8" y="4" width="12" height="4"/>
+  <rect x="4" y="8" width="20" height="4"/>
+  <rect x="0" y="12" width="28" height="4"/>
+  <rect x="0" y="16" width="32" height="4"/>
+  <rect x="0" y="20" width="8" height="8"/><rect x="24" y="20" width="8" height="8"/>
+  <rect x="0" y="28" width="32" height="4"/>
+</symbol>
+
+<!-- TROPHY: achievements -->
+<symbol id="px-trophy" viewBox="0 0 32 32">
+  <rect x="6" y="2" width="20" height="2"/>
+  <rect x="2" y="4" width="28" height="10"/>
+  <rect x="6" y="14" width="20" height="2"/>
+  <rect x="10" y="16" width="12" height="4"/>
+  <rect x="6" y="20" width="20" height="4"/>
+  <rect x="4" y="24" width="24" height="4"/>
+</symbol>
+
+<!-- BELL: notifications / announcements -->
+<symbol id="px-bell" viewBox="0 0 32 32">
+  <rect x="12" y="0" width="8" height="4"/>
+  <rect x="8" y="4" width="16" height="4"/>
+  <rect x="4" y="8" width="24" height="8"/>
+  <rect x="2" y="16" width="28" height="6"/>
+  <rect x="10" y="22" width="12" height="4"/>
+</symbol>
+
+<!-- CHECK: polls / voting -->
+<symbol id="px-check" viewBox="0 0 32 32">
+  <rect x="0" y="0" width="32" height="4"/>
+  <rect x="0" y="28" width="32" height="4"/>
+  <rect x="0" y="0" width="4" height="32"/>
+  <rect x="28" y="0" width="4" height="32"/>
+  <rect x="6" y="18" width="4" height="8"/>
+  <rect x="10" y="22" width="4" height="6"/>
+  <rect x="14" y="18" width="4" height="4"/>
+  <rect x="18" y="14" width="4" height="4"/>
+  <rect x="22" y="10" width="4" height="4"/>
+</symbol>
+
+<!-- GIFT: rewards -->
+<symbol id="px-gift" viewBox="0 0 32 32">
+  <rect x="2" y="0" width="8" height="4"/><rect x="22" y="0" width="8" height="4"/>
+  <rect x="14" y="0" width="4" height="8"/>
+  <rect x="2" y="8" width="28" height="4"/>
+  <rect x="4" y="12" width="24" height="16"/>
+</symbol>
+
+<!-- WIND: Air house -->
+<symbol id="px-wind" viewBox="0 0 32 32">
+  <rect x="8" y="4" width="20" height="4"/><rect x="26" y="8" width="4" height="4"/>
+  <rect x="2" y="14" width="24" height="4"/><rect x="0" y="18" width="4" height="4"/>
+  <rect x="8" y="24" width="20" height="4"/><rect x="26" y="20" width="4" height="4"/>
+</symbol>
+
+<!-- LEAF: Earth house -->
+<symbol id="px-leaf" viewBox="0 0 32 32">
+  <rect x="16" y="0" width="10" height="4"/>
+  <rect x="12" y="4" width="16" height="4"/>
+  <rect x="6" y="8" width="22" height="4"/>
+  <rect x="2" y="12" width="26" height="4"/>
+  <rect x="4" y="16" width="20" height="4"/>
+  <rect x="8" y="20" width="14" height="4"/>
+  <rect x="14" y="24" width="6" height="8"/>
+</symbol>
+
+<!-- WAVES: Water house -->
+<symbol id="px-waves" viewBox="0 0 32 32">
+  <rect x="0" y="4" width="6" height="4"/><rect x="10" y="2" width="6" height="4"/>
+  <rect x="20" y="4" width="6" height="4"/><rect x="28" y="2" width="4" height="4"/>
+  <rect x="0" y="14" width="6" height="4"/><rect x="10" y="12" width="6" height="4"/>
+  <rect x="20" y="14" width="6" height="4"/><rect x="28" y="12" width="4" height="4"/>
+  <rect x="0" y="24" width="6" height="4"/><rect x="10" y="22" width="6" height="4"/>
+  <rect x="20" y="24" width="6" height="4"/><rect x="28" y="22" width="4" height="4"/>
+</symbol>
+
+<!-- FLAME: Fire house -->
+<symbol id="px-flame" viewBox="0 0 32 32">
+  <rect x="14" y="0" width="6" height="4"/>
+  <rect x="10" y="4" width="12" height="4"/>
+  <rect x="6" y="8" width="16" height="4"/>
+  <rect x="4" y="12" width="20" height="8"/>
+  <rect x="6" y="20" width="16" height="4"/>
+  <rect x="10" y="24" width="10" height="4"/>
+  <rect x="14" y="28" width="4" height="4"/>
+</symbol>
+
+<!-- STAR: level / house / rewards -->
+<symbol id="px-star" viewBox="0 0 32 32">
+  <rect x="12" y="0" width="8" height="8"/>
+  <rect x="0" y="8" width="32" height="6"/>
+  <rect x="4" y="14" width="24" height="4"/>
+  <rect x="4" y="18" width="10" height="10"/>
+  <rect x="18" y="18" width="10" height="10"/>
+</symbol>
+
+<!-- EYE: show password / student view -->
+<symbol id="px-eye" viewBox="0 0 32 32">
+  <rect x="8" y="8" width="16" height="2"/>
+  <rect x="4" y="10" width="24" height="12"/>
+  <rect x="8" y="22" width="16" height="2"/>
+  <rect x="12" y="11" width="8" height="8"/>
+</symbol>
+
+<!-- EYE-OFF: hide password -->
+<symbol id="px-eye-off" viewBox="0 0 32 32">
+  <rect x="8" y="8" width="16" height="2"/>
+  <rect x="4" y="10" width="24" height="12"/>
+  <rect x="8" y="22" width="16" height="2"/>
+  <rect x="0" y="26" width="4" height="4"/><rect x="4" y="22" width="4" height="4"/>
+  <rect x="8" y="18" width="4" height="4"/><rect x="12" y="14" width="4" height="4"/>
+  <rect x="16" y="10" width="4" height="4"/><rect x="20" y="6" width="4" height="4"/>
+  <rect x="24" y="2" width="4" height="4"/>
+</symbol>
+
+<!-- MOON: dark theme -->
+<symbol id="px-moon" viewBox="0 0 32 32">
+  <rect x="8" y="2" width="12" height="4"/>
+  <rect x="4" y="6" width="14" height="4"/>
+  <rect x="2" y="10" width="12" height="12"/>
+  <rect x="18" y="10" width="4" height="4"/>
+  <rect x="18" y="18" width="4" height="4"/>
+  <rect x="2" y="22" width="14" height="4"/>
+  <rect x="4" y="26" width="16" height="4"/>
+  <rect x="8" y="28" width="14" height="4"/>
+</symbol>
+
+<!-- SUN: light theme -->
+<symbol id="px-sun" viewBox="0 0 32 32">
+  <rect x="12" y="10" width="8" height="12"/>
+  <rect x="10" y="12" width="12" height="8"/>
+  <rect x="14" y="2" width="4" height="6"/>
+  <rect x="14" y="24" width="4" height="6"/>
+  <rect x="2" y="14" width="6" height="4"/>
+  <rect x="24" y="14" width="6" height="4"/>
+  <rect x="4" y="4" width="4" height="4"/><rect x="24" y="4" width="4" height="4"/>
+  <rect x="4" y="24" width="4" height="4"/><rect x="24" y="24" width="4" height="4"/>
+</symbol>
+
+<!-- LOGOUT: sign out (door + arrow) -->
+<symbol id="px-logout" viewBox="0 0 32 32">
+  <rect x="0" y="0" width="4" height="28"/>
+  <rect x="0" y="0" width="16" height="4"/>
+  <rect x="0" y="24" width="16" height="4"/>
+  <rect x="10" y="12" width="18" height="4"/>
+  <rect x="22" y="8" width="4" height="4"/>
+  <rect x="22" y="16" width="4" height="4"/>
+  <rect x="26" y="12" width="6" height="4"/>
+</symbol>
+
+<!-- GRID: dashboard overview -->
+<symbol id="px-grid" viewBox="0 0 32 32">
+  <rect x="2" y="2" width="12" height="12"/>
+  <rect x="18" y="2" width="12" height="12"/>
+  <rect x="2" y="18" width="12" height="12"/>
+  <rect x="18" y="18" width="12" height="12"/>
+</symbol>
+
+<!-- USERS: community / students -->
+<symbol id="px-users" viewBox="0 0 32 32">
+  <rect x="2" y="2" width="10" height="8"/>
+  <rect x="0" y="12" width="14" height="10"/>
+  <rect x="18" y="4" width="10" height="8"/>
+  <rect x="16" y="14" width="16" height="10"/>
+</symbol>
+
+<!-- SHIELD: manage roles -->
+<symbol id="px-shield" viewBox="0 0 32 32">
+  <rect x="2" y="2" width="28" height="16"/>
+  <rect x="4" y="18" width="24" height="4"/>
+  <rect x="8" y="22" width="16" height="4"/>
+  <rect x="12" y="26" width="8" height="4"/>
+  <rect x="14" y="30" width="4" height="2"/>
+</symbol>
+
+<!-- ROBOT: Eagle AI avatar -->
+<symbol id="px-robot" viewBox="0 0 32 32">
+  <rect x="14" y="0" width="4" height="4"/>
+  <rect x="4" y="4" width="24" height="4"/>
+  <rect x="4" y="24" width="24" height="4"/>
+  <rect x="4" y="8" width="4" height="16"/>
+  <rect x="24" y="8" width="4" height="16"/>
+  <rect x="8" y="10" width="6" height="6"/>
+  <rect x="18" y="10" width="6" height="6"/>
+  <rect x="8" y="20" width="4" height="2"/>
+  <rect x="12" y="22" width="8" height="2"/>
+  <rect x="20" y="20" width="4" height="2"/>
+</symbol>
+
+<!-- EAGLE: login logo -->
+<symbol id="px-eagle" viewBox="0 0 32 32">
+  <rect x="10" y="0" width="12" height="4"/>
+  <rect x="20" y="2" width="8" height="2"/>
+  <rect x="8" y="4" width="14" height="4"/>
+  <rect x="0" y="8" width="10" height="4"/>
+  <rect x="10" y="8" width="12" height="4"/>
+  <rect x="22" y="8" width="10" height="4"/>
+  <rect x="0" y="12" width="32" height="6"/>
+  <rect x="4" y="18" width="24" height="4"/>
+  <rect x="10" y="22" width="12" height="4"/>
+  <rect x="10" y="26" width="4" height="6"/>
+  <rect x="18" y="26" width="4" height="6"/>
+</symbol>
+
+<!-- CAMERA: avatar upload -->
+<symbol id="px-camera" viewBox="0 0 32 32">
+  <rect x="10" y="0" width="8" height="4"/>
+  <rect x="0" y="4" width="32" height="22"/>
+  <rect x="8" y="8" width="16" height="2"/>
+  <rect x="8" y="18" width="16" height="2"/>
+  <rect x="6" y="8" width="2" height="12"/>
+  <rect x="24" y="8" width="2" height="12"/>
+  <rect x="12" y="12" width="8" height="4"/>
+</symbol>
+
+<!-- CHAT: feedbacks / messages -->
+<symbol id="px-chat" viewBox="0 0 32 32">
+  <rect x="2" y="2" width="28" height="2"/>
+  <rect x="0" y="4" width="30" height="16"/>
+  <rect x="2" y="20" width="22" height="2"/>
+  <rect x="4" y="22" width="6" height="4"/>
+  <rect x="4" y="26" width="2" height="4"/>
+  <rect x="4" y="8" width="22" height="2"/>
+  <rect x="4" y="12" width="16" height="2"/>
+</symbol>
+
+<!-- LIST: rankings -->
+<symbol id="px-list" viewBox="0 0 32 32">
+  <rect x="2" y="4" width="4" height="4"/>
+  <rect x="10" y="4" width="18" height="4"/>
+  <rect x="2" y="14" width="4" height="4"/>
+  <rect x="10" y="14" width="14" height="4"/>
+  <rect x="2" y="24" width="4" height="4"/>
+  <rect x="10" y="24" width="16" height="4"/>
+</symbol>
+
+<!-- USER: profile icon -->
+<symbol id="px-user" viewBox="0 0 32 32">
+  <rect x="10" y="2" width="12" height="12"/>
+  <rect x="4" y="16" width="24" height="4"/>
+  <rect x="2" y="20" width="28" height="8"/>
+</symbol>
+
+<!-- SEND: AI chat send button -->
+<symbol id="px-send" viewBox="0 0 32 32">
+  <rect x="2" y="14" width="22" height="4"/>
+  <rect x="18" y="8" width="4" height="6"/>
+  <rect x="18" y="18" width="4" height="6"/>
+  <rect x="22" y="12" width="4" height="8"/>
+  <rect x="26" y="14" width="4" height="4"/>
+</symbol>
+
+<!-- ENVELOPE: email / verification -->
+<symbol id="px-envelope" viewBox="0 0 32 32">
+  <rect x="0" y="4" width="32" height="4"/>
+  <rect x="0" y="24" width="32" height="4"/>
+  <rect x="0" y="4" width="4" height="24"/>
+  <rect x="28" y="4" width="4" height="24"/>
+  <rect x="4" y="8" width="4" height="4"/>
+  <rect x="8" y="12" width="4" height="4"/>
+  <rect x="12" y="16" width="8" height="4"/>
+  <rect x="20" y="12" width="4" height="4"/>
+  <rect x="24" y="8" width="4" height="4"/>
+</symbol>
+
+<!-- PLUS: add / create -->
+<symbol id="px-plus" viewBox="0 0 32 32">
+  <rect x="14" y="4" width="4" height="24"/>
+  <rect x="4" y="14" width="24" height="4"/>
+</symbol>
+
+<!-- CLOCK: time / deadline -->
+<symbol id="px-clock" viewBox="0 0 32 32">
+  <rect x="8" y="2" width="16" height="4"/>
+  <rect x="4" y="6" width="24" height="4"/>
+  <rect x="2" y="10" width="4" height="12"/>
+  <rect x="26" y="10" width="4" height="12"/>
+  <rect x="4" y="22" width="24" height="4"/>
+  <rect x="8" y="26" width="16" height="4"/>
+  <rect x="14" y="6" width="4" height="12"/>
+  <rect x="14" y="18" width="10" height="4"/>
+</symbol>
+
+<!-- FLAG: rewards / goals -->
+<symbol id="px-flag" viewBox="0 0 32 32">
+  <rect x="4" y="2" width="4" height="30"/>
+  <rect x="8" y="2" width="20" height="14"/>
+</symbol>
+
+<!-- EDIT: pencil / modify -->
+<symbol id="px-edit" viewBox="0 0 32 32">
+  <rect x="20" y="0" width="8" height="4"/>
+  <rect x="16" y="4" width="8" height="4"/>
+  <rect x="12" y="8" width="8" height="4"/>
+  <rect x="8" y="12" width="8" height="4"/>
+  <rect x="4" y="16" width="8" height="4"/>
+  <rect x="0" y="20" width="8" height="4"/>
+  <rect x="0" y="24" width="4" height="6"/>
+  <rect x="0" y="28" width="8" height="4"/>
+</symbol>
+
+<!-- TRASH: delete / log management -->
+<symbol id="px-trash" viewBox="0 0 32 32">
+  <rect x="0" y="4" width="32" height="4"/>
+  <rect x="12" y="0" width="8" height="4"/>
+  <rect x="2" y="8" width="28" height="22"/>
+  <rect x="10" y="12" width="4" height="12"/>
+  <rect x="18" y="12" width="4" height="12"/>
+</symbol>
+
+<!-- TROPHY-SM: leaderboard / ranking -->
+<symbol id="px-crown" viewBox="0 0 32 32">
+  <rect x="0" y="8" width="4" height="14"/>
+  <rect x="14" y="2" width="4" height="14"/>
+  <rect x="28" y="8" width="4" height="14"/>
+  <rect x="4" y="12" width="4" height="4"/>
+  <rect x="8" y="16" width="4" height="4"/>
+  <rect x="12" y="14" width="8" height="6"/>
+  <rect x="20" y="16" width="4" height="4"/>
+  <rect x="24" y="12" width="4" height="4"/>
+  <rect x="0" y="22" width="32" height="6"/>
+</symbol>
+
+</svg>
 
 <!-- Loading -->
 <div id="loading-screen">
@@ -672,13 +1013,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   <div class="login-wrap">
     <div class="login-card">
       <div class="login-eagle" style="animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M32 8 C20 8 10 18 8 28 C6 22 2 20 2 20 C8 26 10 30 12 36 C16 44 24 50 32 50 C40 50 48 44 52 36 C54 30 56 26 62 20 C62 20 58 22 56 28 C54 18 44 8 32 8Z"/>
-          <path d="M22 30 C22 30 28 35 32 34 C36 35 42 30 42 30"/>
-          <circle cx="26" cy="26" r="2" fill="var(--text)"/>
-          <circle cx="38" cy="26" r="2" fill="var(--text)"/>
-          <path d="M28 38 C29.5 40 34.5 40 36 38"/>
-        </svg>
+        <svg width="64" height="64" fill="currentColor"><use href="#px-eagle"/></svg>
       </div>
       <div class="login-title" style="font-size:28px;">TIS Student Hub</div>
       <div class="login-sub" id="login-subtitle">Welcome to TIS Eagles · Begin your quest</div>
@@ -714,7 +1049,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <input class="fb-input" id="signin-email" type="email" placeholder="Email address" style="margin-bottom:8px;" />
           <div style="position:relative;margin-bottom:4px;">
             <input class="fb-input" id="signin-password" type="password" placeholder="Password" style="margin-bottom:0;padding-right:40px;" />
-            <button type="button" class="eye-toggle" onclick="togglePw('signin-password',this)" title="Show/hide password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button type="button" class="eye-toggle" onclick="togglePw('signin-password',this)" title="Show/hide password"><svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg></button>
           </div>
           <div style="text-align:right;margin-bottom:10px;">
             <a href="#" onclick="forgotPassword();return false;" style="font-size:12px;color:var(--air-deep);">Forgot password?</a>
@@ -728,11 +1063,11 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <input class="fb-input" id="signup-email" type="email" placeholder="Email address" style="margin-bottom:8px;" />
           <div style="position:relative;margin-bottom:8px;">
             <input class="fb-input" id="signup-password" type="password" placeholder="Password (min 6 characters)" style="margin-bottom:0;padding-right:40px;" />
-            <button type="button" class="eye-toggle" onclick="togglePw('signup-password',this)" title="Show/hide password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button type="button" class="eye-toggle" onclick="togglePw('signup-password',this)" title="Show/hide password"><svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg></button>
           </div>
           <div style="position:relative;margin-bottom:8px;">
             <input class="fb-input" id="signup-confirm" type="password" placeholder="Confirm password" style="margin-bottom:0;padding-right:40px;" />
-            <button type="button" class="eye-toggle" onclick="togglePw('signup-confirm',this)" title="Show/hide password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button type="button" class="eye-toggle" onclick="togglePw('signup-confirm',this)" title="Show/hide password"><svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg></button>
           </div>
           <div style="position:relative;margin-bottom:14px;">
             <input class="fb-input" id="signup-invite" type="text" placeholder="Registration code" maxlength="10"
@@ -744,7 +1079,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
         <!-- Email verification pending -->
         <div id="form-verify" style="display:none;text-align:center;">
-          <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--air-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--air-deep);"><svg width="36" height="36" fill="currentColor"><use href="#px-envelope"/></svg></div>
           <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Verify your email</div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.6;" id="verify-email-hint">We sent a verification link to your email. Click the link then come back here.</div>
           <div style="font-size:11px;background:#FDF5E3;color:#7A5005;border-radius:8px;padding:8px 12px;margin-bottom:16px;line-height:1.6;text-align:left;">
@@ -769,7 +1104,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
 <nav class="sidebar">
   <div class="logo-row">
-    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+    <div class="logo-icon"><svg width="20" height="20" fill="currentColor"><use href="#px-eagle"/></svg></div>
     <span class="logo-name">Student Hub</span>
     <span class="role-badge" id="role-badge">Student</span>
   </div>
@@ -778,39 +1113,39 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="nav-section">
       <div class="nav-label">Menu</div>
       <button class="nav-item active" onclick="showPage('dashboard',this)">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+        <svg width="16" height="16" fill="currentColor"><use href="#px-grid"/></svg>Dashboard
       </button>
       <button class="nav-item" onclick="showPage('announcements',this)">
-        <svg viewBox="0 0 24 24"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Announcements
+        <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
         <span class="nav-badge">3</span>
       </button>
       <button class="nav-item" onclick="showPage('voting',this)">
-        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Voting
+        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Voting
       </button>
       <button class="nav-item" onclick="showPage('feedbacks',this)">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
       <button class="nav-item" id="nav-ranking-btn" onclick="showPage('ranking',this)" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Rankings
+        <svg width="16" height="16" fill="currentColor"><use href="#px-list"/></svg>Rankings
       </button>
       <button class="nav-item" id="nav-board-btn" onclick="showPage('board',this)" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Community
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
       </button>
     </div>
     <div class="nav-section" id="nav-section-houses">
       <div class="nav-label">My House</div>
-      <button class="nav-item" onclick="showPage('houses',this)"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My House</button>
+      <button class="nav-item" onclick="showPage('houses',this)"><svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>My House</button>
     </div>
     <div class="nav-section" id="nav-section-rewards">
       <div class="nav-label">Rewards</div>
       <button class="nav-item" onclick="showPage('rewards',this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
+        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">AI</div>
       <button class="nav-item" id="nav-ai-btn" onclick="showPage('ai',this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>Eagle AI
+        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
       </button>
     </div>
   </div>
@@ -820,31 +1155,31 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="nav-section">
       <div class="nav-label">Manage</div>
       <button class="nav-item" onclick="showPage('mgr-announcements',this)">
-        <svg viewBox="0 0 24 24"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Announcements
+        <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
       </button>
       <button class="nav-item" onclick="showPage('mgr-voting',this)">
-        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Polls & Voting
+        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls & Voting
       </button>
       <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">Rewards</div>
       <button class="nav-item" id="nav-teacher-rewards-btn" onclick="showPage('mgr-rewards',this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
+        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">Preview</div>
       <button class="nav-item" onclick="showPage('dashboard',this)">
-        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Student View
+        <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>Eagle AI
+        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
       </button>
     </div>
   </div>
@@ -853,43 +1188,43 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="nav-section">
       <div class="nav-label">Overview</div>
       <button class="nav-item active" onclick="showPage('mgr-dashboard',this)">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+        <svg width="16" height="16" fill="currentColor"><use href="#px-grid"/></svg>Dashboard
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">Manage</div>
       <button class="nav-item" onclick="showPage('mgr-announcements',this)">
-        <svg viewBox="0 0 24 24"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Announcements
+        <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
       </button>
       <button class="nav-item" onclick="showPage('mgr-voting',this)">
-        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Polls & Voting
+        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls & Voting
       </button>
       <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
       <button class="nav-item" onclick="showPage('mgr-houses',this)">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Houses & Points
+        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>Houses & Points
       </button>
       <button class="nav-item" onclick="showPage('mgr-students',this)">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Students
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Students
       </button>
       <button class="nav-item" onclick="showPage('mgr-rewards',this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Rewards
+        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
       </button>
       <button class="nav-item" id="nav-admins-btn" onclick="showPage('mgr-admins',this)" style="display:none;">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Manage Roles
+        <svg width="16" height="16" fill="currentColor"><use href="#px-shield"/></svg>Manage Roles
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">Preview</div>
       <button class="nav-item" onclick="showPage('dashboard',this)">
-        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Student View
+        <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
       </button>
     </div>
     <div class="nav-section">
       <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>Eagle AI
+        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
       </button>
     </div>
   </div>
@@ -901,15 +1236,15 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div class="user-name" id="user-name">Loading...</div>
         <div class="user-role" id="user-role">Signing in</div>
       </div>
-      <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:var(--muted);fill:none;stroke-width:2;flex-shrink:0;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <svg width="13" height="13" fill="var(--muted)" style="flex-shrink:0;"><use href="#px-user"/></svg>
     </div>
     <div class="sidebar-actions">
       <button class="sidebar-icon-btn" onclick="toggleTheme()" id="theme-toggle-btn" title="Toggle dark/light mode">
-        <svg id="theme-icon-dark" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        <svg id="theme-icon-light" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="theme-icon-dark" width="15" height="15" fill="currentColor"><use href="#px-moon"/></svg>
+        <svg id="theme-icon-light" width="15" height="15" fill="currentColor" style="display:none"><use href="#px-sun"/></svg>
       </button>
       <button class="sidebar-icon-btn" onclick="signOut()" title="Sign out">
-        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg width="15" height="15" fill="currentColor"><use href="#px-logout"/></svg>
       </button>
     </div>
   </div>
@@ -929,28 +1264,28 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             <div class="quest-sub" id="dash-date"></div>
           </div>
           <div class="level-badge" id="dash-level-badge">
-            <span class="level-badge-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+            <span class="level-badge-icon"><svg width="14" height="14" fill="currentColor"><use href="#px-star"/></svg></span>
             <span id="dash-level-text">Rookie · Lv 1</span>
           </div>
         </div>
 
         <div class="quest-stats-row">
           <div class="quest-stat" id="dash-pts-stat">
-            <div class="quest-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <div class="quest-stat-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-bolt"/></svg></div>
             <div>
               <div class="quest-stat-num"><span class="count-up" id="dash-my-pts" data-target="0">0</span></div>
               <div class="quest-stat-label">My XP</div>
             </div>
           </div>
           <div class="quest-stat">
-            <div class="quest-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <div class="quest-stat-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-home"/></svg></div>
             <div>
               <div class="quest-stat-num" id="dash-house-name">—</div>
               <div class="quest-stat-label">My House</div>
             </div>
           </div>
           <div class="quest-stat">
-            <div class="quest-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+            <div class="quest-stat-icon"><svg width="18" height="18" fill="currentColor"><use href="#px-trophy"/></svg></div>
             <div>
               <div class="quest-stat-num" id="dash-house-rank">—</div>
               <div class="quest-stat-label">House Rank</div>
@@ -972,18 +1307,18 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Quick action achievement cards -->
     <div class="g3 stagger">
       <div class="ach-card" onclick="showPage('announcements',null)">
-        <div class="ach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <div class="ach-icon"><svg width="22" height="22" fill="currentColor"><use href="#px-bell"/></svg></div>
         <div class="ach-num" id="dash-ann-num">—</div>
         <div class="ach-label">Announcements</div>
         <span class="ach-trend up" id="dash-ann-trend" style="display:none;">NEW</span>
       </div>
       <div class="ach-card" onclick="showPage('voting',null)">
-        <div class="ach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="ach-icon"><svg width="22" height="22" fill="currentColor"><use href="#px-check"/></svg></div>
         <div class="ach-num" id="dash-poll-num">—</div>
         <div class="ach-label">Active polls</div>
       </div>
       <div class="ach-card" onclick="showPage('rewards',null)">
-        <div class="ach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+        <div class="ach-icon"><svg width="22" height="22" fill="currentColor"><use href="#px-gift"/></svg></div>
         <div class="ach-num">Spin</div>
         <div class="ach-label">Win prizes</div>
       </div>
@@ -1008,28 +1343,28 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="g4 stagger">
       <div class="team-banner" style="background:linear-gradient(135deg,#E8F4FD 0%,#C8E4F8 100%);color:var(--air-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-air">—</span>
-        <div class="team-icon" style="color:var(--air-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></div>
+        <div class="team-icon" style="color:var(--air-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-wind"/></svg></div>
         <div class="team-name" style="color:var(--air-deep);">Air</div>
         <div class="team-pts" id="dash-pts-air" style="color:var(--air-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
       <div class="team-banner" style="background:linear-gradient(135deg,#EAF2E3 0%,#CDDFC0 100%);color:var(--earth-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-earth">—</span>
-        <div class="team-icon" style="color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M17 8C8 10 5.9 16.17 3.82 22 11 12 17 14 21 10c-1.03-2.53-3.35-4.69-4-2z"/></svg></div>
+        <div class="team-icon" style="color:var(--earth-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-leaf"/></svg></div>
         <div class="team-name" style="color:var(--earth-deep);">Earth</div>
         <div class="team-pts" id="dash-pts-earth" style="color:var(--earth-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
       <div class="team-banner" style="background:linear-gradient(135deg,#E3EEF8 0%,#BCD4EC 100%);color:var(--water-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-water">—</span>
-        <div class="team-icon" style="color:var(--water-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></div>
+        <div class="team-icon" style="color:var(--water-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-waves"/></svg></div>
         <div class="team-name" style="color:var(--water-deep);">Water</div>
         <div class="team-pts" id="dash-pts-water" style="color:var(--water-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
       <div class="team-banner" style="background:linear-gradient(135deg,#FDF0E3 0%,#F8D5B5 100%);color:var(--fire-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-fire">—</span>
-        <div class="team-icon" style="color:var(--fire-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg></div>
+        <div class="team-icon" style="color:var(--fire-deep);"><svg width="22" height="22" fill="currentColor"><use href="#px-flame"/></svg></div>
         <div class="team-name" style="color:var(--fire-deep);">Fire</div>
         <div class="team-pts" id="dash-pts-fire" style="color:var(--fire-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
@@ -1230,7 +1565,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <!-- House standings — live from housePts -->
       <div class="mgr-section">
         <div class="mgr-section-title" style="justify-content:space-between;">
-          <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>House standings</span>
+          <span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>House standings</span>
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-houses',document.querySelector('[onclick*=mgr-houses]'))">Manage →</button>
         </div>
         <div id="dash-house-standings"></div>
@@ -1239,7 +1574,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <!-- Recent feedbacks -->
       <div class="mgr-section">
         <div class="mgr-section-title" style="justify-content:space-between;">
-          <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Recent feedbacks</span>
+          <span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Recent feedbacks</span>
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-feedbacks',document.querySelector('[onclick*=mgr-feedbacks]'))">View all →</button>
         </div>
         <div id="dash-fb-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
@@ -1249,7 +1584,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Recent announcements -->
     <div class="mgr-section">
       <div class="mgr-section-title" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M18 8a2 2 0 010 4"/><path d="M14 8.27V4a2 2 0 00-4 0v.27"/><path d="M6 8h10l1 9H5z"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Recent announcements</span>
+        <span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Recent announcements</span>
         <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-announcements',document.querySelector('[onclick*=mgr-announcements]'))">Manage →</button>
       </div>
       <div id="dash-ann-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
@@ -1258,7 +1593,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Active polls -->
     <div class="mgr-section">
       <div class="mgr-section-title" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Active polls</span>
+        <span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Active polls</span>
         <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-voting',document.querySelector('[onclick*=mgr-voting]'))">Manage →</button>
       </div>
       <div id="dash-polls-preview"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
@@ -1267,7 +1602,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Students overview -->
     <div class="mgr-section">
       <div class="mgr-section-title" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Recent students</span>
+        <span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Recent students</span>
         <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="showPage('mgr-students',document.querySelector('[onclick*=mgr-students]'))">View all →</button>
       </div>
       <div id="dash-students-list"><div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:13px;">No students yet.</div></div>
@@ -1369,7 +1704,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     </div>
     <div class="g4" style="margin-bottom:14px;">
       <div class="card" style="text-align:center;background:var(--earth);border-color:rgba(114,181,90,0.3);">
-        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M17 8C8 10 5.9 16.17 3.82 22 11 12 17 14 21 10c-1.03-2.53-3.35-4.69-4-2z"/></svg></div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--earth-deep);"><svg width="28" height="28" fill="currentColor"><use href="#px-leaf"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--earth-text);">Earth</div>
         <div style="font-size:28px;font-weight:300;color:var(--earth-deep);" id="pts-earth">—</div>
         <input type="number" id="pts-input-earth" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('earth',this.value)" />
@@ -1381,7 +1716,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
       </div>
       <div class="card" style="text-align:center;background:var(--water);border-color:rgba(90,143,200,0.3);">
-        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--water-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--water-deep);"><svg width="28" height="28" fill="currentColor"><use href="#px-waves"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--water-text);">Water</div>
         <div style="font-size:28px;font-weight:300;color:var(--water-deep);" id="pts-water">—</div>
         <input type="number" id="pts-input-water" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('water',this.value)" />
@@ -1393,7 +1728,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
       </div>
       <div class="card" style="text-align:center;background:var(--air);border-color:rgba(107,184,232,0.3);">
-        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--air-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--air-deep);"><svg width="28" height="28" fill="currentColor"><use href="#px-wind"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--air-text);">Air</div>
         <div style="font-size:28px;font-weight:300;color:var(--air-deep);" id="pts-air">—</div>
         <input type="number" id="pts-input-air" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('air',this.value)" />
@@ -1405,7 +1740,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
       </div>
       <div class="card" style="text-align:center;background:var(--fire);border-color:rgba(232,135,74,0.3);">
-        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--fire-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg></div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--fire-deep);"><svg width="28" height="28" fill="currentColor"><use href="#px-flame"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--fire-text);">Fire</div>
         <div style="font-size:28px;font-weight:300;color:var(--fire-deep);" id="pts-fire">—</div>
         <input type="number" id="pts-input-fire" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('fire',this.value)" />
@@ -1462,7 +1797,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <!-- Global spin price setting -->
       <div class="mgr-section" style="background:linear-gradient(135deg,var(--earth) 0%,var(--air) 100%);border-color:rgba(114,181,90,0.4);">
         <div class="mgr-section-title" style="color:var(--earth-text);">
-          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--earth-deep);fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <svg width="16" height="16" fill="var(--earth-deep)"><use href="#px-clock"/></svg>
           Draw price (global)
         </div>
         <p style="font-size:13px;color:var(--earth-text);margin-bottom:14px;line-height:1.6;">This is the <strong>point cost per spin</strong> — applies to all prizes. Students pay this amount each time they draw.</p>
@@ -1486,7 +1821,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <!-- Add new prize -->
       <div class="mgr-section">
         <div class="mgr-section-title">
-          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg width="16" height="16" fill="currentColor"><use href="#px-plus"/></svg>
           Add new prize
         </div>
         <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:12px;margin-bottom:12px;align-items:end;">
@@ -1553,7 +1888,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <!-- XP-only grant — Head Admin + above only -->
       <div class="mgr-section" id="xp-grant-section" style="display:none;border-color:rgba(165,111,224,0.25);background:linear-gradient(135deg,#F6F0FF 0%,#FFF 100%);">
         <div class="mgr-section-title" style="color:#6B3FA0;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <svg width="16" height="16" fill="currentColor"><use href="#px-bolt"/></svg>
           Grant XP only (no points)
         </div>
         <p style="font-size:12px;color:#6B3FA0;opacity:0.8;margin-bottom:12px;">Awards XP directly to a student's level bar without giving spendable points. Head Admin and Owner only.</p>
@@ -1638,7 +1973,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:2rem;">
         <!-- Result area -->
         <div id="spin-result-area" style="width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;">
-          <div style="display:flex;justify-content:center;margin-bottom:10px;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="56" height="56"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+          <div style="display:flex;justify-content:center;margin-bottom:10px;color:var(--earth-deep);"><svg width="56" height="56" fill="currentColor"><use href="#px-gift"/></svg></div>
           <div style="font-size:15px;font-weight:500;color:var(--muted);">Ready to draw?</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px;">Spend points for a random prize</div>
         </div>
@@ -1705,7 +2040,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
     <div class="mgr-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <svg width="16" height="16" fill="currentColor"><use href="#px-shield"/></svg>
         Add new admin
       </div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Enter the Microsoft account email of the person you want to grant manager access. They will see the full manager dashboard when they sign in.</p>
@@ -1725,7 +2060,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
     <div class="mgr-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>
         Current admins
       </div>
       <div id="admin-list"></div>
@@ -1734,8 +2069,8 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Log Management — Owner only -->
     <div class="mgr-section" id="log-mgmt-section" style="display:none;">
       <div class="mgr-section-title" style="color:var(--fire-text);">
-        <svg viewBox="0 0 24 24" style="stroke:var(--fire-deep);"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        🗑️ Log management <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:linear-gradient(135deg,#7c3aed,#c026d3);color:white;">Owner only</span>
+        <svg width="16" height="16" fill="var(--fire-deep)"><use href="#px-trash"/></svg>
+        Log management <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:linear-gradient(135deg,#7c3aed,#c026d3);color:white;">Owner only</span>
       </div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Permanently delete log records from Firestore. This cannot be undone.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -1751,7 +2086,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Feature Flags — Head Admin + above -->
     <div class="mgr-section" id="feature-flags-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        <svg width="16" height="16" fill="currentColor"><use href="#px-flag"/></svg>
         Feature flags
         <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--air);color:var(--air-text);">Head Admin+</span>
       </div>
@@ -1824,7 +2159,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- AI Info (manual input by Head Admin) -->
     <div class="mgr-section" id="ai-config-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <svg width="16" height="16" fill="currentColor"><use href="#px-edit"/></svg>
         Eagle AI — School Information
         <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--air);color:var(--air-text);">Head Admin+</span>
       </div>
@@ -1859,7 +2194,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Teacher Management -->
     <div class="mgr-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>
         Teachers
         <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--water);color:var(--water-text);">Below Admin</span>
       </div>
@@ -1881,7 +2216,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
     <div class="mgr-section">
       <div class="mgr-section-title">
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>
         House leaders
       </div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Designate one student per house as a House Leader. They can post announcements to their house.</p>
@@ -1907,7 +2242,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div class="ai-messages" id="ai-messages">
           <!-- Welcome message -->
           <div class="ai-bubble-row">
-            <div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg></div>
+            <div class="ai-avatar"><svg width="18" height="18" fill="white"><use href="#px-robot"/></svg></div>
             <div class="ai-bubble bot">
               Hi! I'm <strong>Eagle AI</strong>, your TIS Eagles study assistant.<br>
               Ask me anything — school info, lunch menu, tips, or general questions. I'm here to help!
@@ -1929,7 +2264,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             oninput="aiAutoResize(this)"
           ></textarea>
           <button class="ai-send-btn" id="ai-send-btn" onclick="aiSend()" title="Send">
-            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <svg width="18" height="18" fill="white"><use href="#px-send"/></svg>
           </button>
         </div>
       </div>
@@ -2374,8 +2709,8 @@ function togglePw(inputId, btn) {
   inp.type = inp.type === 'password' ? 'text' : 'password';
   const isVisible = inp.type === 'text';
   btn.innerHTML = isVisible
-    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    ? `<svg width="16" height="16" fill="currentColor"><use href="#px-eye-off"/></svg>`
+    : `<svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>`;
 }
 
 function showLoginError(msg) {
@@ -3081,15 +3416,15 @@ const HOUSE_INFO = {
   fire:  {name:'Fire',  emoji:'🔥', bg:'var(--fire)',  border:'rgba(232,135,74,0.3)',  text:'var(--fire-text)',  deep:'var(--fire-deep)',  mid:'var(--fire-mid)'},
 };
 
-const HOUSE_SVG_PATHS = {
-  Air:   `<path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>`,
-  Earth: `<path d="M17 8C8 10 5.9 16.17 3.82 22 11 12 17 14 21 10c-1.03-2.53-3.35-4.69-4-2z"/>`,
-  Water: `<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>`,
-  Fire:  `<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/>`,
+const HOUSE_PX_ICONS = {
+  Air:   'px-wind',
+  Earth: 'px-leaf',
+  Water: 'px-waves',
+  Fire:  'px-flame',
 };
 function getHouseIconSvg(houseName, size=24, color='currentColor') {
-  const paths = HOUSE_SVG_PATHS[houseName] || HOUSE_SVG_PATHS.Air;
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}">${paths}</svg>`;
+  const id = HOUSE_PX_ICONS[houseName] || 'px-wind';
+  return `<svg width="${size}" height="${size}" fill="${color}"><use href="#${id}"/></svg>`;
 }
 
 function renderMyHousePage() {
@@ -3814,7 +4149,7 @@ function renderRanking() {
     return `<div class="podium-slot">
       <div class="podium-avatar" style="background:${col};${isFirst ? 'width:64px;height:64px;font-size:26px;' : ''}">
         ${ini}
-        ${isFirst ? `<span class="podium-crown"><svg viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M2 20h20M5 20V10l7-6 7 6v10"/><polyline points="9 20 9 13 15 13 15 20"/></svg></span>` : `<span class="podium-crown" style="font-size:13px;font-weight:700;color:${['#C89A10','#888','#A05A20'][i]};">${i+1}</span>`}
+        ${isFirst ? `<span class="podium-crown"><svg width="20" height="20" fill="#FFD700"><use href="#px-crown"/></svg></span>` : `<span class="podium-crown" style="font-size:13px;font-weight:700;color:${['#C89A10','#888','#A05A20'][i]};">${i+1}</span>`}
       </div>
       <div class="podium-name" title="${esc(s.name)}">${esc(s.name)}</div>
       <div class="podium-xp">${s[sortKey].toLocaleString()} ${sortKey.toUpperCase()}</div>
@@ -4850,7 +5185,7 @@ function renderMyFeedbackCards(feedbacks) {
   if (!feedbacks || feedbacks.length === 0) {
     container.innerHTML = `
       <div style="text-align:center;padding:3rem 1rem;">
-        <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--muted);"><svg width="36" height="36" fill="currentColor"><use href="#px-chat"/></svg></div>
         <div style="font-size:14px;font-weight:500;margin-bottom:6px;">No feedbacks yet</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Submit your first feedback using the "New feedback" tab.</div>
         <button class="btn-outline" onclick="switchFbTab('new')">Write feedback</button>
@@ -5326,7 +5661,7 @@ async function loadMyDrawHistory(email) {
       const date = r.drawnAt?.toDate?.()?.toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) || 'Recent';
       return `
         <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);">
-          <div style="flex-shrink:0;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+          <div style="flex-shrink:0;color:var(--earth-deep);"><svg width="30" height="30" fill="currentColor"><use href="#px-gift"/></svg></div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:14px;font-weight:600;color:var(--earth-deep);">${esc(r.prizeName)}</div>
             ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${esc(r.prizeDescription)}</div>` : ''}
@@ -5462,7 +5797,7 @@ function showSpinResult(prize, serial, pointsSpent) {
 
   area.innerHTML = `
     <div style="animation:bounceIn 0.55s cubic-bezier(0.36,0.07,0.19,0.97);width:100%;">
-      <div style="display:flex;justify-content:center;margin-bottom:6px;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+      <div style="display:flex;justify-content:center;margin-bottom:6px;color:var(--earth-deep);"><svg width="52" height="52" fill="currentColor"><use href="#px-gift"/></svg></div>
       <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--earth-mid);margin-bottom:4px;">YOU WON!</div>
       <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${esc(prize.name)}</div>
       ${prize.description ? `<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${esc(prize.description)}</div>` : '<div style="margin-bottom:10px;"></div>'}
@@ -6089,7 +6424,7 @@ function _tryInit() {
       <!-- Clickable avatar -->
       <div class="avatar-upload-ring" onclick="document.getElementById('avatar-file-input').click()" title="Click to change photo">
         <div class="avatar" id="profile-modal-avatar" style="width:64px;height:64px;font-size:18px;background:#1A6FA8;flex-shrink:0;overflow:hidden;">?</div>
-        <div class="avatar-upload-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <div class="avatar-upload-overlay"><svg width="20" height="20" fill="white"><use href="#px-camera"/></svg></div>
       </div>
       <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
       <div>
@@ -6112,15 +6447,15 @@ function _tryInit() {
       <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Change password</div>
       <div style="position:relative;margin-bottom:8px;">
         <input class="fb-input" id="profile-pw-current" type="password" placeholder="Current password" style="margin-bottom:0;padding-right:36px;" />
-        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-current',this)" title="Show/hide"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-current',this)" title="Show/hide"><svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg></button>
       </div>
       <div style="position:relative;margin-bottom:8px;">
         <input class="fb-input" id="profile-pw-new" type="password" placeholder="New password (min 6 chars)" style="margin-bottom:0;padding-right:36px;" />
-        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-new',this)" title="Show/hide"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-new',this)" title="Show/hide"><svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg></button>
       </div>
       <div style="position:relative;margin-bottom:8px;">
         <input class="fb-input" id="profile-pw-confirm" type="password" placeholder="Confirm new password" style="margin-bottom:0;padding-right:36px;" />
-        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-confirm',this)" title="Show/hide"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-confirm',this)" title="Show/hide"><svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg></button>
       </div>
       <button class="btn-primary" style="width:100%;padding:10px;" onclick="saveProfilePassword()">Change password</button>
       <div id="profile-pw-status" style="font-size:11px;margin-top:5px;min-height:14px;"></div>
@@ -6498,7 +6833,7 @@ function aiAppendBubble(role, text) {
   row.className = 'ai-bubble-row' + (role === 'user' ? ' user' : '');
 
   const isBot = role === 'bot';
-  const botSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg>`;
+  const botSvg = `<svg width="18" height="18" fill="white"><use href="#px-robot"/></svg>`;
   const avatarLabel = isBot ? botSvg : aiGetUserInitials();
 
   row.innerHTML = `
@@ -6517,7 +6852,7 @@ function aiAppendThinking() {
   row.className = 'ai-bubble-row';
   row.id = id;
   row.innerHTML = `
-    <div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg></div>
+    <div class="ai-avatar"><svg width="18" height="18" fill="white"><use href="#px-robot"/></svg></div>
     <div class="ai-bubble bot">
       <div class="ai-thinking-dots">
         <span></span><span></span><span></span>
@@ -6539,7 +6874,7 @@ function aiClearChat() {
   const container = document.getElementById('ai-messages');
   container.innerHTML = `
     <div class="ai-bubble-row">
-      <div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg></div>
+      <div class="ai-avatar"><svg width="18" height="18" fill="white"><use href="#px-robot"/></svg></div>
       <div class="ai-bubble bot">
         Hi! I'm <strong>Eagle AI</strong>, your TIS Eagles study assistant.<br>
         Ask me anything — school info, lunch menu, tips, or general questions. I'm here to help!
