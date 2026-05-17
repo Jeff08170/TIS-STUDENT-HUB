@@ -40,7 +40,15 @@
   --primary:#0a0a0a;--primary-hover:#333;--primary-soft:rgba(0,0,0,0.05);
   --sidebar-bg:#ffffff;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s;}
+body{
+  font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s;
+  background-image:radial-gradient(circle,rgba(255,255,255,0.028) 1px,transparent 1px);
+  background-size:28px 28px;background-attachment:fixed;
+}
+[data-theme="light"] body{
+  background-image:radial-gradient(circle,rgba(0,0,0,0.045) 1px,transparent 1px);
+}
 
 /* ── LOADING ── */
 #loading-screen{
@@ -345,6 +353,31 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 .fb-rc-reply{background:var(--bg);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--text);border-left:3px solid var(--air-deep);margin-bottom:8px;}
 .fb-stars{color:#F5C747;font-size:12px;}
 
+/* ── DOT-GRID ICON CONTAINERS ── */
+.ach-icon svg,.quest-stat-icon svg,.d-icon svg,.team-icon svg{
+  width:22px;height:22px;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.quest-stat-icon svg{width:18px;height:18px;}
+.team-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.22);backdrop-filter:blur(8px);
+  margin-bottom:6px;flex-shrink:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,0.20) 1.5px,transparent 1.5px);
+  background-size:7px 7px;
+}
+.ach-icon{
+  background-image:radial-gradient(circle,rgba(255,255,255,0.10) 1.5px,transparent 1.5px);
+  background-size:7px 7px;
+}
+[data-theme="light"] .ach-icon{
+  background-image:radial-gradient(circle,rgba(0,0,0,0.07) 1.5px,transparent 1.5px);
+}
+.level-badge-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.eye-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);background:none;border:none;padding:2px;display:flex;align-items:center;}
+.eye-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
 /* ═══════════════════════════════════════════════
    GAMIFIED UI — XP, levels, achievements
    ═══════════════════════════════════════════════ */
@@ -638,7 +671,15 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-card">
-      <div class="login-eagle" style="font-size:60px;animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1);">🦅</div>
+      <div class="login-eagle" style="animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M32 8 C20 8 10 18 8 28 C6 22 2 20 2 20 C8 26 10 30 12 36 C16 44 24 50 32 50 C40 50 48 44 52 36 C54 30 56 26 62 20 C62 20 58 22 56 28 C54 18 44 8 32 8Z"/>
+          <path d="M22 30 C22 30 28 35 32 34 C36 35 42 30 42 30"/>
+          <circle cx="26" cy="26" r="2" fill="var(--text)"/>
+          <circle cx="38" cy="26" r="2" fill="var(--text)"/>
+          <path d="M28 38 C29.5 40 34.5 40 36 38"/>
+        </svg>
+      </div>
       <div class="login-title" style="font-size:28px;">TIS Student Hub</div>
       <div class="login-sub" id="login-subtitle">Welcome to TIS Eagles · Begin your quest</div>
 
@@ -673,7 +714,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <input class="fb-input" id="signin-email" type="email" placeholder="Email address" style="margin-bottom:8px;" />
           <div style="position:relative;margin-bottom:4px;">
             <input class="fb-input" id="signin-password" type="password" placeholder="Password" style="margin-bottom:0;padding-right:40px;" />
-            <span onclick="togglePw('signin-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
+            <button type="button" class="eye-toggle" onclick="togglePw('signin-password',this)" title="Show/hide password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
           <div style="text-align:right;margin-bottom:10px;">
             <a href="#" onclick="forgotPassword();return false;" style="font-size:12px;color:var(--air-deep);">Forgot password?</a>
@@ -687,11 +728,11 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <input class="fb-input" id="signup-email" type="email" placeholder="Email address" style="margin-bottom:8px;" />
           <div style="position:relative;margin-bottom:8px;">
             <input class="fb-input" id="signup-password" type="password" placeholder="Password (min 6 characters)" style="margin-bottom:0;padding-right:40px;" />
-            <span onclick="togglePw('signup-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
+            <button type="button" class="eye-toggle" onclick="togglePw('signup-password',this)" title="Show/hide password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
           <div style="position:relative;margin-bottom:8px;">
             <input class="fb-input" id="signup-confirm" type="password" placeholder="Confirm password" style="margin-bottom:0;padding-right:40px;" />
-            <span onclick="togglePw('signup-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:var(--muted);">👁</span>
+            <button type="button" class="eye-toggle" onclick="togglePw('signup-confirm',this)" title="Show/hide password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
           <div style="position:relative;margin-bottom:14px;">
             <input class="fb-input" id="signup-invite" type="text" placeholder="Registration code" maxlength="10"
@@ -703,7 +744,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
         <!-- Email verification pending -->
         <div id="form-verify" style="display:none;text-align:center;">
-          <div style="font-size:32px;margin-bottom:12px;">📧</div>
+          <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--air-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
           <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Verify your email</div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.6;" id="verify-email-hint">We sent a verification link to your email. Click the link then come back here.</div>
           <div style="font-size:11px;background:#FDF5E3;color:#7A5005;border-radius:8px;padding:8px 12px;margin-bottom:16px;line-height:1.6;text-align:left;">
@@ -888,28 +929,28 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             <div class="quest-sub" id="dash-date"></div>
           </div>
           <div class="level-badge" id="dash-level-badge">
-            <span class="level-badge-emoji">⭐</span>
+            <span class="level-badge-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
             <span id="dash-level-text">Rookie · Lv 1</span>
           </div>
         </div>
 
         <div class="quest-stats-row">
           <div class="quest-stat" id="dash-pts-stat">
-            <div class="quest-stat-icon">⚡</div>
+            <div class="quest-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
             <div>
               <div class="quest-stat-num"><span class="count-up" id="dash-my-pts" data-target="0">0</span></div>
               <div class="quest-stat-label">My XP</div>
             </div>
           </div>
           <div class="quest-stat">
-            <div class="quest-stat-icon">🏰</div>
+            <div class="quest-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
             <div>
               <div class="quest-stat-num" id="dash-house-name">—</div>
               <div class="quest-stat-label">My House</div>
             </div>
           </div>
           <div class="quest-stat">
-            <div class="quest-stat-icon">🏆</div>
+            <div class="quest-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
             <div>
               <div class="quest-stat-num" id="dash-house-rank">—</div>
               <div class="quest-stat-label">House Rank</div>
@@ -931,18 +972,18 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <!-- Quick action achievement cards -->
     <div class="g3 stagger">
       <div class="ach-card" onclick="showPage('announcements',null)">
-        <div class="ach-icon">📢</div>
+        <div class="ach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
         <div class="ach-num" id="dash-ann-num">—</div>
         <div class="ach-label">Announcements</div>
         <span class="ach-trend up" id="dash-ann-trend" style="display:none;">NEW</span>
       </div>
       <div class="ach-card" onclick="showPage('voting',null)">
-        <div class="ach-icon">🗳️</div>
+        <div class="ach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
         <div class="ach-num" id="dash-poll-num">—</div>
         <div class="ach-label">Active polls</div>
       </div>
       <div class="ach-card" onclick="showPage('rewards',null)">
-        <div class="ach-icon">🎁</div>
+        <div class="ach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
         <div class="ach-num">Spin</div>
         <div class="ach-label">Win prizes</div>
       </div>
@@ -950,45 +991,45 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
     <div class="g2">
       <div class="card">
-        <div class="section-label">📰 Latest announcements</div>
+        <div class="section-label">Latest announcements</div>
         <div id="dash-ann-preview"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
       </div>
       <div class="card">
-        <div class="section-label">🗳️ Active poll</div>
+        <div class="section-label">Active poll</div>
         <div id="dash-poll-preview"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
       </div>
     </div>
 
     <!-- House team banners -->
     <div style="margin-top:1.25rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline;">
-      <div class="section-label" style="margin-bottom:0;">🏆 House Standings</div>
+      <div class="section-label" style="margin-bottom:0;">House Standings</div>
       <span style="font-size:11px;color:var(--muted);">Tap a house to see details</span>
     </div>
     <div class="g4 stagger">
       <div class="team-banner" style="background:linear-gradient(135deg,#E8F4FD 0%,#C8E4F8 100%);color:var(--air-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-air">—</span>
-        <span class="team-emoji">💨</span>
+        <div class="team-icon" style="color:var(--air-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></div>
         <div class="team-name" style="color:var(--air-deep);">Air</div>
         <div class="team-pts" id="dash-pts-air" style="color:var(--air-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
       <div class="team-banner" style="background:linear-gradient(135deg,#EAF2E3 0%,#CDDFC0 100%);color:var(--earth-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-earth">—</span>
-        <span class="team-emoji">🌿</span>
+        <div class="team-icon" style="color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M17 8C8 10 5.9 16.17 3.82 22 11 12 17 14 21 10c-1.03-2.53-3.35-4.69-4-2z"/></svg></div>
         <div class="team-name" style="color:var(--earth-deep);">Earth</div>
         <div class="team-pts" id="dash-pts-earth" style="color:var(--earth-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
       <div class="team-banner" style="background:linear-gradient(135deg,#E3EEF8 0%,#BCD4EC 100%);color:var(--water-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-water">—</span>
-        <span class="team-emoji">🌊</span>
+        <div class="team-icon" style="color:var(--water-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></div>
         <div class="team-name" style="color:var(--water-deep);">Water</div>
         <div class="team-pts" id="dash-pts-water" style="color:var(--water-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
       </div>
       <div class="team-banner" style="background:linear-gradient(135deg,#FDF0E3 0%,#F8D5B5 100%);color:var(--fire-text);" onclick="showPage('houses',null)">
         <span class="team-rank" id="dash-rank-fire">—</span>
-        <span class="team-emoji">🔥</span>
+        <div class="team-icon" style="color:var(--fire-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg></div>
         <div class="team-name" style="color:var(--fire-deep);">Fire</div>
         <div class="team-pts" id="dash-pts-fire" style="color:var(--fire-deep);">—</div>
         <div class="team-pts-label">XP earned</div>
@@ -1040,8 +1081,8 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
     <!-- Tab switcher -->
     <div style="display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;width:fit-content;">
-      <button class="login-tab active" id="fb-tab-new" onclick="switchFbTab('new')">✏️ New feedback</button>
-      <button class="login-tab" id="fb-tab-mine" onclick="switchFbTab('mine')">📋 My feedbacks <span id="fb-mine-count" style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:var(--air-deep);color:white;margin-left:4px;display:none;"></span></button>
+      <button class="login-tab active" id="fb-tab-new" onclick="switchFbTab('new')">New feedback</button>
+      <button class="login-tab" id="fb-tab-mine" onclick="switchFbTab('mine')">My feedbacks <span id="fb-mine-count" style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:var(--air-deep);color:white;margin-left:4px;display:none;"></span></button>
     </div>
 
     <!-- Panel: Submit new feedback -->
@@ -1083,7 +1124,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     </div>
     <!-- Post house announcement (house leaders + admins only) -->
     <div class="mgr-section" id="house-post-section" style="display:none;">
-      <div class="mgr-section-title">📢 Post house announcement</div>
+      <div class="mgr-section-title">Post house announcement</div>
       <input class="fb-input" id="house-ann-title" type="text" placeholder="Announcement title" />
       <textarea class="fb-input" id="house-ann-body" placeholder="Write the announcement..." style="min-height:80px;" maxlength="1000"></textarea>
       <button class="btn-primary" onclick="postHouseAnnouncement()">Post to my house</button>
@@ -1104,18 +1145,18 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   <!-- Student: Ranking -->
   <div id="page-ranking" class="page">
     <div class="page-header">
-      <div><h1 class="page-title">🏆 Rankings</h1><p class="page-sub">Compete with your fellow students</p></div>
+      <div><h1 class="page-title">Rankings</h1><p class="page-sub">Compete with your fellow students</p></div>
       <button class="btn-outline" style="font-size:11px;padding:6px 14px;" onclick="loadRankingPage()">↻ Refresh</button>
     </div>
 
     <!-- Filter pills -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;" id="rank-filter-row">
-      <button class="fpill active" onclick="setRankFilter('xp',this)">⚡ XP Rank</button>
-      <button class="fpill" onclick="setRankFilter('points',this)">🪙 Points Rank</button>
-      <button class="fpill" onclick="setRankFilter('house-air',this)">💨 Air</button>
-      <button class="fpill" onclick="setRankFilter('house-earth',this)">🌿 Earth</button>
-      <button class="fpill" onclick="setRankFilter('house-water',this)">🌊 Water</button>
-      <button class="fpill" onclick="setRankFilter('house-fire',this)">🔥 Fire</button>
+      <button class="fpill active" onclick="setRankFilter('xp',this)">XP Rank</button>
+      <button class="fpill" onclick="setRankFilter('points',this)">Points Rank</button>
+      <button class="fpill" onclick="setRankFilter('house-air',this)">Air</button>
+      <button class="fpill" onclick="setRankFilter('house-earth',this)">Earth</button>
+      <button class="fpill" onclick="setRankFilter('house-water',this)">Water</button>
+      <button class="fpill" onclick="setRankFilter('house-fire',this)">Fire</button>
     </div>
 
     <!-- Podium top 3 -->
@@ -1142,7 +1183,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   <!-- Student: Community Board -->
   <div id="page-board" class="page">
     <div class="page-header">
-      <div><h1 class="page-title">💬 Community Board</h1><p class="page-sub">Share your ideas with everyone</p></div>
+      <div><h1 class="page-title">Community Board</h1><p class="page-sub">Share your ideas with everyone</p></div>
     </div>
 
     <!-- Composer -->
@@ -1158,7 +1199,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:11px;color:var(--muted);" id="board-char-count">0/500</span>
-          <button class="btn-primary" onclick="postBoardMessage()" style="padding:8px 20px;">Post 🚀</button>
+          <button class="btn-primary" onclick="postBoardMessage()" style="padding:8px 20px;">Post</button>
         </div>
       </div>
     </div>
@@ -1319,16 +1360,16 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="page-header">
       <div><h1 class="page-title">Houses & Points</h1><p class="page-sub">Manage house points for Term 2</p></div>
       <button class="btn-primary" id="save-pts-btn" onclick="saveAllHousePoints()" style="background:var(--earth-deep);">
-        💾 Save to Firebase
+        Save to Firebase
       </button>
     </div>
     <div id="pts-unsaved-banner" style="display:none;background:#FDF5E3;border:1px solid #E8C97A;border-radius:var(--radius-sm);padding:10px 16px;margin-bottom:14px;font-size:13px;color:#7A5005;display:flex;align-items:center;justify-content:space-between;">
-      <span>⚠️ You have unsaved changes — press "Save to Firebase" to apply.</span>
+      <span>You have unsaved changes — press "Save to Firebase" to apply.</span>
       <button class="btn-primary" onclick="saveAllHousePoints()" style="padding:6px 14px;font-size:12px;">Save now</button>
     </div>
     <div class="g4" style="margin-bottom:14px;">
       <div class="card" style="text-align:center;background:var(--earth);border-color:rgba(114,181,90,0.3);">
-        <div style="font-size:24px;margin-bottom:4px;">🌿</div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M17 8C8 10 5.9 16.17 3.82 22 11 12 17 14 21 10c-1.03-2.53-3.35-4.69-4-2z"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--earth-text);">Earth</div>
         <div style="font-size:28px;font-weight:300;color:var(--earth-deep);" id="pts-earth">—</div>
         <input type="number" id="pts-input-earth" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('earth',this.value)" />
@@ -1340,7 +1381,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
       </div>
       <div class="card" style="text-align:center;background:var(--water);border-color:rgba(90,143,200,0.3);">
-        <div style="font-size:24px;margin-bottom:4px;">🌊</div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--water-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--water-text);">Water</div>
         <div style="font-size:28px;font-weight:300;color:var(--water-deep);" id="pts-water">—</div>
         <input type="number" id="pts-input-water" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('water',this.value)" />
@@ -1352,7 +1393,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
       </div>
       <div class="card" style="text-align:center;background:var(--air);border-color:rgba(107,184,232,0.3);">
-        <div style="font-size:24px;margin-bottom:4px;">💨</div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--air-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--air-text);">Air</div>
         <div style="font-size:28px;font-weight:300;color:var(--air-deep);" id="pts-air">—</div>
         <input type="number" id="pts-input-air" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('air',this.value)" />
@@ -1364,7 +1405,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </div>
       </div>
       <div class="card" style="text-align:center;background:var(--fire);border-color:rgba(232,135,74,0.3);">
-        <div style="font-size:24px;margin-bottom:4px;">🔥</div>
+        <div style="display:flex;justify-content:center;margin-bottom:4px;color:var(--fire-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg></div>
         <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--fire-text);">Fire</div>
         <div style="font-size:28px;font-weight:300;color:var(--fire-deep);" id="pts-fire">—</div>
         <input type="number" id="pts-input-fire" class="fb-input" style="text-align:center;font-size:18px;font-weight:500;margin:8px 0 4px;padding:6px;" oninput="previewPts('fire',this.value)" />
@@ -1384,7 +1425,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div style="font-size:12px;color:var(--muted);margin-top:2px;">Changes are local until you save to Firebase</div>
       </div>
       <button class="btn-primary" id="save-pts-btn-2" onclick="saveAllHousePoints()" style="padding:10px 24px;">
-        💾 Save to Firebase
+        Save to Firebase
       </button>
     </div>
     <div class="mgr-section">
@@ -1396,7 +1437,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="award-reason" type="text" placeholder="e.g. Won quiz" style="margin-bottom:0;" maxlength="200" /></div>
         <button class="btn-primary" style="flex-shrink:0;" onclick="awardPoints()">Award & Save</button>
       </div>
-      <div style="font-size:11px;color:var(--muted);">💡 Use negative numbers (e.g. -10) to deduct points. Points can go below zero.</div>
+      <div style="font-size:11px;color:var(--muted);">Use negative numbers (e.g. -10) to deduct points. Points can go below zero.</div>
     </div>
 
   </div>
@@ -1410,9 +1451,9 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
     <!-- Reward tabs -->
     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-      <button class="fpill active" id="rwd-tab-prizes" onclick="switchRewardTab('prizes',this)">🎁 Prize Settings</button>
-      <button class="fpill" id="rwd-tab-points" onclick="switchRewardTab('points',this)">⭐ Student Points</button>
-      <button class="fpill" id="rwd-tab-draws" onclick="switchRewardTab('draws',this)">🎰 Draw History</button>
+      <button class="fpill active" id="rwd-tab-prizes" onclick="switchRewardTab('prizes',this)">Prize Settings</button>
+      <button class="fpill" id="rwd-tab-points" onclick="switchRewardTab('points',this)">Student Points</button>
+      <button class="fpill" id="rwd-tab-draws" onclick="switchRewardTab('draws',this)">Draw History</button>
     </div>
 
     <!-- ── Prize Settings tab ── -->
@@ -1422,7 +1463,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="mgr-section" style="background:linear-gradient(135deg,var(--earth) 0%,var(--air) 100%);border-color:rgba(114,181,90,0.4);">
         <div class="mgr-section-title" style="color:var(--earth-text);">
           <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--earth-deep);fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          🎰 Draw price (global)
+          Draw price (global)
         </div>
         <p style="font-size:13px;color:var(--earth-text);margin-bottom:14px;line-height:1.6;">This is the <strong>point cost per spin</strong> — applies to all prizes. Students pay this amount each time they draw.</p>
         <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
@@ -1435,7 +1476,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             </div>
           </div>
           <button class="btn-primary" onclick="saveSpinPrice()" style="background:var(--earth-deep);padding:10px 24px;">
-            💾 Save price
+            Save price
           </button>
           <div id="spin-price-status" style="font-size:12px;color:var(--earth-deep);font-weight:500;align-self:flex-end;padding-bottom:2px;"></div>
         </div>
@@ -1468,7 +1509,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
           <button class="btn-primary" onclick="addPrize()" style="padding:10px 28px;">+ Add Prize</button>
           <div style="font-size:11px;color:var(--muted);line-height:1.6;">
-            💡 <strong>Probability is a weight, not a percentage.</strong> e.g. Prize A = 30, Prize B = 70 → B is 2× more likely to appear.
+            <strong>Probability is a weight, not a percentage.</strong> e.g. Prize A = 30, Prize B = 70 → B is 2× more likely to appear.
             No need to total to 100.
           </div>
         </div>
@@ -1486,7 +1527,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <!-- Prize Settings change log -->
       <div class="mgr-section">
         <div class="mgr-section-title" style="justify-content:space-between;">
-          <span>📋 Prize Settings change log</span>
+          <span>Prize Settings change log</span>
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPrizeSettingsLog()">↻ Refresh</button>
         </div>
         <div id="prize-settings-log"><div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">Loading log...</div></div>
@@ -1506,7 +1547,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="sp-reason" type="text" placeholder="e.g. Best quiz score" style="margin-bottom:0;" maxlength="200" /></div>
           <button class="btn-primary" style="flex-shrink:0;" onclick="awardStudentPoints()">Award & Save</button>
         </div>
-        <div style="font-size:11px;color:var(--muted);">💡 Negative values deduct points. Positive awards also grant 10× XP automatically.</div>
+        <div style="font-size:11px;color:var(--muted);">Negative values deduct points. Positive awards also grant 10× XP automatically.</div>
       </div>
 
       <!-- XP-only grant — Head Admin + above only -->
@@ -1523,19 +1564,19 @@ textarea.fb-input{resize:vertical;min-height:90px;}
           </div>
           <div style="width:120px;"><label class="fb-label">XP amount</label><input class="fb-input" id="xp-grant-amount" type="number" value="50" min="1" style="margin-bottom:0;" /></div>
           <div style="flex:2;min-width:150px;"><label class="fb-label">Reason</label><input class="fb-input" id="xp-grant-reason" type="text" placeholder="e.g. Special achievement" style="margin-bottom:0;" maxlength="200" /></div>
-          <button class="btn-primary" style="flex-shrink:0;background:#6B3FA0;" onclick="grantXpOnly()">⚡ Grant XP</button>
+          <button class="btn-primary" style="flex-shrink:0;background:#6B3FA0;" onclick="grantXpOnly()">Grant XP</button>
         </div>
       </div>
       <div class="mgr-section">
         <div class="mgr-section-title" style="justify-content:space-between;">
-          <span>🏆 Student leaderboard</span>
+          <span>Student leaderboard</span>
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadStudentLeaderboard()">↻ Refresh</button>
         </div>
         <div id="student-leaderboard"><div style="color:var(--muted);font-size:13px;padding:1rem 0;">Loading...</div></div>
       </div>
       <div class="mgr-section">
         <div class="mgr-section-title" style="justify-content:space-between;">
-          <span>📋 Points award log</span>
+          <span>Points award log</span>
           <button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="loadPointsLog()">↻ Refresh</button>
         </div>
         <div id="pts-log-list"><div style="color:var(--muted);font-size:13px;padding:1rem 0;text-align:center;">Loading...</div></div>
@@ -1551,7 +1592,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="mgr-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
           <div>
-            <div class="mgr-section-title" style="margin-bottom:2px;">🎰 All student draw records</div>
+            <div class="mgr-section-title" style="margin-bottom:2px;">All student draw records</div>
             <div style="font-size:12px;color:var(--muted);">Verify serial codes and mark prizes as redeemed</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -1597,7 +1638,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:2rem;">
         <!-- Result area -->
         <div id="spin-result-area" style="width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;">
-          <div style="font-size:56px;margin-bottom:10px;">🎰</div>
+          <div style="display:flex;justify-content:center;margin-bottom:10px;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="56" height="56"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
           <div style="font-size:15px;font-weight:500;color:var(--muted);">Ready to draw?</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px;">Spend points for a random prize</div>
         </div>
@@ -1616,7 +1657,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
         <button class="btn-primary" id="spin-btn" onclick="doSpin()"
           style="width:100%;padding:14px;font-size:16px;font-weight:700;background:var(--earth-deep);letter-spacing:0.02em;border-radius:var(--radius-sm);">
-          🎰 &nbsp;Draw!
+          Draw!
         </button>
         <div id="spin-status" style="font-size:12px;color:var(--muted);min-height:16px;"></div>
       </div>
@@ -1718,7 +1759,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div style="display:flex;flex-direction:column;gap:12px;">
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">🏆 Rankings tab</div>
+            <div style="font-size:13px;font-weight:600;">Rankings tab</div>
             <div style="font-size:11px;color:var(--muted);">Student leaderboard with XP & points ranking</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
@@ -1728,7 +1769,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">💬 Community Board tab</div>
+            <div style="font-size:13px;font-weight:600;">Community Board tab</div>
             <div style="font-size:11px;color:var(--muted);">Public message board where students share ideas</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
@@ -1738,7 +1779,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">🏠 House tab</div>
+            <div style="font-size:13px;font-weight:600;">House tab</div>
             <div style="font-size:11px;color:var(--muted);">My House page and house standings for students</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
@@ -1748,7 +1789,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">🎁 Rewards tab</div>
+            <div style="font-size:13px;font-weight:600;">Rewards tab</div>
             <div style="font-size:11px;color:var(--muted);">Prize draws and rewards page for students</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
@@ -1758,7 +1799,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">⚡ Levels &amp; XP</div>
+            <div style="font-size:13px;font-weight:600;">Levels &amp; XP</div>
             <div style="font-size:11px;color:var(--muted);">Student level badge, XP bar, and rank display</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
@@ -1768,7 +1809,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         </label>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">🪙 Points display</div>
+            <div style="font-size:13px;font-weight:600;">Points display</div>
             <div style="font-size:11px;color:var(--muted);">My XP / points stat shown on the dashboard</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
@@ -1791,26 +1832,26 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">📢 Announcements</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Announcements</div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Current school announcements and events</div>
           <textarea class="fb-input" id="ai-info-announcements" rows="4" placeholder="e.g. Sports Day is on Friday May 23. Library will be closed on Wednesday..." style="margin-bottom:0;font-size:12px;resize:vertical;"></textarea>
         </div>
 
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🍱 Lunch Menu</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Lunch Menu</div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Today's or this week's lunch menu</div>
           <textarea class="fb-input" id="ai-info-lunch" rows="4" placeholder="e.g. Monday: Fried rice, soup, fruit&#10;Tuesday: Pasta, salad, juice..." style="margin-bottom:0;font-size:12px;resize:vertical;"></textarea>
         </div>
 
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">📅 Schedule & Other Info</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Schedule & Other Info</div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Class schedule, important dates, or any other info for the AI</div>
           <textarea class="fb-input" id="ai-info-other" rows="4" placeholder="e.g. Class A: Math 8am, English 9am...&#10;No school on June 1 (holiday)" style="margin-bottom:0;font-size:12px;resize:vertical;"></textarea>
         </div>
       </div>
 
       <div style="display:flex;justify-content:flex-end;margin-top:12px;">
-        <button class="btn-primary" onclick="saveAiConfig()" style="padding:10px 24px;">💾 Save &amp; Update AI</button>
+        <button class="btn-primary" onclick="saveAiConfig()" style="padding:10px 24px;">Save &amp; Update AI</button>
       </div>
       <div id="ai-config-status" style="font-size:12px;color:var(--earth-deep);margin-top:8px;min-height:16px;"></div>
     </div>
@@ -1852,7 +1893,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
   <div id="page-ai" class="page">
     <div class="page-header">
       <div>
-        <h1 class="page-title">🦅 Eagle AI</h1>
+        <h1 class="page-title">Eagle AI</h1>
         <p class="page-sub">Announcements · Lunch menu · Waimai recommendations</p>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -1866,10 +1907,10 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div class="ai-messages" id="ai-messages">
           <!-- Welcome message -->
           <div class="ai-bubble-row">
-            <div class="ai-avatar">🦅</div>
+            <div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg></div>
             <div class="ai-bubble bot">
               Hi! I'm <strong>Eagle AI</strong>, your TIS Eagles study assistant.<br>
-              Ask me anything — homework help, study tips, or general questions. I'm here to help! 🎓
+              Ask me anything — school info, lunch menu, tips, or general questions. I'm here to help!
             </div>
           </div>
         </div>
@@ -2331,7 +2372,10 @@ function togglePw(inputId, btn) {
   const inp = document.getElementById(inputId);
   if (!inp) return;
   inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  const isVisible = inp.type === 'text';
+  btn.innerHTML = isVisible
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
 function showLoginError(msg) {
@@ -2646,10 +2690,10 @@ function handleLogin(account) {
       if (result.granted) {
         // Show a fun toast — bigger if level-up
         if (result.levelUp) {
-          toast(`🎉 LEVEL UP! +${result.xp} XP daily bonus`);
+          toast(`LEVEL UP! +${result.xp} XP daily bonus`);
           fireConfetti(50);
         } else {
-          toast(`✨ +${result.xp} XP daily login bonus!`);
+          toast(`+${result.xp} XP daily login bonus!`);
         }
       }
       // Use the up-to-date total (whether granted or not)
@@ -2702,7 +2746,7 @@ function isAuthorized(pageId) {
 function requireManager(action) {
   if (!window.currentUserEmail || (!isManager(window.currentUserEmail) && !isTeacher(window.currentUserEmail))) {
     console.warn(`[SECURITY] Unauthorized attempt: ${action} by ${window.currentUserEmail||'unknown'}`);
-    toast('⛔ Access denied.');
+    toast('Access denied.');
     return false;
   }
   return true;
@@ -2710,7 +2754,7 @@ function requireManager(action) {
 function requireManagerOnly(action) {
   if (!window.currentUserEmail || !isManager(window.currentUserEmail)) {
     console.warn(`[SECURITY] Unauthorized attempt: ${action} by ${window.currentUserEmail||'unknown'}`);
-    toast('⛔ Access denied.');
+    toast('Access denied.');
     return false;
   }
   return true;
@@ -2718,7 +2762,7 @@ function requireManagerOnly(action) {
 function requireOwner(action) {
   if ((window.currentUserEmail||'').toLowerCase() !== SUPER_ADMIN.toLowerCase()) {
     console.warn(`[SECURITY] Owner-only action blocked: ${action} by ${window.currentUserEmail||'unknown'}`);
-    toast('⛔ Owner only.');
+    toast('Owner only.');
     return false;
   }
   return true;
@@ -2729,7 +2773,7 @@ function requireHeadAdmin(action) {
   const isHead = isOwner || (window._headAdmins||[]).includes(email);
   if (!isHead) {
     console.warn(`[SECURITY] Head-admin-only action blocked: ${action} by ${email}`);
-    toast('⛔ Head admin only.');
+    toast('Head admin only.');
     return false;
   }
   return true;
@@ -2981,7 +3025,7 @@ function loadStudentHousePoints() {
       .sort((a,b) => b.pts - a.pts);
     const rankMap = {};
     ranked.forEach((h, i) => { rankMap[h.name] = i + 1; });
-    const medals = { 1:'🥇', 2:'🥈', 3:'🥉', 4:'4th' };
+    const medals = { 1:'1st', 2:'2nd', 3:'3rd', 4:'4th' };
 
     // Update dashboard team banner pts + rank
     ['air','earth','water','fire'].forEach(h => {
@@ -2997,7 +3041,7 @@ function loadStudentHousePoints() {
     const houseRankEl = document.getElementById('dash-house-rank');
     if (houseNameEl) {
       if (HOUSE_INFO[myHouse]) {
-        houseNameEl.innerHTML = `${HOUSE_INFO[myHouse].emoji} ${HOUSE_INFO[myHouse].name}`;
+        houseNameEl.innerHTML = HOUSE_INFO[myHouse].name;
       } else {
         houseNameEl.textContent = 'None yet';
       }
@@ -3019,15 +3063,11 @@ function updateHeroXp(xp) {
   const lvlText = document.getElementById('dash-level-text');
   const lvlBadge = document.getElementById('dash-level-badge');
   if (lvlText) lvlText.textContent = `${info.current.name} · Lv ${info.current.lvl}`;
-  if (lvlBadge) {
-    const emojiEl = lvlBadge.querySelector('.level-badge-emoji');
-    if (emojiEl) emojiEl.textContent = info.current.emoji;
-  }
   const xpCur = document.getElementById('dash-xp-current');
   const xpNext = document.getElementById('dash-xp-next');
   const xpFill = document.getElementById('dash-xp-fill');
   if (xpCur) xpCur.textContent = `${xp} XP`;
-  if (xpNext) xpNext.textContent = info.next ? `${info.toNext} XP to ${info.next.name}` : 'MAX LEVEL ✨';
+  if (xpNext) xpNext.textContent = info.next ? `${info.toNext} XP to ${info.next.name}` : 'MAX LEVEL';
   // Use rAF so the bar animates from 0
   requestAnimationFrame(() => {
     if (xpFill) xpFill.style.width = info.progress + '%';
@@ -3041,6 +3081,17 @@ const HOUSE_INFO = {
   fire:  {name:'Fire',  emoji:'🔥', bg:'var(--fire)',  border:'rgba(232,135,74,0.3)',  text:'var(--fire-text)',  deep:'var(--fire-deep)',  mid:'var(--fire-mid)'},
 };
 
+const HOUSE_SVG_PATHS = {
+  Air:   `<path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>`,
+  Earth: `<path d="M17 8C8 10 5.9 16.17 3.82 22 11 12 17 14 21 10c-1.03-2.53-3.35-4.69-4-2z"/>`,
+  Water: `<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>`,
+  Fire:  `<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/>`,
+};
+function getHouseIconSvg(houseName, size=24, color='currentColor') {
+  const paths = HOUSE_SVG_PATHS[houseName] || HOUSE_SVG_PATHS.Air;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}">${paths}</svg>`;
+}
+
 function renderMyHousePage() {
   const card = document.getElementById('my-house-card');
   if (!card) return;
@@ -3048,7 +3099,7 @@ function renderMyHousePage() {
   if (!myHouse || myHouse === 'unassigned' || !HOUSE_INFO[myHouse]) {
     card.innerHTML = `
       <div class="card" style="text-align:center;padding:2rem;">
-        <div style="font-size:32px;margin-bottom:8px;">🏠</div>
+        <div style="display:flex;justify-content:center;margin-bottom:8px;color:var(--muted);">${getHouseIconSvg('Air',32,'var(--muted)')}</div>
         <div style="font-size:15px;font-weight:500;margin-bottom:4px;">No house assigned yet</div>
         <div style="font-size:13px;color:var(--muted);">Ask an admin to assign you to a house.</div>
       </div>`;
@@ -3063,16 +3114,16 @@ function renderMyHousePage() {
   // Find rank
   const allPts = [housePts.earth||0, housePts.water||0, housePts.air||0, housePts.fire||0].sort((a,b)=>b-a);
   const rank = allPts.indexOf(pts) + 1;
-  const rankLabel = ['🥇 1st','🥈 2nd','🥉 3rd','4th'][rank-1] || `${rank}th`;
+  const rankLabel = ['1st','2nd','3rd','4th'][rank-1] || `${rank}th`;
 
-  document.getElementById('my-house-title').textContent = `${h.emoji} ${h.name} House`;
+  document.getElementById('my-house-title').textContent = `${h.name} House`;
   document.getElementById('my-house-sub').textContent = 'Your house standings and announcements';
   document.getElementById('my-house-badge').textContent = rankLabel;
 
   card.innerHTML = `
     <div class="house-big" style="background:${h.bg};border-color:${h.border};">
       <div class="house-big-top">
-        <div class="h-big-emoji">${h.emoji}</div>
+        <div class="h-big-emoji">${getHouseIconSvg(h.name,36,h.deep)}</div>
         <span class="h-rank" style="background:${h.bg};color:${h.text};">${rankLabel} place</span>
       </div>
       <div class="h-big-name" style="color:${h.text};">${h.name}</div>
@@ -3346,7 +3397,7 @@ function postAnnouncement() {
     document.getElementById('ann-title-input').value = '';
     document.getElementById('ann-body-input').value = '';
     document.getElementById('ann-ai-only').checked = false;
-    toast(aiOnly ? '👁️ AI-only announcement saved!' : 'Announcement posted!');
+    toast(aiOnly ? 'AI-only announcement saved!' : 'Announcement posted!');
     updateMgrDashboard();
   });
 }
@@ -3398,7 +3449,7 @@ function previewPts(house, val) {
   const el = document.getElementById('pts-' + house);
   if (el) el.textContent = num.toLocaleString();
   // Mark unsaved
-  ['save-pts-btn','save-pts-btn-2'].forEach(id => { const b=document.getElementById(id); if(b){b.textContent='💾 Save to Firebase';b.style.background='#C04A10';} });
+  ['save-pts-btn','save-pts-btn-2'].forEach(id => { const b=document.getElementById(id); if(b){b.textContent='Save to Firebase';b.style.background='#C04A10';} });
 }
 
 function adjustPts(house, delta) {
@@ -3407,7 +3458,7 @@ function adjustPts(house, delta) {
   if (el) el.textContent = housePts[house].toLocaleString();
   const input = document.getElementById('pts-input-' + house);
   if (input) input.value = housePts[house];
-  ['save-pts-btn','save-pts-btn-2'].forEach(id => { const b=document.getElementById(id); if(b){b.textContent='💾 Save to Firebase';b.style.background='#C04A10';} });
+  ['save-pts-btn','save-pts-btn-2'].forEach(id => { const b=document.getElementById(id); if(b){b.textContent='Save to Firebase';b.style.background='#C04A10';} });
 }
 
 function saveAllHousePoints() {
@@ -3415,7 +3466,7 @@ function saveAllHousePoints() {
   btns.forEach(b => { b.textContent = 'Saving...'; b.disabled = true; });
   saveHousePoints().then(() => {
     btns.forEach(b => { b.textContent = '✓ Saved!'; b.style.background = '#2D7A1F'; b.disabled = false; });
-    setTimeout(() => btns.forEach(b => { b.textContent = '💾 Save to Firebase'; b.style.background = ''; }), 2000);
+    setTimeout(() => btns.forEach(b => { b.textContent = 'Save to Firebase'; b.style.background = ''; }), 2000);
     toast('House points saved to Firebase! ✓');
     updateMgrDashboard();
   }).catch(() => {
@@ -3664,7 +3715,7 @@ async function grantXpOnly() {
   const [email, name] = sel.value.split('|||');
   try {
     await addStudentXP(email, amt, reason, name);
-    toast(`⚡ +${amt} XP granted to ${name || email}!`);
+    toast(`+${amt} XP granted to ${name || email}!`);
     document.getElementById('xp-grant-amount').value = 50;
     document.getElementById('xp-grant-reason').value = '';
   } catch(e) {
@@ -3753,7 +3804,6 @@ function renderRanking() {
   const podiumHeights = { 0: 90, 1: 120, 2: 70 };
   const podiumColors  = { 0: '#C89A10', 1: '#888', 2: '#A05A30' };
   const podiumBg      = { 0: 'linear-gradient(135deg,#F5C747,#E0A020)', 1: 'linear-gradient(135deg,#C0C0C0,#909090)', 2: 'linear-gradient(135deg,#CD7F32,#A05A20)' };
-  const crowns        = ['🥇','🥈','🥉'];
 
   podiumEl.innerHTML = podiumOrder.filter(i => data[i]).map(i => {
     const s = data[i];
@@ -3764,7 +3814,7 @@ function renderRanking() {
     return `<div class="podium-slot">
       <div class="podium-avatar" style="background:${col};${isFirst ? 'width:64px;height:64px;font-size:26px;' : ''}">
         ${ini}
-        ${isFirst ? `<span class="podium-crown">👑</span>` : `<span class="podium-crown" style="font-size:14px;">${crowns[i]}</span>`}
+        ${isFirst ? `<span class="podium-crown"><svg viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M2 20h20M5 20V10l7-6 7 6v10"/><polyline points="9 20 9 13 15 13 15 20"/></svg></span>` : `<span class="podium-crown" style="font-size:13px;font-weight:700;color:${['#C89A10','#888','#A05A20'][i]};">${i+1}</span>`}
       </div>
       <div class="podium-name" title="${esc(s.name)}">${esc(s.name)}</div>
       <div class="podium-xp">${s[sortKey].toLocaleString()} ${sortKey.toUpperCase()}</div>
@@ -3786,15 +3836,15 @@ function renderRanking() {
     const col  = avatarColor(s.name);
     const ini  = initials(s.name);
     const barW = Math.round((s[sortKey] / maxVal) * 100);
-    const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+    const rankEmoji = `#${rank}`;
     return `<div class="rank-row ${isMe ? 'is-me' : ''}" style="animation-delay:${Math.min(i*0.05, 0.6)}s;">
       <div class="rank-num" style="color:${rank<=3?['#C89A10','#888','#A05A20'][rank-1]:'var(--muted)'};">${rankEmoji}</div>
       <div class="rank-avatar" style="background:${col};">${ini}</div>
       <div class="rank-info">
         <div class="rank-name">${esc(s.name)}${isMe ? ' <span style="font-size:10px;background:var(--primary);color:white;padding:1px 6px;border-radius:99px;vertical-align:middle;">You</span>' : ''}</div>
         <div class="rank-badge-row">
-          <span class="tier-pip tier-${info.current.tier}">${info.current.emoji} ${info.current.name}</span>
-          <span class="rank-xp">⚡ ${s.xp.toLocaleString()} XP</span>
+          <span class="tier-pip tier-${info.current.tier}">${info.current.name}</span>
+          <span class="rank-xp">${s.xp.toLocaleString()} XP</span>
           <span class="rank-pts">· ${s.points.toLocaleString()} pts</span>
         </div>
       </div>
@@ -3815,7 +3865,7 @@ function renderRanking() {
       const me = data[myRank - 1];
       if (me) {
         const info = getLevelInfo(me.xp);
-        myPosSub.textContent = `${info.current.emoji} ${info.current.name} · ${me[sortKey].toLocaleString()} ${sortKey.toUpperCase()}`;
+        myPosSub.textContent = `${info.current.name} · ${me[sortKey].toLocaleString()} ${sortKey.toUpperCase()}`;
       }
     } else {
       myPos.style.display = 'none';
@@ -3860,7 +3910,7 @@ function updateBoardComposerAvatar() {
 async function postBoardMessage() {
   const box = document.getElementById('board-input');
   const text = box?.value.trim();
-  if (!text) { toast('Write something first! ✍️'); return; }
+  if (!text) { toast('Write something first!'); return; }
   if (text.length > 500) { toast('Max 500 characters.'); return; }
 
   const email = (window.currentUserEmail || '').toLowerCase();
@@ -3886,7 +3936,7 @@ async function postBoardMessage() {
     if (box) box.value = '';
     const ctr = document.getElementById('board-char-count');
     if (ctr) ctr.textContent = '0/500';
-    toast('Posted! 🚀');
+    toast('Posted!');
     loadBoardFeed();
   } catch(e) {
     console.error('postBoardMessage:', e);
@@ -3921,7 +3971,7 @@ async function loadBoardFeed() {
       const likedByMe = (p.likes||[]).includes(myEmail);
       const likeCount = (p.likes||[]).length;
       const lvlBadge = p.showLevel
-        ? `<span class="tier-pip tier-${p.levelTier||'rookie'}">${p.levelEmoji||'⭐'} ${p.levelName} Lv${p.levelNum}</span>`
+        ? `<span class="tier-pip tier-${p.levelTier||'rookie'}">${p.levelName||'Rookie'} Lv${p.levelNum||1}</span>`
         : '';
       return `<div class="board-post" style="animation-delay:${Math.min(i*0.04,0.5)}s;">
         <div class="board-post-header">
@@ -4181,14 +4231,13 @@ function loadStudentLeaderboard() {
         return;
       }
       const hc = { Air:'var(--air-mid)', Earth:'var(--earth-mid)', Water:'var(--water-mid)', Fire:'var(--fire-mid)', Unassigned:'var(--muted)' };
-      const medals = ['🥇','🥈','🥉'];
       el.innerHTML = `
         <table class="mgr-table">
           <thead><tr><th>#</th><th>Student</th><th>House</th><th style="text-align:right;">Points</th></tr></thead>
           <tbody>
             ${ranked.map((s, i) => `
               <tr>
-                <td style="font-size:14px;">${medals[i]||i+1}</td>
+                <td style="font-size:13px;font-weight:600;color:${i<3?['#C89A10','#888','#A05A20'][i]:'var(--muted)'};">${i+1}</td>
                 <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div><div style="font-size:11px;color:var(--muted);">${esc(s.email)}</div></td>
                 <td><span style="font-size:12px;font-weight:500;color:${hc[s.house]||'var(--muted)'};">${esc(s.house||'Unassigned')}</span></td>
                 <td style="text-align:right;font-size:16px;font-weight:600;color:${s.points>=0?'var(--earth-deep)':'var(--fire-deep)'};">${s.points>0?'+':''}${s.points}</td>
@@ -4576,7 +4625,7 @@ function loadAnnouncementsToMgr() {
         <div style="flex:1;">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
             <span style="font-size:13px;font-weight:500;">${esc(a.title)}</span>
-            ${a.aiOnly ? '<span class="tag t-ai" style="font-size:10px;">👁️ AI only</span>' : ''}
+            ${a.aiOnly ? '<span class="tag t-ai" style="font-size:10px;">AI only</span>' : ''}
           </div>
           <div style="font-size:11px;color:var(--muted);margin:2px 0 6px;">${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
           <span class="tag ${tagMap[a.category]||'t-blue'}">${tagLabel[a.category]||'General'}</span>
@@ -4672,7 +4721,7 @@ function loadPollsToMgr() {
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">${p.totalVotes||0} votes${p.closesAt?' · Closes '+p.closesAt:''}</div>
         </div>
         <span class="tag ${isActive?'t-green':'t-amber'}">${isActive?'Active':'Closed'}</span>
-        <span class="tag" style="background:${p.showResults==='manager'?'var(--fire)':'var(--earth)'}; color:${p.showResults==='manager'?'var(--fire-text)':'var(--earth-text)'};">${p.showResults==='manager'?'🔒 Admin only':'👁 Everyone'}</span>
+        <span class="tag" style="background:${p.showResults==='manager'?'var(--fire)':'var(--earth)'}; color:${p.showResults==='manager'?'var(--fire-text)':'var(--earth-text)'};">${p.showResults==='manager'?'Admin only':'Everyone'}</span>
         ${isActive?`<button class="btn-outline" style="font-size:12px;" data-id="${p.id}">Close</button>`:''}
         <button class="btn-danger" data-del="${p.id}">Delete</button>`;
       if (isActive) {
@@ -4801,10 +4850,10 @@ function renderMyFeedbackCards(feedbacks) {
   if (!feedbacks || feedbacks.length === 0) {
     container.innerHTML = `
       <div style="text-align:center;padding:3rem 1rem;">
-        <div style="font-size:36px;margin-bottom:12px;">💬</div>
+        <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
         <div style="font-size:14px;font-weight:500;margin-bottom:6px;">No feedbacks yet</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Submit your first feedback using the "New feedback" tab.</div>
-        <button class="btn-outline" onclick="switchFbTab('new')">✏️ Write feedback</button>
+        <button class="btn-outline" onclick="switchFbTab('new')">Write feedback</button>
       </div>`;
     return;
   }
@@ -4907,10 +4956,10 @@ async function loadPrizeSettingsLog() {
       return;
     }
     const ACTION_META = {
-      prize_added:        { label:'Prize added',        color:'var(--earth-deep)', bg:'var(--earth)', icon:'➕' },
-      prize_deleted:      { label:'Prize removed',      color:'var(--fire-deep)',  bg:'var(--fire)',  icon:'🗑️' },
-      prize_prob_updated: { label:'Probability edited', color:'var(--air-deep)',   bg:'var(--air)',   icon:'✏️' },
-      spin_price_changed: { label:'Spin price changed', color:'var(--water-deep)', bg:'var(--water)', icon:'💰' },
+      prize_added:        { label:'Prize added',        color:'var(--earth-deep)', bg:'var(--earth)', icon:'+' },
+      prize_deleted:      { label:'Prize removed',      color:'var(--fire-deep)',  bg:'var(--fire)',  icon:'×' },
+      prize_prob_updated: { label:'Probability edited', color:'var(--air-deep)',   bg:'var(--air)',   icon:'~' },
+      spin_price_changed: { label:'Spin price changed', color:'var(--water-deep)', bg:'var(--water)', icon:'$' },
     };
     el.innerHTML = `
       <table class="mgr-table">
@@ -5277,7 +5326,7 @@ async function loadMyDrawHistory(email) {
       const date = r.drawnAt?.toDate?.()?.toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) || 'Recent';
       return `
         <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);">
-          <div style="font-size:30px;flex-shrink:0;">🎁</div>
+          <div style="flex-shrink:0;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:14px;font-weight:600;color:var(--earth-deep);">${esc(r.prizeName)}</div>
             ${r.prizeDescription ? `<div style="font-size:11px;color:var(--muted);">${esc(r.prizeDescription)}</div>` : ''}
@@ -5317,12 +5366,12 @@ async function doSpin() {
 
     if (prizes.length === 0) {
       toast('No prizes available yet!');
-      btn.disabled = false; btn.innerHTML = '🎰 &nbsp;Draw!';
+      btn.disabled = false; btn.innerHTML = 'Draw!';
       return;
     }
     if (pts < spinPrice) {
       toast(`Not enough points! Need ${spinPrice} pts, you have ${pts}.`);
-      btn.disabled = false; btn.innerHTML = '🎰 &nbsp;Draw!';
+      btn.disabled = false; btn.innerHTML = 'Draw!';
       btn.style.background = 'var(--muted)';
       return;
     }
@@ -5390,7 +5439,7 @@ async function doSpin() {
     console.error('doSpin:', e);
     toast('Draw failed. Please try again.');
     btn.disabled = false;
-    btn.innerHTML = '🎰 &nbsp;Draw!';
+    btn.innerHTML = 'Draw!';
   }
 }
 
@@ -5413,7 +5462,7 @@ function showSpinResult(prize, serial, pointsSpent) {
 
   area.innerHTML = `
     <div style="animation:bounceIn 0.55s cubic-bezier(0.36,0.07,0.19,0.97);width:100%;">
-      <div style="font-size:52px;margin-bottom:6px;">🎉</div>
+      <div style="display:flex;justify-content:center;margin-bottom:6px;color:var(--earth-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
       <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--earth-mid);margin-bottom:4px;">YOU WON!</div>
       <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${esc(prize.name)}</div>
       ${prize.description ? `<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${esc(prize.description)}</div>` : '<div style="margin-bottom:10px;"></div>'}
@@ -5423,7 +5472,7 @@ function showSpinResult(prize, serial, pointsSpent) {
       <div style="font-size:11px;color:var(--muted);margin-top:8px;">📌 Show this code to a teacher to redeem your prize</div>
     </div>`;
 
-  btn.innerHTML = '🎰 &nbsp;Draw again!';
+  btn.innerHTML = 'Draw again!';
   btn.disabled = false;
   if (statusEl) statusEl.innerHTML = `<span style="color:var(--fire-deep);">−${pointsSpent} pts spent</span>`;
 
@@ -5572,7 +5621,7 @@ function renderHouseLeaders() {
         const houseOpts = houseStudents.map(s => `<option value="${esc(s.email)}" ${s.email.toLowerCase()===currentEmail.toLowerCase()?'selected':''}>${esc(s.name||s.email)}</option>`).join('');
         return `
           <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${info.bg};border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid ${info.border};">
-            <div style="font-size:24px;">${info.emoji}</div>
+            <div style="color:${info.deep};">${getHouseIconSvg(info.name, 24, info.deep)}</div>
             <div style="flex:1;min-width:120px;">
               <div style="font-size:13px;font-weight:500;color:${info.text};">${info.name} House</div>
               <div style="font-size:11px;color:${info.text};opacity:0.7;">Current: ${currentLabel}</div>
@@ -6040,38 +6089,38 @@ function _tryInit() {
       <!-- Clickable avatar -->
       <div class="avatar-upload-ring" onclick="document.getElementById('avatar-file-input').click()" title="Click to change photo">
         <div class="avatar" id="profile-modal-avatar" style="width:64px;height:64px;font-size:18px;background:#1A6FA8;flex-shrink:0;overflow:hidden;">?</div>
-        <div class="avatar-upload-overlay">📷</div>
+        <div class="avatar-upload-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
       </div>
       <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
       <div>
         <div style="font-size:15px;font-weight:600;" id="profile-modal-name">—</div>
         <div style="font-size:12px;color:var(--muted);" id="profile-modal-email">—</div>
         <div style="font-size:11px;font-weight:600;margin-top:3px;" id="profile-modal-role">—</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">📷 Click photo to change</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Click photo to change</div>
       </div>
     </div>
     <div id="avatar-upload-status" style="font-size:11px;margin-bottom:10px;min-height:14px;text-align:center;"></div>
     <!-- Change display name -->
     <div class="modal-section">
-      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">✏️ Change display name</div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Change display name</div>
       <input class="fb-input" id="profile-name-input" type="text" placeholder="New display name" style="margin-bottom:8px;" />
       <button class="btn-primary" style="width:100%;padding:10px;" onclick="saveProfileName()">Save name</button>
       <div id="profile-name-status" style="font-size:11px;margin-top:5px;min-height:14px;"></div>
     </div>
     <!-- Change password (email/password users only) -->
     <div class="modal-section" id="profile-pw-section">
-      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">🔒 Change password</div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Change password</div>
       <div style="position:relative;margin-bottom:8px;">
         <input class="fb-input" id="profile-pw-current" type="password" placeholder="Current password" style="margin-bottom:0;padding-right:36px;" />
-        <span onclick="togglePw('profile-pw-current',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;color:var(--muted);">👁</span>
+        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-current',this)" title="Show/hide"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <div style="position:relative;margin-bottom:8px;">
         <input class="fb-input" id="profile-pw-new" type="password" placeholder="New password (min 6 chars)" style="margin-bottom:0;padding-right:36px;" />
-        <span onclick="togglePw('profile-pw-new',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;color:var(--muted);">👁</span>
+        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-new',this)" title="Show/hide"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <div style="position:relative;margin-bottom:8px;">
         <input class="fb-input" id="profile-pw-confirm" type="password" placeholder="Confirm new password" style="margin-bottom:0;padding-right:36px;" />
-        <span onclick="togglePw('profile-pw-confirm',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;color:var(--muted);">👁</span>
+        <button type="button" class="eye-toggle" style="right:10px;" onclick="togglePw('profile-pw-confirm',this)" title="Show/hide"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <button class="btn-primary" style="width:100%;padding:10px;" onclick="saveProfilePassword()">Change password</button>
       <div id="profile-pw-status" style="font-size:11px;margin-top:5px;min-height:14px;"></div>
@@ -6449,7 +6498,8 @@ function aiAppendBubble(role, text) {
   row.className = 'ai-bubble-row' + (role === 'user' ? ' user' : '');
 
   const isBot = role === 'bot';
-  const avatarLabel = isBot ? '🦅' : aiGetUserInitials();
+  const botSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg>`;
+  const avatarLabel = isBot ? botSvg : aiGetUserInitials();
 
   row.innerHTML = `
     <div class="ai-avatar ${isBot ? '' : 'user-av'}">${avatarLabel}</div>
@@ -6467,7 +6517,7 @@ function aiAppendThinking() {
   row.className = 'ai-bubble-row';
   row.id = id;
   row.innerHTML = `
-    <div class="ai-avatar">🦅</div>
+    <div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg></div>
     <div class="ai-bubble bot">
       <div class="ai-thinking-dots">
         <span></span><span></span><span></span>
@@ -6489,10 +6539,10 @@ function aiClearChat() {
   const container = document.getElementById('ai-messages');
   container.innerHTML = `
     <div class="ai-bubble-row">
-      <div class="ai-avatar">🦅</div>
+      <div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><line x1="12" y1="4" x2="12" y2="6"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg></div>
       <div class="ai-bubble bot">
         Hi! I'm <strong>Eagle AI</strong>, your TIS Eagles study assistant.<br>
-        Ask me anything — homework help, study tips, or general questions. I'm here to help! 🎓
+        Ask me anything — school info, lunch menu, tips, or general questions. I'm here to help!
       </div>
     </div>
   `;
