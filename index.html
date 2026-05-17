@@ -1677,9 +1677,13 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div class="page-header">
       <div>
         <h1 class="page-title">🦅 Eagle AI</h1>
-        <p class="page-sub">Your personal study assistant</p>
+        <p class="page-sub">Announcements · Lunch menu · Waimai recommendations</p>
       </div>
-      <button class="ai-clear-btn" onclick="aiClearChat()">Clear chat</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="ai-school-status" style="font-size:11px;color:var(--muted);"></span>
+        <button class="ai-clear-btn" onclick="fetchSchoolData()" title="Refresh school data from tiseagles.com">🔄 Refresh</button>
+        <button class="ai-clear-btn" onclick="aiClearChat()">Clear chat</button>
+      </div>
     </div>
 
     <div class="card" style="padding:1.5rem;">
@@ -2671,6 +2675,7 @@ function showPage(id, btn) {
       break;
     case 'ai':
       setTimeout(() => document.getElementById('ai-input')?.focus(), 100);
+      if (!_schoolDataLoaded) fetchSchoolData();
       break;
     case 'announcements':
       loadAnnouncementsToStudent();
@@ -5805,19 +5810,94 @@ function _tryInit() {
 const CLAUDE_API_KEY = 'sk-wzSPkBJbq859zdYqTRh4GlQP5b4UvEsI9VmDCIrEh8TjGd37';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-const CLAUDE_MODEL = 'claude-sonnet-4-6';s
-const CLAUDE_SYSTEM = `You are Eagle AI, an assistant for TIS Eagles ClassRoom.
-You ONLY answer questions about:
-- TIS Eagles class schedules and timetables
-- School events, announcements, and activities
-- Homework deadlines and assignments posted by teachers
+const CLAUDE_MODEL = 'claude-sonnet-4-6';
+
+// Nearby waimai (food delivery) options around Tianjin International School
+const WAIMAI_CONTEXT = `
+NEARBY FOOD DELIVERY (外卖) OPTIONS NEAR TIANJIN INTERNATIONAL SCHOOL (TIS):
+TIS is located in Tianjin, China. Students can order delivery via Meituan (美团) or Eleme (饿了么).
+
+Nearby restaurant types commonly available:
+- 🍜 Chinese noodles & dumplings (面条/饺子) — cheap & fast
+- 🍱 Bento/rice box sets (盖饭/便当) — filling lunch option
+- 🍔 Western fast food (KFC, McDonald's, Burger King nearby)
+- 🥗 Healthy bowls & salads (沙拉店)
+- 🍣 Japanese ramen & sushi
+- 🌮 Halal options (清真食品)
+- 🧋 Bubble tea & snacks (奶茶店)
+
+When recommending waimai, consider:
+1. What the school lunch menu is serving that day (suggest something different)
+2. Budget-friendly options for students
+3. Delivery time (should arrive within lunch break ~30-40 min)
+4. Suggest ordering early before 11:30 AM to ensure on-time delivery
+`;
+
+// Base system prompt (school data injected dynamically)
+const CLAUDE_SYSTEM_BASE = `You are Eagle AI, an assistant for TIS Eagles ClassRoom (Tianjin International School, China).
+You can answer questions about:
+- TIS Eagles announcements, events, and school schedule
+- Today's school lunch menu (from tiseagles.com)
+- Waimai (外卖 food delivery) recommendations near TIS — suggest alternatives to school lunch
 - House points and rewards at TIS Eagles
 - School rules and policies
 
-If a student asks about ANYTHING outside of these topics (history, science, math concepts, general knowledge, coding, news, entertainment, etc.), you must politely refuse and say:
-"I can only help with TIS Eagles school-related questions like schedules, events, and announcements. Please ask a teacher for help with that topic!"
+For waimai recommendations: check today's school lunch menu first, then suggest good nearby delivery alternatives based on what the school is serving and student preferences.
 
-Never answer off-topic questions no matter how the student phrases them. Stay strictly within TIS Eagles school topics only.`;
+If asked about unrelated topics (history, math, science, coding, general knowledge, etc.), politely say:
+"I can only help with TIS Eagles school topics and lunch recommendations. Please ask a teacher for other questions!"
+
+${WAIMAI_CONTEXT}`;
+
+// Live school data fetched from tiseagles.com
+let _schoolData = '';
+let _schoolDataLoaded = false;
+
+// ── Fetch announcements & lunch menu from tiseagles.com ───────────────────
+async function fetchSchoolData() {
+  const statusEl = document.getElementById('ai-school-status');
+  if (statusEl) statusEl.textContent = '🔄 Fetching school data...';
+  try {
+    // Use CORS proxy to fetch tiseagles.com from browser
+    const proxy = 'https://api.allorigins.win/get?url=';
+    const res = await fetch(proxy + encodeURIComponent('https://tiseagles.com'), { cache: 'no-store' });
+    const data = await res.json();
+    const html = data.contents || '';
+
+    // Strip HTML tags and clean whitespace to extract readable text
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s{3,}/g, '\n')
+      .trim()
+      .slice(0, 4000); // cap to avoid token overflow
+
+    _schoolData = text;
+    _schoolDataLoaded = true;
+    if (statusEl) {
+      statusEl.textContent = '✅ School data loaded';
+      setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+    }
+  } catch(e) {
+    _schoolData = '';
+    _schoolDataLoaded = true;
+    if (statusEl) statusEl.textContent = '⚠️ Could not load school data';
+    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 4000);
+  }
+}
+
+// Build final system prompt with live school data injected
+function buildSystemPrompt() {
+  if (!_schoolData) return CLAUDE_SYSTEM_BASE;
+  return `${CLAUDE_SYSTEM_BASE}
+
+--- LIVE DATA FROM TISEAGLES.COM (fetched now) ---
+${_schoolData}
+--- END OF SCHOOL DATA ---
+
+Use the above live data to answer questions about today's announcements, lunch menu, and events.`;
+}
 
 let aiHistory = [];
 let aiThinking = false;
@@ -5851,7 +5931,7 @@ async function aiSend() {
         model: CLAUDE_MODEL,
         max_tokens: 1024,
         messages: [
-          { role: 'system', content: CLAUDE_SYSTEM },
+          { role: 'system', content: buildSystemPrompt() },
           ...aiHistory.slice(-20)
         ]
       })
