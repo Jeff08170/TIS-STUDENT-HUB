@@ -2562,6 +2562,9 @@ function handleLogin(account) {
       if (pollNum) animateCount(pollNum, active);
     });
   }
+
+  // Load school info for Eagle AI (all roles need this)
+  loadAiConfig();
 }
 
 // ── SECURITY ──
@@ -5949,22 +5952,42 @@ const CLAUDE_MODEL = 'claude-sonnet-4-6';
 // Nearby waimai (food delivery) options around Tianjin International School
 const WAIMAI_CONTEXT = `
 NEARBY FOOD DELIVERY (外卖) OPTIONS NEAR TIANJIN INTERNATIONAL SCHOOL (TIS):
-TIS is located in Tianjin, China. Students can order delivery via Meituan (美团) or Eleme (饿了么).
+TIS address: 4–1 Sishui Dao, Hexi District (河西区四水道4-1号), Tianjin 300222, China.
+Students can order delivery via Meituan (美团) or Eleme (饿了么). Most places in Hexi District deliver in 15–30 min.
 
-Nearby restaurant types commonly available:
-- 🍜 Chinese noodles & dumplings (面条/饺子) — cheap & fast
-- 🍱 Bento/rice box sets (盖饭/便当) — filling lunch option
-- 🍔 Western fast food (KFC, McDonald's, Burger King nearby)
-- 🥗 Healthy bowls & salads (沙拉店)
-- 🍣 Japanese ramen & sushi
-- 🌮 Halal options (清真食品)
-- 🧋 Bubble tea & snacks (奶茶店)
+--- CHINESE FOOD (本地中餐) ---
+- 🥟 Tianjin specialties: Goubuli steamed buns (狗不理包子), Jianbing guozi (煎饼果子), Mahua (麻花 fried dough twists) — iconic local snacks
+- 🍜 Noodles & dumplings: hand-pulled noodles (拉面), knife-cut noodles (刀削面), wonton soup (馄饨), boiled dumplings (水饺)
+- 🍚 Rice box sets (盖饭/便当): braised pork rice (红烧肉饭), egg & tomato rice (番茄鸡蛋饭), kung pao chicken (宫保鸡丁饭) — filling & cheap
+- 🫕 Claypot & braised (砂锅/卤味): claypot rice (砂锅饭), braised chicken feet (卤鸡爪), braised tofu sets
+- 🥬 Home-style stir-fry (家常菜): quick set meals with 2–3 dishes + rice, usually ¥18–30
 
-When recommending waimai, consider:
-1. What the school lunch menu is serving that day (suggest something different)
-2. Budget-friendly options for students
-3. Delivery time (should arrive within lunch break ~30-40 min)
-4. Suggest ordering early before 11:30 AM to ensure on-time delivery
+--- MALA & SPICY (麻辣) ---
+- 🌶️ Mala hotpot (麻辣火锅): individual mini-hotpot boxes (自助小火锅) — very popular, ~¥25–40
+- 🫙 Mala tang (麻辣烫): customizable spicy soup with skewers of vegetables, tofu, meat — ¥15–30
+- 🍢 Mala skewers (串串香 / 冒菜): cold or hot mala skewers, great variety, ¥20–35
+- 🐟 Sichuan-style spicy fish (水煮鱼/麻辣鱼): rich spicy broth with fish fillets, ¥28–45
+- 🦞 Spicy crawfish (小龙虾): seasonal Meituan favourite in summer, ¥35–60
+
+--- DIM SUM & CANTONESE (点心/粤式) ---
+- 🍤 Dim sum delivery: siu mai (烧卖), har gow (虾饺), egg tarts (蛋挞), turnip cake (萝卜糕) — order combos ~¥30–50
+- 🫖 Cantonese congee (广式粥): preserved egg & pork congee (皮蛋瘦肉粥), smooth and light for lunch
+- 🍡 Cheung fun (肠粉): rice noodle rolls with shrimp or beef, ¥18–28
+
+--- OTHER POPULAR OPTIONS ---
+- 🍔 Western fast food: KFC, McDonald's, Burger King — all available on Meituan in TEDA area, ~20 min delivery
+- 🍣 Japanese: ramen (拉面), donburi rice bowls (丼饭), sushi sets — ¥35–65
+- 🥗 Healthy bowls & salads (轻食沙拉): popular with students watching diet, ¥25–40
+- 🌮 Halal options (清真食品): lamb skewers (羊肉串), hand-pulled beef noodles (牛肉拉面) — widely available
+- 🧋 Bubble tea & desserts: Mixue (蜜雪冰城), Chagee (霸王茶姬), Nayuki — ¥10–22, great after-lunch treat
+
+--- ORDERING TIPS ---
+1. Check today's school lunch menu first — suggest something different from what's being served
+2. Budget range: ¥15–35 is typical for a student lunch delivery
+3. Order before 11:30 AM to ensure delivery arrives within the lunch break (~12:00–13:00)
+4. Mala tang and rice box sets are the fastest to prepare (usually 15–20 min)
+5. On rainy or cold days, hotpot and noodle soups are especially popular
+6. For groups, mala hotpot boxes or claypot rice sets are easy to order in bulk
 `;
 
 // Base system prompt (school data injected dynamically)
