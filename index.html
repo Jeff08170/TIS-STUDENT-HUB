@@ -5722,13 +5722,18 @@ function _tryInit() {
 
 <script>
 // ── EAGLE AI CHAT ────────────────────────────────────────────────────────
-// Calls the Firebase Cloud Function "askAI" as a proxy to Claude.
-// The API key never touches the browser — it lives in the Cloud Function.
+// Calls Claude API directly from the browser. No Cloud Function needed.
 
-// Firebase Cloud Function URL — update region if your project uses a different one
-const AI_FUNCTION_URL = 'https://us-central1-tis-student-hub.cloudfunctions.net/askAI';
+// ▼▼▼ PUT YOUR CLAUDE API KEY HERE ▼▼▼
+const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE';
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-let aiHistory = [];      // [{role:'user'|'assistant', content:string}]
+const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
+const CLAUDE_SYSTEM = `You are Eagle AI, a friendly study assistant for TIS Eagles ClassRoom.
+Help students with homework, study tips, and general questions.
+Be kind, concise, and age-appropriate. Guide students to think rather than giving direct exam answers.`;
+
+let aiHistory = [];
 let aiThinking = false;
 
 // ── Send a message ────────────────────────────────────────────────────────
@@ -5738,53 +5743,51 @@ async function aiSend() {
   const msg = input.value.trim();
   if (!msg) return;
 
-  // Clear input & hide error
   input.value = '';
   aiAutoResize(input);
   aiShowError('');
 
-  // Render user bubble
   aiAppendBubble('user', msg);
   aiHistory.push({ role: 'user', content: msg });
 
-  // Show thinking dots
   aiThinking = true;
   document.getElementById('ai-send-btn').disabled = true;
   const thinkId = aiAppendThinking();
 
   try {
-    // Get Firebase Auth token for the callable function
-    const user = firebase.auth().currentUser;
-    if (!user) throw new Error('Not signed in.');
-    const token = await user.getIdToken();
-
-    const res = await fetch(AI_FUNCTION_URL, {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
-        data: { message: msg, history: aiHistory.slice(0, -1) }
+        model: CLAUDE_MODEL,
+        max_tokens: 1024,
+        system: CLAUDE_SYSTEM,
+        messages: aiHistory.slice(-20)
       })
     });
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `Server error ${res.status}`);
+      throw new Error(err?.error?.message || `Error ${res.status}`);
     }
 
     const json = await res.json();
-    const reply = json?.result?.reply || 'Sorry, I got an empty response.';
+    const reply = json?.content?.[0]?.text || 'Sorry, I got an empty response.';
 
     aiRemoveThinking(thinkId);
     aiAppendBubble('bot', reply);
     aiHistory.push({ role: 'assistant', content: reply });
 
-    // Keep history to last 20 turns to avoid huge payloads
     if (aiHistory.length > 20) aiHistory = aiHistory.slice(-20);
 
   } catch (err) {
     aiRemoveThinking(thinkId);
     aiShowError('⚠️ ' + (err.message || 'Could not reach Eagle AI. Try again.'));
-    // Remove the user message from history so they can retry
     aiHistory.pop();
   } finally {
     aiThinking = false;
