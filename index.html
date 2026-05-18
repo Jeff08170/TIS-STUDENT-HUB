@@ -14,12 +14,12 @@
   - 'unsafe-inline' is unavoidable here because the app uses many inline event
     handlers (onclick=...) and inline <style>/<script> blocks. Removing it would
     require a major refactor.
-  - All connect-src hosts are the ones actually used at runtime (Firebase, MSAL,
+  - All connect-src hosts are the ones actually used at runtime (Firebase,
     allorigins proxy, lingshi Claude proxy). If you add new endpoints, list them.
 -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.gstatic.com https://*.googleapis.com;
+  script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.googleapis.com;
   style-src  'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src   'self' https://fonts.gstatic.com data:;
   img-src    'self' data: blob: https:;
@@ -31,8 +31,6 @@
               https://identitytoolkit.googleapis.com
               https://securetoken.googleapis.com
               https://firestore.googleapis.com
-              https://login.microsoftonline.com
-              https://graph.microsoft.com
               https://api.allorigins.win
               https://api.lingshi.chat;
   frame-ancestors 'none';
@@ -41,7 +39,6 @@
 ">
 <title>TIS Student Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -98,17 +95,6 @@ body{
 .login-eagle{font-size:44px;margin-bottom:12px;}
 .login-title{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px;}
 .login-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
-.ms-signin-btn{
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  width:100%;padding:13px 20px;border-radius:var(--radius-sm);
-  border:1px solid var(--border);background:var(--surface2);
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
-  color:var(--text);cursor:pointer;transition:all 0.15s;margin-bottom:12px;
-}
-.ms-signin-btn:hover{background:var(--ms);color:white;border-color:var(--ms);}
-.ms-signin-btn:hover .ms-logo span{background:#fff !important;}
-.ms-logo{width:20px;height:20px;display:grid;grid-template-columns:1fr 1fr;gap:2px;flex-shrink:0;}
-.ms-logo span{display:block;border-radius:1px;transition:background 0.15s;}
 .login-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
 .login-tab{flex:1;padding:9px 12px;font-size:13px;font-weight:500;border:none;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all 0.15s;}
 .login-tab.active{background:var(--primary);color:var(--bg);}
@@ -1041,26 +1027,8 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="login-title" style="font-size:28px;">TIS Student Hub</div>
       <div class="login-sub" id="login-subtitle">Welcome to TIS Eagles · Begin your quest</div>
 
-      <!-- Login method tabs -->
-      <div style="display:flex;gap:0;margin:1.2rem 0 1.4rem;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
-        <button class="login-tab active" id="tab-microsoft" onclick="switchLoginTab('microsoft')">Microsoft</button>
-        <button class="login-tab" id="tab-email" onclick="switchLoginTab('email')">Email & Password</button>
-      </div>
-
-      <!-- Microsoft panel -->
-      <div id="panel-microsoft">
-        <button class="ms-signin-btn" onclick="signIn()">
-          <div class="ms-logo">
-            <span style="background:#F25022;"></span><span style="background:#7FBA00;"></span>
-            <span style="background:#00A4EF;"></span><span style="background:#FFB900;"></span>
-          </div>
-          Sign in with Microsoft
-        </button>
-        <div class="login-note" style="margin-top:12px;">Use your @outlook.com, @hotmail.com, @live.com or school account.</div>
-      </div>
-
-      <!-- Email/Password panel -->
-      <div id="panel-email" style="display:none;">
+      <!-- Email/Password panel (only login method) -->
+      <div id="panel-email" style="margin-top:1.25rem;">
         <!-- Sign In / Sign Up sub-tabs -->
         <div style="display:flex;gap:8px;margin-bottom:14px;">
           <button class="fpill active" id="subtab-signin" onclick="switchEmailSubtab('signin')">Sign In</button>
@@ -2317,10 +2285,9 @@ function initFirebase() {
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
   auth = firebase.auth();
-  // Listen for Firebase Auth state — ONLY for email/password users
-  // Guard flag prevents double-call when MSAL also calls handleLogin
+  // Listen for Firebase Auth state — email/password is the only login method.
   auth.onAuthStateChanged(async fbUser => {
-    if (window._loginHandled) return; // MSAL already handled login
+    if (window._loginHandled) return;
     if (!fbUser) return;
     if (fbUser.providerData[0]?.providerId !== 'password') return; // only email/pass
 
@@ -2538,7 +2505,7 @@ async function saveHouseLeader(house, email) {
   } catch(e) { console.error('saveHouseLeader:', e); }
 }
 
-// ── MSAL CONFIG ──
+// ── OWNER (hardcoded; matches firestore.rules) ──
 const SUPER_ADMIN = 'TisStudentHub@outlook.com';
 
 // ── XSS PROTECTION ──
@@ -2557,6 +2524,21 @@ function esc(str) {
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 function isValidEmail(e) {
   return typeof e === 'string' && e.length <= 254 && EMAIL_RE.test(e.trim());
+}
+
+// Login allowlist:
+//   - Domains: @students.tiseagles.com, @tiseagles.com
+//   - Plus a couple of hardcoded exceptions (owner + one specific student).
+// Everything else is rejected with a single generic "Failed." message so we
+// don't leak whether an email exists, is malformed, or is simply not allowed.
+const ALLOWED_DOMAINS = ['students.tiseagles.com', 'tiseagles.com'];
+const ALLOWED_EMAILS  = ['tisstudenthub@outlook.com', 'denisenovak2688@outlook.com'];
+function isAllowedEmail(e) {
+  if (!isValidEmail(e)) return false;
+  const lc = e.trim().toLowerCase();
+  if (ALLOWED_EMAILS.includes(lc)) return true;
+  const domain = lc.slice(lc.lastIndexOf('@') + 1);
+  return ALLOWED_DOMAINS.includes(domain);
 }
 let MANAGER_EMAILS = [SUPER_ADMIN]; // always start with owner only; populated from Firestore on login
 if (!MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(SUPER_ADMIN.toLowerCase())) { MANAGER_EMAILS = [SUPER_ADMIN, ...MANAGER_EMAILS]; }
@@ -2584,59 +2566,6 @@ function saveManagers() {
   // Only persist to Firestore — never localStorage (prevents client-side privilege escalation)
   saveManagerEmailsToFirestore();
 }
-const CLIENT_ID = 'b59528a6-1eab-4d13-ad23-bd8bf5c23c17';
-
-let msalInstance = null;
-
-function msalLoadError() {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-error').textContent = 'Failed to load Microsoft library. Please refresh.';
-  document.getElementById('login-error').style.display = 'block';
-}
-
-function initMsal() {
-  const msalConfig = {
-    auth: {
-      clientId: CLIENT_ID,
-      authority: 'https://login.microsoftonline.com/common',
-      redirectUri: 'https://jeff08170.github.io/TIS-STUDENT-HUB/',
-      navigateToLoginRequestUrl: true,
-    },
-    cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: true }
-  };
-  window._loginRequest = { scopes: ['openid', 'profile', 'email'] };
-  msalInstance = new msal.PublicClientApplication(msalConfig);
-  init();
-}
-
-let signingIn = false;
-
-async function signIn() {
-  if (!msalInstance) {
-    document.getElementById('login-error').textContent = 'Still loading... please wait and try again.';
-    document.getElementById('login-error').style.display = 'block';
-    return;
-  }
-  if (signingIn) return;
-  signingIn = true;
-  try {
-    // Clear any stuck state before redirect
-    Object.keys(sessionStorage).forEach(k => {
-      if (k.startsWith('msal.')) sessionStorage.removeItem(k);
-    });
-    document.getElementById('login-error').style.display = 'none';
-    // Use redirect — more reliable across tabs, no popup blocker issues
-    await msalInstance.loginRedirect(window._loginRequest);
-  } catch (e) {
-    console.error('Login error:', e);
-    document.getElementById('login-error').textContent = 'Sign-in failed: ' + (e.message || 'Please try again.');
-    document.getElementById('login-error').style.display = 'block';
-    signingIn = false;
-  }
-  // Note: signingIn stays true during redirect — page reloads on return
-}
-
 async function signOut() {
   currentUserRole = null;
   window._signedInViaForm = false;
@@ -2648,79 +2577,28 @@ async function signOut() {
   window._myFeedbacks = null;
   window._headAdmins = [];
   TEACHER_EMAILS = [];
-  // Sign out Firebase (email/password users)
+  // Sign out Firebase
   if (auth && auth.currentUser) {
     await auth.signOut().catch(() => {});
   }
-  // Sign out Microsoft (MSAL users)
-  if (msalInstance) {
-    const accounts = msalInstance.getAllAccounts();
-    if (accounts.length > 0) {
-      await msalInstance.logoutRedirect({
-        account: accounts[0],
-        postLogoutRedirectUri: 'https://jeff08170.github.io/TIS-STUDENT-HUB/'
-      });
-      return; // page will redirect
-    }
-  }
-  // Firebase-only signout — just show login screen
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  switchLoginTab('microsoft');
+  switchEmailSubtab('signin');
 }
 
-// ── INIT ── handles redirect return automatically
+// ── INIT ── if Firebase already has a session it'll be handled by
+// onAuthStateChanged; otherwise show the login screen after a short delay.
 async function init() {
   window._loginHandled = false;
-  try {
-    const response = await msalInstance.handleRedirectPromise();
-    if (response && response.account) {
-      window._loginHandled = true;
-      const fbManagers = await loadManagerEmails().catch(() => []);
-      fbManagers.forEach(e => {
-        if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
-      });
-      const leaders = await loadHouseLeaders().catch(() => null);
-      if (leaders) Object.assign(HOUSE_LEADERS, leaders);
-      await loadHeadAdmins().catch(() => {});
-      await loadAdminNames().catch(() => {});
-      TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
-      handleLogin(response.account);
-      return;
-    }
-    // Check existing MSAL session
-    const accounts = msalInstance.getAllAccounts();
-    if (accounts.length > 0) {
-      window._loginHandled = true;
-      const fbManagers = await loadManagerEmails().catch(() => []);
-      fbManagers.forEach(e => {
-        if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
-      });
-      const leaders = await loadHouseLeaders().catch(() => null);
-      if (leaders) Object.assign(HOUSE_LEADERS, leaders);
-      await loadHeadAdmins().catch(() => {});
-      await loadAdminNames().catch(() => {});
-      TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
-      handleLogin(accounts[0]);
-      return;
-    }
-    // No MSAL session — let Firebase onAuthStateChanged handle email/pass users
-    // If Firebase also has no user, show login screen after short delay
-    setTimeout(() => {
-      if (!window._loginHandled) showLoginScreen();
-    }, 1500);
-  } catch (e) {
-    console.error('Init error:', e);
+  setTimeout(() => {
     if (!window._loginHandled) showLoginScreen();
-  }
+  }, 1500);
 }
 
 // ── EMAIL AUTH UI ──
-function switchLoginTab(tab) {
-  ['microsoft','email'].forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
-    document.getElementById('panel-'+t).style.display = t===tab ? '' : 'none';
-  });
+// switchLoginTab is a no-op now that Microsoft sign-in is removed.
+// Kept as a stub so any leftover callers don't crash.
+function switchLoginTab(_tab) {
   hideLoginError();
 }
 
@@ -2773,7 +2651,7 @@ async function signUpWithEmail() {
   const invite = document.getElementById('signup-invite').value.trim();
   hideLoginError();
   if (!name || name.length < 2 || name.length > 60) { showLoginError('Please enter your full name (2–60 characters).'); return; }
-  if (!isValidEmail(email)) { showLoginError('Please enter a valid email address.'); return; }
+  if (!isAllowedEmail(email)) { showLoginError('Failed.'); return; }
   if (pw.length < 8) { showLoginError('Password must be at least 8 characters.'); return; }
   if (!/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) { showLoginError('Password must contain both letters and numbers.'); return; }
   if (pw !== confirm) { showLoginError('Passwords do not match.'); return; }
@@ -2841,6 +2719,8 @@ async function signInWithEmail() {
   const pw = document.getElementById('signin-password').value;
   hideLoginError();
   if (!email || !pw) { showLoginError('Please enter your email and password.'); return; }
+  // Allowlist gate — any non-allowed email gets a single generic "Failed."
+  if (!isAllowedEmail(email)) { showLoginError('Failed.'); return; }
   // Client-side rate limiting
   const rlKey = 'signin_fails';
   const rl = JSON.parse(sessionStorage.getItem(rlKey) || '{"count":0,"until":0}');
@@ -4029,7 +3909,10 @@ async function setFeatureFlag(flag, value) {
     }
   } catch(e) {
     console.error('setFeatureFlag:', e);
-    if (statusEl) statusEl.textContent = '❌ Failed to save. Check permissions.';
+    if (statusEl) statusEl.textContent = `❌ Save failed (${e.code || e.message || 'unknown'}). See console.`;
+    // Roll back the optimistic local change so UI matches Firestore.
+    _featureFlags[flag] = !value;
+    applyFeatureFlags();
   }
 }
 
@@ -6370,11 +6253,14 @@ async function saveProfilePassword() {
 }
 
 // ── STARTUP ──
-const _msalTimeout = setTimeout(() => {
-  if (!msalInstance) {
-    console.warn('Load timeout — showing login screen');
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'flex';
+// Safety net: if Firebase never finishes loading, show the login screen.
+const _loadTimeout = setTimeout(() => {
+  if (typeof db === 'undefined' || db === null) {
+    console.warn('Firebase load timeout — showing login screen anyway');
+    const ls = document.getElementById('loading-screen');
+    const li = document.getElementById('login-screen');
+    if (ls) ls.style.display = 'none';
+    if (li) li.style.display = 'flex';
   }
 }, 10000);
 
@@ -6385,38 +6271,32 @@ if (document.readyState === 'complete') {
 }
 
 function _tryInit() {
-  clearTimeout(_msalTimeout);
+  const firebaseReady = () => typeof firebase !== 'undefined'
+    && typeof firebase.firestore === 'function'
+    && typeof firebase.auth === 'function';
 
-  // Check all required libraries are loaded
-  const msalReady = typeof msal !== 'undefined';
-  const firebaseReady = typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' && typeof firebase.auth === 'function';
-
-  if (msalReady && firebaseReady) {
+  if (firebaseReady()) {
+    clearTimeout(_loadTimeout);
     initFirebase();
-    initMsal();
+    init();
     return;
   }
 
-  // If not ready yet, poll every 100ms up to 8s
+  // Poll every 100ms up to 8s for the Firebase SDK to finish loading.
   let attempts = 0;
   const poll = setInterval(() => {
     attempts++;
-    const mReady = typeof msal !== 'undefined';
-    const fReady = typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' && typeof firebase.auth === 'function';
-    if (mReady && fReady) {
+    if (firebaseReady()) {
       clearInterval(poll);
+      clearTimeout(_loadTimeout);
       initFirebase();
-      initMsal();
-    } else if (attempts > 80) { // 8 seconds
+      init();
+    } else if (attempts > 80) {
       clearInterval(poll);
-      if (fReady) initFirebase();
-      if (mReady) initMsal();
-      else msalLoadError();
+      console.error('Firebase failed to load.');
     }
   }, 100);
 }
-
-// Start is triggered by _tryInit → initMsal() → init()
 </script>
 
 <!-- Profile Modal -->
@@ -6477,7 +6357,7 @@ function _tryInit() {
 //   The client should then call YOUR endpoint, never lingshi/Anthropic directly.
 
 // ▼▼▼ PUT YOUR CLAUDE API KEY HERE ▼▼▼
-const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE';
+const CLAUDE_API_KEY = 'sk-wzSPkBJbq859zdYqTRh4GlQP5b4UvEsI9VmDCIrEh8TjGd37';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 // Loud console warning if a real-looking key ever lands in this file.
