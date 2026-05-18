@@ -1133,7 +1133,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="nav-section-ai-student">
       <div class="nav-label">AI</div>
       <button class="nav-item" id="nav-ai-btn" onclick="showPage('ai',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
@@ -1167,7 +1167,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="nav-section-ai-teacher">
       <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
@@ -1212,7 +1212,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="nav-section-ai-admin">
       <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
@@ -2164,6 +2164,16 @@ textarea.fb-input{resize:vertical;min-height:90px;}
             <input type="checkbox" id="ff-points" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('points',this.checked)">
           </div>
         </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;">Eagle AI</div>
+            <div style="font-size:11px;color:var(--muted);">Sidebar Eagle AI tab and the chat page for everyone</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);" id="ff-ai-label">Loading...</span>
+            <input type="checkbox" id="ff-ai" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('ai',this.checked)">
+          </div>
+        </label>
       </div>
       <div id="ff-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
     </div>
@@ -2306,32 +2316,49 @@ function initFirebase() {
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
   auth = firebase.auth();
-  // Listen for Firebase Auth state — email/password is the only login method.
+
+  // Use LOCAL persistence (the default, but be explicit) so the user stays
+  // signed in across page refreshes and browser restarts.
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+    console.warn('setPersistence failed:', err);
+  });
+
+  // Auth state listener — fires once on page load with either the persisted
+  // user or null. We act on both cases so init() doesn't need to wait/poll.
   auth.onAuthStateChanged(async fbUser => {
     if (window._loginHandled) return;
-    if (!fbUser) return;
-    if (fbUser.providerData[0]?.providerId !== 'password') return; // only email/pass
 
-    // Only proceed if the user explicitly signed in or just created an account.
-    // This prevents a persisted Firebase session from auto-logging in on page load
-    // when the user hasn't actively chosen to sign in.
-    const explicitAction = window._signedInViaForm || window._createdViaSignup;
-    if (!explicitAction) {
-      // Sign them out silently — they must use the login form
-      auth.signOut();
+    if (!fbUser) {
+      // No persisted session → show the login screen right away.
+      showLoginScreen();
+      return;
+    }
+    if (fbUser.providerData[0]?.providerId !== 'password') {
+      showLoginScreen();
       return;
     }
 
-    // Email/password user — load managers/leaders then login
-    const fbManagers = await loadManagerEmails().catch(() => []);
+    // Load all the supporting Firestore data in PARALLEL. Previously these
+    // five reads ran sequentially — round-trip latency added up to >1 second.
+    let fbManagers, leaders, teachers;
+    try {
+      [fbManagers, leaders, teachers] = await Promise.all([
+        loadManagerEmails().catch(() => []),
+        loadHouseLeaders().catch(() => null),
+        loadTeacherEmails().catch(() => []),
+        loadHeadAdmins().catch(() => {}),
+        loadAdminNames().catch(() => {}),
+      ]);
+    } catch(e) {
+      console.warn('Login data preload failed:', e);
+      fbManagers = []; leaders = null; teachers = [];
+    }
     fbManagers.forEach(e => {
       if (!MANAGER_EMAILS.map(x=>x.toLowerCase()).includes(e.toLowerCase())) MANAGER_EMAILS.push(e);
     });
-    const leaders = await loadHouseLeaders().catch(() => null);
     if (leaders) Object.assign(HOUSE_LEADERS, leaders);
-    await loadHeadAdmins().catch(() => {});
-    await loadAdminNames().catch(() => {});
-    TEACHER_EMAILS = await loadTeacherEmails().catch(() => []);
+    TEACHER_EMAILS = teachers || [];
+
     window._loginHandled = true;
     handleLogin({ username: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
   });
@@ -2607,13 +2634,12 @@ async function signOut() {
   switchEmailSubtab('signin');
 }
 
-// ── INIT ── if Firebase already has a session it'll be handled by
-// onAuthStateChanged; otherwise show the login screen after a short delay.
+// ── INIT ──
+// No timeout needed: initFirebase() registered an onAuthStateChanged listener
+// that fires immediately with either the persisted user OR null. Both paths
+// transition the UI on their own.
 async function init() {
   window._loginHandled = false;
-  setTimeout(() => {
-    if (!window._loginHandled) showLoginScreen();
-  }, 1500);
 }
 
 // ── EMAIL AUTH UI ──
@@ -3916,7 +3942,7 @@ async function saveInviteCode() {
 
 // ── FEATURE FLAGS ──
 // Stored in Firestore: settings/features = { ranking: bool, board: bool }
-let _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true };
+let _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ai: true };
 
 async function loadFeatureFlags() {
   try {
@@ -3953,6 +3979,9 @@ function applyFeatureFlags() {
 
   // Rewards tab + nav section + dashboard "Spin" shortcut card
   applyFlag('rewards', ['nav-section-rewards', 'page-rewards', 'dash-spin-shortcut'], 'ff-rewards');
+
+  // Eagle AI tab — all three nav sections (student / teacher / admin) + the page itself
+  applyFlag('ai', ['nav-section-ai-student', 'nav-section-ai-teacher', 'nav-section-ai-admin', 'page-ai'], 'ff-ai');
 
   // Levels & XP — topbar level, dashboard level badge, XP bar
   const levelsOn = !!_featureFlags.levels;
