@@ -2698,13 +2698,15 @@ async function signUpWithEmail() {
   let codeValid = false;
   try {
     const codeDoc = await db.collection('settings').doc('inviteCode').get();
-    if (codeDoc.exists) {
+    if (codeDoc.exists && codeDoc.data().code) {
+      // Admin has set a custom code — that's the only one that works
       codeValid = codeDoc.data().code === invite;
     } else {
-      // No invite code configured — show a clear error rather than allowing a hardcoded fallback
-      showLoginError('Registration is not yet configured. Please contact an admin.');
-      if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
-      return;
+      // Bootstrap: no code configured yet → accept the default '7180' so the
+      // first owner/admin can sign up. As soon as an admin saves a code via
+      // the admin UI, this branch stops triggering and only the saved code
+      // works.
+      codeValid = (invite === DEFAULT_INVITE_CODE);
     }
   } catch(e) {
     console.error('inviteCode read failed:', e);
