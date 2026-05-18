@@ -8,6 +8,37 @@
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<!--
+  Content Security Policy
+  - Restricts where scripts, styles, fonts, and network requests can come from.
+  - 'unsafe-inline' is unavoidable here because the app uses many inline event
+    handlers (onclick=...) and inline <style>/<script> blocks. Removing it would
+    require a major refactor.
+  - All connect-src hosts are the ones actually used at runtime (Firebase, MSAL,
+    allorigins proxy, lingshi Claude proxy). If you add new endpoints, list them.
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.gstatic.com https://*.googleapis.com;
+  style-src  'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src   'self' https://fonts.gstatic.com data:;
+  img-src    'self' data: blob: https:;
+  connect-src 'self'
+              https://*.googleapis.com
+              https://*.firebaseio.com
+              https://*.firebasestorage.app
+              https://firebaseinstallations.googleapis.com
+              https://identitytoolkit.googleapis.com
+              https://securetoken.googleapis.com
+              https://firestore.googleapis.com
+              https://login.microsoftonline.com
+              https://graph.microsoft.com
+              https://api.allorigins.win
+              https://api.lingshi.chat;
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+">
 <title>TIS Student Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
@@ -26,7 +57,7 @@
   --text:#f0f0f0;--muted:#666;
   --border:rgba(255,255,255,0.07);--radius:14px;--radius-sm:9px;
   --primary:#f0f0f0;--primary-hover:#ffffff;--primary-soft:rgba(255,255,255,0.06);
-  --sidebar-bg:#111;--sidebar-w:64px;
+  --sidebar-bg:#111;--sidebar-w:220px;
   --ms:#0078D4;
 }
 [data-theme="light"]{
@@ -91,13 +122,12 @@ body{
 .sidebar{
   width:var(--sidebar-w);background:var(--sidebar-bg);
   border-right:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:center;
+  display:flex;flex-direction:column;align-items:flex-start;
   padding:1rem 0 0.75rem;
   position:fixed;top:0;left:0;bottom:0;z-index:100;
-  overflow:hidden;
-  transition:width 0.22s cubic-bezier(0.4,0,0.2,1),background 0.3s,border-color 0.3s;
+  overflow-x:hidden;overflow-y:auto;
+  transition:background 0.3s,border-color 0.3s;
 }
-.sidebar:hover{width:220px;}
 
 /* Logo */
 .logo-row{
@@ -113,15 +143,13 @@ body{
 .logo-icon svg{width:17px;height:17px;fill:var(--bg);stroke:none;}
 .logo-name{
   font-family:'DM Serif Display',serif;font-size:15px;white-space:nowrap;
-  opacity:0;transition:opacity 0.15s 0.05s;flex:1;
+  opacity:1;flex:1;
 }
-.sidebar:hover .logo-name{opacity:1;}
 .role-badge{
   font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px;
   white-space:nowrap;flex-shrink:0;
-  opacity:0;transition:opacity 0.15s 0.05s;
+  opacity:1;
 }
-.sidebar:hover .role-badge{opacity:1;}
 .role-badge.manager{background:rgba(192,74,16,0.2);color:var(--fire-deep);}
 .role-badge.owner{background:linear-gradient(135deg,#7c3aed,#c026d3);color:white;}
 .role-badge.teacher{background:rgba(30,79,140,0.2);color:var(--water-deep);}
@@ -132,20 +160,18 @@ body{
 .nav-label{
   font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);
   text-transform:uppercase;padding:0 20px;margin-bottom:3px;margin-top:8px;
-  white-space:nowrap;opacity:0;transition:opacity 0.15s;
+  white-space:nowrap;opacity:1;
 }
-.sidebar:hover .nav-label{opacity:1;}
 .nav-item{
   display:flex;align-items:center;gap:10px;
   padding:9px 0 9px 20px;
   border-radius:var(--radius-sm);cursor:pointer;
-  font-size:0;color:var(--muted);font-weight:400;
-  transition:background 0.12s,color 0.12s,font-size 0.05s;
+  font-size:13px;color:var(--muted);font-weight:400;
+  transition:background 0.12s,color 0.12s;
   margin:1px 8px;border:none;background:none;
   width:calc(100% - 16px);text-align:left;
   font-family:'DM Sans',sans-serif;white-space:nowrap;
 }
-.sidebar:hover .nav-item{font-size:13px;}
 .nav-item svg{width:16px;height:16px;fill:currentColor;stroke:none;flex-shrink:0;}
 .nav-item:hover{background:var(--primary-soft);color:var(--text);}
 .nav-item.active{background:var(--primary);color:var(--bg);}
@@ -157,9 +183,8 @@ body{
   margin-left:auto;margin-right:10px;font-size:10px;font-weight:600;
   padding:1px 7px;border-radius:99px;
   background:rgba(255,255,255,0.15);color:var(--text);
-  opacity:0;transition:opacity 0.15s;
+  opacity:1;
 }
-.sidebar:hover .nav-badge{opacity:1;}
 [data-theme="light"] .nav-badge{background:rgba(0,0,0,0.08);color:var(--text);}
 .house-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
@@ -170,9 +195,8 @@ body{
 }
 .user-row{display:flex;align-items:center;gap:10px;padding:6px 12px;}
 .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0;}
-.user-name{font-size:13px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity 0.15s;}
-.user-role{font-size:11px;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity 0.15s;}
-.sidebar:hover .user-name,.sidebar:hover .user-role{opacity:1;}
+.user-name{font-size:13px;font-weight:500;white-space:nowrap;opacity:1;overflow:hidden;text-overflow:ellipsis;}
+.user-role{font-size:11px;color:var(--muted);white-space:nowrap;opacity:1;overflow:hidden;text-overflow:ellipsis;}
 .sidebar-actions{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;width:100%;}
 .sidebar-icon-btn{
   display:flex;align-items:center;justify-content:center;
@@ -186,11 +210,10 @@ body{
   display:flex;align-items:center;gap:10px;
   padding:8px 12px;width:calc(100% - 16px);margin:2px 8px;
   border:none;background:none;font-family:'DM Sans',sans-serif;
-  font-size:0;color:var(--muted);cursor:pointer;
-  border-radius:var(--radius-sm);transition:background 0.12s,color 0.12s,font-size 0.05s;
+  font-size:13px;color:var(--muted);cursor:pointer;
+  border-radius:var(--radius-sm);transition:background 0.12s,color 0.12s;
   white-space:nowrap;
 }
-.sidebar:hover .logout-btn{font-size:13px;}
 .logout-btn:hover{background:var(--primary-soft);color:var(--text);}
 .logout-btn svg{width:15px;height:15px;fill:currentColor;stroke:none;flex-shrink:0;}
 
@@ -207,7 +230,7 @@ body{
 .avatar-upload-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.18s;font-size:18px;}
 
 /* Main */
-.main{margin-left:var(--sidebar-w);flex:1;padding:2rem 2.5rem;max-width:calc(100vw - var(--sidebar-w));overflow-y:auto;transition:margin-left 0.22s;}
+.main{margin-left:var(--sidebar-w);flex:1;padding:2rem 2.5rem;max-width:calc(100vw - var(--sidebar-w));overflow-y:auto;}
 .page{display:none;animation:fadeIn 0.2s ease;}
 .page.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
@@ -1317,7 +1340,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
         <div class="ach-num" id="dash-poll-num">—</div>
         <div class="ach-label">Active polls</div>
       </div>
-      <div class="ach-card" onclick="showPage('rewards',null)">
+      <div class="ach-card" id="dash-spin-shortcut" onclick="showPage('rewards',null)">
         <div class="ach-icon"><svg width="22" height="22" fill="currentColor"><use href="#px-gift"/></svg></div>
         <div class="ach-num">Spin</div>
         <div class="ach-label">Win prizes</div>
@@ -2528,6 +2551,13 @@ function esc(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
 }
+// Stricter email validator — rejects obvious malformed input that
+// weak checks like `email.includes('@')` let through. Not RFC-perfect,
+// but good enough to stop typos and injection attempts.
+const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+function isValidEmail(e) {
+  return typeof e === 'string' && e.length <= 254 && EMAIL_RE.test(e.trim());
+}
 let MANAGER_EMAILS = [SUPER_ADMIN]; // always start with owner only; populated from Firestore on login
 if (!MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(SUPER_ADMIN.toLowerCase())) { MANAGER_EMAILS = [SUPER_ADMIN, ...MANAGER_EMAILS]; }
 let TEACHER_EMAILS = []; // populated from Firestore on login
@@ -2742,9 +2772,10 @@ async function signUpWithEmail() {
   const confirm = document.getElementById('signup-confirm').value;
   const invite = document.getElementById('signup-invite').value.trim();
   hideLoginError();
-  if (!name) { showLoginError('Please enter your full name.'); return; }
-  if (!email) { showLoginError('Please enter your email.'); return; }
-  if (pw.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
+  if (!name || name.length < 2 || name.length > 60) { showLoginError('Please enter your full name (2–60 characters).'); return; }
+  if (!isValidEmail(email)) { showLoginError('Please enter a valid email address.'); return; }
+  if (pw.length < 8) { showLoginError('Password must be at least 8 characters.'); return; }
+  if (!/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) { showLoginError('Password must contain both letters and numbers.'); return; }
   if (pw !== confirm) { showLoginError('Passwords do not match.'); return; }
   if (!invite) { showLoginError('Please enter the registration code.'); return; }
   // Verify invite code against Firestore (never hardcode in client)
@@ -3539,43 +3570,6 @@ function postHouseAnnouncement() {
   });
 }
 
-function loadStudentPastFeedbacks() {
-  const el = document.getElementById('student-fb-list');
-  if (!el || !window.currentUserEmail) return;
-  db.collection('feedbacks')
-    .where('studentEmail','==',window.currentUserEmail.toLowerCase())
-    .orderBy('createdAt','desc').get()
-    .then(snap => {
-      if (snap.empty) {
-        el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem 0;">No feedbacks submitted yet.</div>';
-        return;
-      }
-      el.innerHTML = snap.docs.map(d => {
-        const fb = d.data();
-        const stars = '★'.repeat(fb.rating||0)+'☆'.repeat(5-(fb.rating||0));
-        const date = fb.createdAt?.toDate?.()?.toLocaleDateString()||'Recent';
-        const replyHtml = fb.reply
-          ? `<div style="margin-top:10px;padding:10px 12px;background:var(--air);border-radius:var(--radius-sm);border-left:3px solid var(--air-deep);">
-               <div style="font-size:11px;color:var(--air-deep);font-weight:500;margin-bottom:4px;">✓ Reply from ${esc(fb.replyBy||'Manager')}</div>
-               <div style="font-size:13px;color:var(--air-text);">${esc(fb.reply)}</div>
-             </div>`
-          : `<div style="margin-top:6px;font-size:11px;color:var(--muted);font-style:italic;">⏳ Awaiting reply...</div>`;
-        return `<div style="border-bottom:1px solid var(--border);padding:14px 0;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-size:12px;font-weight:500;">${fb.category||'General'}</span>
-            <span style="font-size:11px;color:var(--muted);">${date}</span>
-          </div>
-          <div class="fb-stars">${stars}</div>
-          <div style="font-size:13px;color:var(--text);margin-top:6px;">${esc(fb.text)}</div>
-          ${replyHtml}
-        </div>`;
-      }).join('');
-    }).catch((e) => { 
-      console.warn('loadStudentPastFeedbacks:', e);
-      el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Could not load.</div>'; 
-    });
-}
-
 function loadDashboardPollPreview(userEmail) {
   const el = document.getElementById('dash-poll-preview');
   if (!el) return;
@@ -3991,8 +3985,8 @@ function applyFeatureFlags() {
   // My House tab + nav section
   applyFlag('house', ['nav-section-houses', 'page-houses'], 'ff-house');
 
-  // Rewards tab + nav section
-  applyFlag('rewards', ['nav-section-rewards', 'page-rewards'], 'ff-rewards');
+  // Rewards tab + nav section + dashboard "Spin" shortcut card
+  applyFlag('rewards', ['nav-section-rewards', 'page-rewards', 'dash-spin-shortcut'], 'ff-rewards');
 
   // Levels & XP — topbar level, dashboard level badge, XP bar
   const levelsOn = !!_featureFlags.levels;
@@ -5233,9 +5227,10 @@ function loadStudentPastFeedbacks() {
   const el = document.getElementById('student-fb-list');
   if (!el || !window.currentUserEmail) return;
   el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:0.5rem 0;text-align:center;">Loading...</div>';
+  // No orderBy here — sorting client-side avoids the (studentEmail, createdAt) composite index requirement.
   db.collection('feedbacks')
     .where('studentEmail','==',window.currentUserEmail.toLowerCase())
-    .orderBy('createdAt','desc').get()
+    .get()
     .then(snap => {
       const badge = document.getElementById('my-fb-count-badge');
       const countPill = document.getElementById('fb-mine-count');
@@ -5243,7 +5238,13 @@ function loadStudentPastFeedbacks() {
       if (badge) { badge.style.display = total > 0 ? '' : 'none'; badge.textContent = `${total} submitted`; }
       if (countPill) { countPill.style.display = total > 0 ? '' : 'none'; countPill.textContent = total; }
       if (snap.empty) { renderMyFeedbackCards([]); return; }
-      const replied = snap.docs.filter(d => d.data().reply).length;
+      // Sort newest first
+      const sortedDocs = [...snap.docs].sort((a, b) => {
+        const ta = a.data().createdAt?.toMillis?.() || 0;
+        const tb = b.data().createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      });
+      const replied = sortedDocs.filter(d => d.data().reply).length;
       const pending = total - replied;
       const statsHtml = `
         <div style="display:flex;gap:10px;margin-bottom:1.25rem;">
@@ -5259,12 +5260,12 @@ function loadStudentPastFeedbacks() {
         </div>
         <div id="fb-cards-container"></div>`;
       el.innerHTML = statsHtml;
-      window._myFeedbacks = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      window._myFeedbacks = sortedDocs.map(d => ({id: d.id, ...d.data()}));
       renderMyFeedbackCards(window._myFeedbacks);
     })
     .catch(e => {
       console.warn('loadStudentPastFeedbacks:', e);
-      el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;">Could not load feedbacks.</div>';
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;">Could not load feedbacks. Please retry.</div>';
     });
 }
 
@@ -5324,9 +5325,10 @@ function submitFb(btn) {
   const category = document.getElementById('fb-select-category')?.value || 'General';
   const house = document.getElementById('fb-select-house')?.value || 'Unassigned';
   const textarea = document.getElementById('fb-textarea');
-  const text = textarea?.value?.trim() || '';
+  const text = (textarea?.value?.trim() || '').slice(0, 1000);
   const rating = document.querySelectorAll('#stars .star.on').length;
   if (!text) { toast('Please write your feedback first.'); return; }
+  if (text.length < 3) { toast('Please write a bit more.'); return; }
   const email = (window.currentUserEmail || '').toLowerCase();
   const studentName = window.currentUserName || email.split('@')[0] || 'Student';
   btn.disabled = true;
@@ -5996,7 +5998,7 @@ async function addTeacher() {
   const btn = document.querySelector('#new-teacher-email')?.closest('.mgr-section')?.querySelector('.btn-primary');
   const email = emailInput.value.trim().toLowerCase();
   const name = nameInput.value.trim();
-  if (!email || !email.includes('@') || !email.includes('.')) { errEl.style.display='block'; return; }
+  if (!isValidEmail(email)) { errEl.style.display='block'; return; }
   errEl.style.display = 'none';
   if (TEACHER_EMAILS.map(e=>e.toLowerCase()).includes(email)) { toast('Already a teacher!'); return; }
   if (isManager(email)) { toast('This person is already an admin.'); return; }
@@ -6142,7 +6144,7 @@ function addAdmin() {
   const email = emailInput.value.trim();
   const name = nameInput.value.trim();
 
-  if (!email || !email.includes('@') || !email.includes('.')) {
+  if (!isValidEmail(email)) {
     errEl.style.display = 'block';
     return;
   }
@@ -6245,9 +6247,10 @@ async function handleAvatarUpload(input) {
   if (!file) return;
   const statusEl = document.getElementById('avatar-upload-status');
 
-  // Validate
-  if (!file.type.startsWith('image/')) {
-    if (statusEl) { statusEl.style.color='var(--fire-deep)'; statusEl.textContent='Please select an image file.'; }
+  // Validate — allowlist specific image MIME types (rejects SVG, which can carry XSS).
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    if (statusEl) { statusEl.style.color='var(--fire-deep)'; statusEl.textContent='Please select a JPEG, PNG, WebP or GIF image.'; }
     return;
   }
   if (file.size > 2 * 1024 * 1024) {
@@ -6465,11 +6468,26 @@ function _tryInit() {
 
 <script>
 // ── EAGLE AI CHAT ────────────────────────────────────────────────────────
-// Calls Claude API directly from the browser. No Cloud Function needed.
+// SECURITY WARNING:
+//   This file ships the Claude API key to every browser that loads the page.
+//   Anyone who opens DevTools can read it and bill calls to your account.
+//   Before going to production, move this call to a server-side proxy
+//   (Firebase Cloud Function or a small Node/Cloudflare Worker endpoint)
+//   that holds the key as an environment variable and forwards requests.
+//   The client should then call YOUR endpoint, never lingshi/Anthropic directly.
 
 // ▼▼▼ PUT YOUR CLAUDE API KEY HERE ▼▼▼
 const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+// Loud console warning if a real-looking key ever lands in this file.
+if (CLAUDE_API_KEY && CLAUDE_API_KEY !== 'YOUR_API_KEY_HERE' && CLAUDE_API_KEY.length > 20) {
+  console.warn(
+    '%c[SECURITY] Claude API key is exposed in client-side code.\n' +
+    'Anyone with DevTools can read it. Move this call to a server-side proxy.',
+    'background:#7A1F1F;color:#fff;padding:4px 8px;border-radius:4px;font-weight:bold;'
+  );
+}
 
 const CLAUDE_MODEL = 'claude-sonnet-4-6';
 
@@ -6756,8 +6774,15 @@ let aiThinking = false;
 async function aiSend() {
   if (aiThinking) return;
   const input = document.getElementById('ai-input');
-  const msg = input.value.trim();
-  if (!msg) return;
+  const rawMsg = input.value.trim();
+  if (!rawMsg) return;
+  // Cap message size to prevent prompt-stuffing / token abuse from the client.
+  const MAX_MSG_LEN = 2000;
+  if (rawMsg.length > MAX_MSG_LEN) {
+    aiShowError(`Message too long (max ${MAX_MSG_LEN} characters).`);
+    return;
+  }
+  const msg = rawMsg;
 
   input.value = '';
   aiAutoResize(input);
