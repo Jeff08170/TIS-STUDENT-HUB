@@ -2707,7 +2707,11 @@ async function signUpWithEmail() {
       return;
     }
   } catch(e) {
-    showLoginError('Could not verify registration code. Please check your connection and try again.');
+    console.error('inviteCode read failed:', e);
+    const reason = e.code === 'permission-denied'
+      ? 'Registration is temporarily disabled (server permissions). Please contact an admin.'
+      : `Could not verify registration code (${e.code || e.message || 'unknown error'}). Please try again.`;
+    showLoginError(reason);
     if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
     return;
   }
