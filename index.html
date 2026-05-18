@@ -2074,6 +2074,27 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div id="log-mgmt-status" style="font-size:12px;color:var(--muted);margin-top:10px;min-height:16px;"></div>
     </div>
 
+    <!-- Registration (invite) code — Head Admin + above -->
+    <div class="mgr-section" id="invite-code-section">
+      <div class="mgr-section-title">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-shield"/></svg>
+        Registration code
+        <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--air);color:var(--air-text);">Head Admin+</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">
+        Students must enter this code when creating an account. Share it only with people you want to let in. 3–10 characters.
+      </p>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <label class="fb-label">Current code</label>
+          <input class="fb-input" id="invite-code-input" type="text" maxlength="10" placeholder="e.g. 7180"
+            style="margin-bottom:0;letter-spacing:0.15em;font-weight:600;text-align:center;font-size:18px;" />
+        </div>
+        <button class="btn-primary" style="flex-shrink:0;" onclick="saveInviteCode()">Save code</button>
+      </div>
+      <div id="invite-code-status" style="font-size:12px;margin-top:8px;min-height:14px;"></div>
+    </div>
+
     <!-- Feature Flags — Head Admin + above -->
     <div class="mgr-section" id="feature-flags-section">
       <div class="mgr-section-title">
@@ -3091,6 +3112,7 @@ function showPage(id, btn) {
       renderTeacherList();
       loadFeatureFlags();
       loadAiConfig();
+      loadInviteCode();
       { const logSec = document.getElementById('log-mgmt-section');
         const _ce = (window.currentUserEmail||'').toLowerCase();
         const _isHeadOrOwner = _ce === SUPER_ADMIN.toLowerCase() || (window._headAdmins||[]).includes(_ce);
@@ -3826,6 +3848,64 @@ async function claimDailyLoginXP(email, studentName) {
     }
     return result;
   } catch(e) { console.error('claimDailyLoginXP:', e); return { granted: false }; }
+}
+
+// ── REGISTRATION (INVITE) CODE ──
+// Stored in Firestore: settings/inviteCode = { code: string }
+// Default suggestion when none is configured yet.
+const DEFAULT_INVITE_CODE = '7180';
+
+async function loadInviteCode() {
+  const inp = document.getElementById('invite-code-input');
+  const statusEl = document.getElementById('invite-code-status');
+  if (!inp) return;
+  try {
+    const doc = await db.collection('settings').doc('inviteCode').get();
+    if (doc.exists && doc.data().code) {
+      inp.value = doc.data().code;
+      if (statusEl) statusEl.textContent = '';
+    } else {
+      // Pre-fill the default — admin just has to click Save to activate.
+      inp.value = DEFAULT_INVITE_CODE;
+      if (statusEl) {
+        statusEl.style.color = 'var(--muted)';
+        statusEl.textContent = 'No code set yet. Click "Save code" to use the default.';
+      }
+    }
+  } catch(e) {
+    console.warn('loadInviteCode:', e);
+    if (statusEl) {
+      statusEl.style.color = 'var(--fire-deep)';
+      statusEl.textContent = `Could not load (${e.code || e.message}). Check permissions.`;
+    }
+  }
+}
+
+async function saveInviteCode() {
+  if (!requireHeadAdmin('saveInviteCode')) return;
+  const inp = document.getElementById('invite-code-input');
+  const statusEl = document.getElementById('invite-code-status');
+  const code = (inp?.value || '').trim();
+  if (code.length < 3 || code.length > 10) {
+    if (statusEl) { statusEl.style.color = 'var(--fire-deep)'; statusEl.textContent = 'Code must be 3–10 characters.'; }
+    return;
+  }
+  if (statusEl) { statusEl.style.color = 'var(--muted)'; statusEl.textContent = 'Saving...'; }
+  try {
+    await db.collection('settings').doc('inviteCode').set({ code });
+    if (statusEl) {
+      statusEl.style.color = 'var(--earth-deep)';
+      statusEl.textContent = '✓ Saved. New signups will use this code.';
+      setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 4000);
+    }
+    toast('Registration code updated ✓');
+  } catch(e) {
+    console.error('saveInviteCode:', e);
+    if (statusEl) {
+      statusEl.style.color = 'var(--fire-deep)';
+      statusEl.textContent = `❌ Save failed (${e.code || e.message || 'unknown'}).`;
+    }
+  }
 }
 
 // ── FEATURE FLAGS ──
