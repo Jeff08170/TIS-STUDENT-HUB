@@ -2964,6 +2964,9 @@ function handleLogin(account) {
     loadAnnouncementsToMgr();
     loadPollsToMgr();
     loadFeedbacksToMgr();
+    // Teachers can also browse the Student View pages — load feature flags so
+    // the right student tabs/pages are visible when they switch over.
+    loadFeatureFlags();
   } else {
     // Auto-register student
     registerStudent(email, fullName);
@@ -3040,7 +3043,14 @@ function handleLogin(account) {
 // ── SECURITY ──
 const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
 const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards','ranking','board'];
-const TEACHER_PAGES = ['mgr-announcements','mgr-voting','mgr-feedbacks','mgr-rewards'];
+// Teachers get the manager subset they're allowed to moderate PLUS the AI tab
+// PLUS the full student preview (so the "Student View" button actually works
+// and they can navigate around the student-facing pages).
+const TEACHER_PAGES = [
+  'mgr-announcements','mgr-voting','mgr-feedbacks','mgr-rewards',
+  'ai',
+  ...STUDENT_PAGES,
+];
 let currentUserRole = null; // set on login
 
 function isAuthorized(pageId) {
@@ -3199,10 +3209,13 @@ function showPage(id, btn) {
       loadStudentRewardsPage();
       break;
     case 'dashboard':
-      // Refresh hero XP and house standings when student returns
+      // Refresh everything the dashboard shows. Runs for students returning
+      // to the page AND for teachers/admins using the "Student View" button.
+      loadAnnouncementsToStudent();
+      loadStudentHousePoints();
       if (window.currentUserEmail) {
         getStudentXP(window.currentUserEmail).then(xp => updateHeroXp(xp));
-        loadStudentHousePoints();
+        loadDashboardPollPreview(window.currentUserEmail);
       }
       break;
     case 'ranking':
@@ -3233,11 +3246,6 @@ function showPage(id, btn) {
         Object.assign(HOUSE_LEADERS, l);
         loadStudentHousePoints();
       });
-      break;
-    case 'dashboard':
-      loadAnnouncementsToStudent();
-      loadStudentHousePoints();
-      if (window.currentUserEmail) loadDashboardPollPreview(window.currentUserEmail);
       break;
   }
 }
