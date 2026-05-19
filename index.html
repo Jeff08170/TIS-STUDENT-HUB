@@ -2516,27 +2516,45 @@ async function saveTeacherEmailsToFirestore() {
 let teacherNames = {};
 
 // House announcements
+//
+// NOTE: we deliberately do NOT use .orderBy('createdAt','desc') in the
+// query — combining where() + orderBy() on different fields requires a
+// composite Firestore index. Without that index the query throws and
+// the view silently shows "No announcements". Sorting client-side here
+// matches the houseAnnouncements collection's expected scale (tens of
+// docs per house) so it's effectively free.
+//
+// Returns an object { ok: boolean, data: [...], error: Error? } so the
+// caller can distinguish "empty" from "failed".
 async function loadHouseAnnouncements(house) {
-  if (!house) return [];
+  if (!house) return { ok: true, data: [] };
   try {
     const snap = await db.collection('houseAnnouncements')
       .where('house','==',house.toLowerCase())
-      .orderBy('createdAt','desc').get();
-    return snap.docs.map(d => ({id: d.id, ...d.data()}));
-  } catch(e) { console.warn('loadHouseAnnouncements:', e); return []; }
+      .get();
+    const data = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const ta = a.createdAt?.toMillis?.() || 0;
+        const tb = b.createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      });
+    return { ok: true, data };
+  } catch(e) {
+    console.warn('loadHouseAnnouncements:', e);
+    return { ok: false, data: [], error: e };
+  }
 }
+// save/delete now propagate the underlying error so callers can show a
+// useful message rather than silently failing.
 async function saveHouseAnnouncement(ann) {
-  try {
-    await db.collection('houseAnnouncements').add({
-      ...ann,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  } catch(e) { console.error('saveHouseAnnouncement:', e); }
+  await db.collection('houseAnnouncements').add({
+    ...ann,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
 }
 async function deleteHouseAnnouncement(id) {
-  try {
-    await db.collection('houseAnnouncements').doc(id).delete();
-  } catch(e) { console.error('deleteHouseAnnouncement:', e); }
+  await db.collection('houseAnnouncements').doc(id).delete();
 }
 
 // House leaders (one per house)
@@ -3453,7 +3471,15 @@ function renderMyHousePage() {
 function loadHouseAnnouncementsForView(house) {
   const list = document.getElementById('house-ann-list');
   if (!list) return;
-  loadHouseAnnouncements(house).then(anns => {
+  list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem;">Loading...</div>';
+  loadHouseAnnouncements(house).then(result => {
+    // Distinguish "load failed" from "no announcements yet"
+    if (!result.ok) {
+      const code = result.error?.code || result.error?.message || 'unknown error';
+      list.innerHTML = `<div style="color:var(--fire-deep);font-size:13px;padding:1rem;background:var(--fire);border-radius:var(--radius-sm);">⚠️ Could not load announcements (${esc(code)}). Check connection or permissions.</div>`;
+      return;
+    }
+    const anns = result.data;
     if (anns.length === 0) {
       list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem;">No announcements for your house yet.</div>';
       return;
@@ -3467,41 +3493,73 @@ function loadHouseAnnouncementsForView(house) {
             <div style="font-size:14px;font-weight:500;">${esc(a.title)}</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">By ${esc(a.postedBy||'Admin')} · ${a.createdAt?.toDate?.()?.toLocaleDateString()||'Recent'}</div>
           </div>
-          ${canDelete ? `<button class="btn-danger" data-del="${a.id}">Delete</button>` : ''}
+          ${canDelete ? `<button class="btn-danger" data-del="${esc(a.id)}">Delete</button>` : ''}
         </div>
-        <div style="font-size:13px;color:var(--text);">${esc(a.body)}</div>
+        <div style="font-size:13px;color:var(--text);white-space:pre-wrap;">${esc(a.body)}</div>
       </div>`).join('');
     if (canDelete) {
       list.querySelectorAll('[data-del]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           if (!confirm('Delete this announcement?')) return;
-          deleteHouseAnnouncement(btn.dataset.del).then(() => {
+          btn.disabled = true;
+          try {
+            await deleteHouseAnnouncement(btn.dataset.del);
             loadHouseAnnouncementsForView(house);
             toast('Announcement deleted.');
-          });
+          } catch(e) {
+            btn.disabled = false;
+            toast(`Delete failed (${e.code || e.message || 'error'}).`);
+            console.error('deleteHouseAnnouncement:', e);
+          }
         });
       });
     }
   });
 }
 
-function postHouseAnnouncement() {
-  const title = document.getElementById('house-ann-title').value.trim();
-  const body = document.getElementById('house-ann-body').value.trim();
+async function postHouseAnnouncement() {
+  const titleEl = document.getElementById('house-ann-title');
+  const bodyEl  = document.getElementById('house-ann-body');
+  const title = titleEl.value.trim();
+  const body  = bodyEl.value.trim();
   if (!title) { toast('Please enter a title!'); return; }
+  if (title.length > 150) { toast('Title is too long (max 150 chars).'); return; }
+  if (body.length > 1000) { toast('Body is too long (max 1000 chars).'); return; }
   const myHouse = (window.currentUserHouse || '').toLowerCase();
   if (!myHouse || !HOUSE_INFO[myHouse]) { toast('You must be in a house to post.'); return; }
-  saveHouseAnnouncement({
-    title, body,
-    house: myHouse,
-    postedBy: window.currentUserName || 'Anonymous',
-    postedByEmail: (window.currentUserEmail||'').toLowerCase()
-  }).then(() => {
-    document.getElementById('house-ann-title').value = '';
-    document.getElementById('house-ann-body').value = '';
+
+  // Permission check up front so the user gets a clear message
+  // instead of waiting for Firestore to reject.
+  const myEmail = (window.currentUserEmail || '').toLowerCase();
+  const isAdmin = isManager(myEmail) || isTeacher(myEmail);
+  const isLeader = (HOUSE_LEADERS[myHouse] || '').toLowerCase() === myEmail;
+  if (!isAdmin && !isLeader) {
+    toast('Only admins/teachers or this house\'s leader can post.');
+    return;
+  }
+
+  const btn = document.querySelector('#house-post-section .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
+  try {
+    await saveHouseAnnouncement({
+      title, body,
+      house: myHouse,
+      postedBy: window.currentUserName || 'Anonymous',
+      postedByEmail: myEmail
+    });
+    titleEl.value = '';
+    bodyEl.value  = '';
     loadHouseAnnouncementsForView(myHouse);
-    toast('Announcement posted to ' + HOUSE_INFO[myHouse].name + ' house ✓');
-  });
+    toast(`Announcement posted to ${HOUSE_INFO[myHouse].name} house ✓`);
+  } catch(e) {
+    console.error('postHouseAnnouncement:', e);
+    const why = e.code === 'permission-denied'
+      ? 'You don\'t have permission. Are you a house leader or admin?'
+      : `Failed to post (${e.code || e.message || 'unknown'}).`;
+    toast(why);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Post to my house'; }
+  }
 }
 
 function loadDashboardPollPreview(userEmail) {
@@ -6591,6 +6649,95 @@ Ratings are out of 5.0. Monthly sales (月售) = approximate orders per month on
   Best picks: taro milk tea, brown sugar boba
 • Nayuki 奈雪的茶 — ⭐4.7 | 月售 1,200+ | ¥18–30 | ~20 min
   Best picks: fresh fruit teas, soft bread combos
+• Heytea 喜茶 — ⭐4.8 | 月售 2,000+ | ¥18–32 | ~20 min
+  Best picks: cheese-foam green tea (芝芝绿妍), grape boba (多肉葡萄)
+• Yi Dian Dian 一点点 — ⭐4.7 | 月售 1,500+ | ¥10–18 | ~18 min
+  Best picks: red tea macchiato, oolong milk tea — cheap and reliable
+• Bawang Cha Ji 霸王茶姬 — same as Chagee above
+
+=== ☕ COFFEE & BREAKFAST ===
+• Luckin Coffee 瑞幸咖啡 — ⭐4.8 | 月售 4,000+ | ¥9–22 | ~15 min  ← cheapest coffee chain
+  Best picks: thick coconut latte (生椰拿铁), Americano with coupon — ¥9.9 promos common
+• Starbucks 星巴克 — ⭐4.7 | 月售 1,500+ | ¥30–45 | ~20 min
+  Best picks: caramel macchiato, java chip frappuccino, breakfast egg sandwich
+• Manner Coffee — ⭐4.7 | 月售 800+ | ¥15–28 | ~18 min
+  Best picks: dirty coffee (脏脏咖啡), oat-milk latte — minimalist, strong shots
+• Cotti Coffee 库迪咖啡 — ⭐4.6 | 月售 1,000+ | ¥9–18 | ~15 min
+  Best picks: coconut latte, ¥8.8 weekday promos
+• Tims Coffee 蒂姆斯咖啡 — ⭐4.6 | 月售 600+ | ¥18–32 | ~20 min
+  Best picks: maple latte, Canadian-style donuts + coffee combo
+• Local breakfast shops 包子粥铺 — ⭐4.6 | 月售 1,200+ | ¥8–18 | ~15 min
+  Best picks: pork buns + congee + soy milk set — cheapest hot breakfast
+
+=== 🍕 PIZZA ===
+• Pizza Hut 必胜客 — ⭐4.7 | 月售 1,200+ | ¥35–60/person | ~25 min
+  Best picks: super supreme pizza, pasta + drink combo lunch sets
+• Domino's 达美乐 — ⭐4.6 | 月售 900+ | ¥30–55/person | ~25 min
+  Best picks: pepperoni passion, BBQ chicken, half-and-half pizza
+• Mr. Pizza 美仕唐纳滋 — ⭐4.5 | 月售 400+ | ¥30–50/person | ~28 min
+  Best picks: shrimp + corn pizza, cream pasta
+
+=== 🍰 DESSERT & BAKERY ===
+• 85°C Bakery 85度C — ⭐4.7 | 月售 1,000+ | ¥10–25 | ~20 min
+  Best picks: sea-salt cheese cake, egg tarts, sweet bread set
+• Holiland 好利来 — ⭐4.7 | 月售 800+ | ¥15–35 | ~22 min
+  Best picks: half-baked cheese (半熟芝士), Cha Lai Wei (chocolate roll)
+• Tao Yuan Cun 桃园眷村 (Taiwanese breakfast) — ⭐4.7 | 月售 700+ | ¥15–30 | ~20 min
+  Best picks: soy milk + youtiao, fan tuan (rice rolls)
+• Local bakery shops 烘焙店 — ⭐4.6 | 月售 500–1,200 | ¥10–25 | ~20 min
+  Best picks: cream pastries, mochi rolls, baked egg tart
+
+=== 🔥 HOTPOT (delivery boxes / mini hotpot) ===
+• Haidilao 海底捞 mini hotpot box — ⭐4.8 | 月售 600+ | ¥35–70/person | ~30 min
+  Best picks: tomato base mini hotpot, beef + veggie set — premium service even in delivery
+• Banu 巴奴毛肚火锅 — ⭐4.7 | 月售 400+ | ¥40–70/person | ~30 min
+  Best picks: tripe (毛肚), mushroom soup base, hand-pulled noodles
+• Xiao Long Kan 小龙坎 — ⭐4.8 | 月售 1,200+ | ¥30–50/person | ~25 min
+  Best picks: self-service mini hotpot box (自助小火锅) — affordable Sichuan-style
+• Self-heating hotpot 自热火锅 (convenience store on Meituan) — ⭐4.5 | 月售 800+ | ¥18–35 | ~15 min
+  Best picks: spicy beef self-heating box — no need to wait long
+
+=== 🍢 BBQ / SKEWERS ===
+• Chinese skewers 烧烤串串 — ⭐4.6 | 月售 1,000+ | ¥18–35/person | ~22 min
+  Best picks: lamb skewers (羊肉串), chicken wings (烤鸡翅), grilled bread (烤馒头), enoki bacon rolls
+• Korean BBQ stalls 韩式烤肉 — ⭐4.7 | 月售 600+ | ¥30–50/person | ~25 min
+  Best picks: marinated pork belly, beef bulgogi grilled set with kimchi
+• Xinjiang skewers 新疆烤串 — ⭐4.7 | 月售 500+ | ¥20–40/person | ~25 min
+  Best picks: cumin lamb skewers (孜然羊肉), hand-grabbed rice (手抓饭)
+• Yakitori 日式烤串 — ⭐4.6 | 月售 400+ | ¥28–45/person | ~25 min
+  Best picks: chicken thigh skewers, beef tongue, scallion wraps
+
+=== 🌶️ SICHUAN, HUNAN & REGIONAL CHINESE ===
+• Sichuan dishes 川菜 — ⭐4.7 | 月售 600+ | ¥25–45/person | ~22 min
+  Best picks: kung pao chicken (宫保鸡丁), mapo tofu (麻婆豆腐), twice-cooked pork (回锅肉), boiled fish (水煮鱼)
+• Hunan dishes 湘菜 — ⭐4.6 | 月售 400+ | ¥28–48/person | ~25 min
+  Best picks: Chairman Mao's red-braised pork (毛氏红烧肉), spicy chicken with peppers, smoked tofu
+• Cantonese 粤菜 — ⭐4.6 | 月售 500+ | ¥30–55/person | ~25 min
+  Best picks: char siu rice (叉烧饭), wonton noodles (云吞面), cheung fun
+• Northeastern 东北菜 — ⭐4.6 | 月售 600+ | ¥25–42/person | ~25 min
+  Best picks: pork stew with potato noodles, sweet & sour pork (锅包肉)
+• Xinjiang big-plate chicken 大盘鸡 — ⭐4.7 | 月售 500+ | ¥35–55/person | ~28 min
+  Best picks: big-plate chicken with noodles — perfect for groups
+
+=== 🍛 SOUTHEAST / SOUTH ASIAN ===
+• Indian curry shops 印度菜 — ⭐4.6 | 月售 300+ | ¥38–58/person | ~30 min
+  Best picks: butter chicken (黄油鸡), tandoori chicken, garlic naan + curry combos
+• Thai food 泰国菜 — ⭐4.7 | 月售 500+ | ¥30–55/person | ~25 min
+  Best picks: green curry (绿咖喱), pad thai (泰式炒河粉), tom yum soup (冬阴功汤), mango sticky rice
+• Vietnamese pho 越南河粉 — ⭐4.6 | 月售 400+ | ¥25–40/person | ~22 min
+  Best picks: beef pho (牛肉河粉), spring rolls (春卷), Vietnamese coffee (越南滴漏咖啡)
+• Malaysian / Singaporean — ⭐4.5 | 月售 250+ | ¥35–55/person | ~28 min
+  Best picks: laksa, Hainanese chicken rice (海南鸡饭)
+
+=== 🌙 LATE NIGHT / SNACKS / QUICK BITES ===
+• 7-11 / FamilyMart 便利店 hot boxes — ⭐4.5 | 月售 1,500+ | ¥10–22 | ~15 min
+  Best picks: oden, onigiri, microwave bento — open 24/7, fastest option
+• Steamed buns shops 包子铺 — ⭐4.6 | 月售 900+ | ¥8–15 | ~15 min
+  Best picks: pork buns, vegetable buns, soup dumplings (灌汤包)
+• Late-night skewer stalls 夜宵串串 — ⭐4.6 | 月售 700+ | ¥25–45 | ~25 min  (open till 2am)
+  Best picks: spicy duck neck, grilled fish, midnight beer combos
+• Wonton noodles 馄饨面店 — ⭐4.7 | 月售 800+ | ¥15–28 | ~18 min
+  Best picks: pork wonton noodles, shrimp wontons in clear broth
 
 === 🍱 TOP PICKS FOR QUICK LUNCH (rank by value + speed) ===
 1. Tastien 塔斯汀 — cheapest hot meal, fast, high rating (⭐4.7)
@@ -6598,6 +6745,35 @@ Ratings are out of 5.0. Monthly sales (月售) = approximate orders per month on
 3. Lao Xiang Ji 老乡鸡 — most balanced meal, best for daily lunch (⭐4.7, 月售2200+)
 4. KFC — reliable, fast, students know the menu (⭐4.8)
 5. Mao Cai 冒菜 — cheapest hot spicy food, great budget option
+6. Luckin Coffee + sandwich — fast caffeine + light bite for busy days
+
+=== 🎲 HOW TO RECOMMEND RESTAURANTS (IMPORTANT) ===
+When a student asks "what should I eat?", "recommend something", "I don't know what to order",
+or any similar open-ended food question WITHOUT specifying a category, follow this exactly:
+
+1. Pick THREE RANDOM restaurants from THREE DIFFERENT categories above.
+   Do NOT default to the same picks every time — actually randomise.
+   Do NOT pick three burger places or three drinks — mix cuisines.
+
+2. Mix price tiers: ideally 1 cheap (¥10–20), 1 mid (¥20–35), 1 nicer (¥35+).
+
+3. For EACH of the 3 picks, present in this format:
+     🎲 [Restaurant name 中文名] — [Why it's good in 1 sentence]
+     💰 Price: ¥X–¥Y per person · ETA ~XX min · ⭐ rating
+     🍽️ Try: [best pick / signature item]
+
+4. End with one warm sentence ("Hope something here tempts you!") and a follow-up question
+   like "want me to narrow down by mood, budget, or cuisine?"
+
+If the student SPECIFIES a category, cuisine, mood, or budget:
+- Filter to restaurants matching their criteria.
+- Still pick 3 random options from the filtered set (don't keep picking the top).
+- Use the same 3-pick format above.
+
+If the student asks for a SINGLE pick ("just tell me one"), pick 1 random one but
+mention it's randomly chosen and offer to suggest more.
+
+Never invent restaurants that aren't in the lists above — only use the names provided here.
 
 === 📌 ORDERING TIPS ===
 1. Compare today's school lunch first — recommend something different
