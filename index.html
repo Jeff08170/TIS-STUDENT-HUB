@@ -302,7 +302,6 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 .star{font-size:22px;cursor:pointer;color:#444;transition:color 0.1s;}
 [data-theme="light"] .star{color:#DDD;}
 .star.on{color:#F5C747;}
-.star-row{display:flex;gap:5px;margin-bottom:12px;}
 
 .btn-primary{background:var(--primary);color:var(--bg);border:none;border-radius:var(--radius-sm);padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;}
 .btn-primary:hover{background:var(--primary-hover);transform:translateY(-1px);}
@@ -1415,14 +1414,15 @@ textarea.fb-input{resize:vertical;min-height:90px;}
     <div id="fb-panel-new">
       <div class="card" style="margin-bottom:14px;">
         <div style="font-size:15px;font-weight:500;margin-bottom:1rem;">Submit new feedback</div>
-        <div class="g2-fb">
-          <div><label class="fb-label">Category</label><select class="fb-input" id="fb-select-category"><option>Class activity</option><option>Teacher feedback</option><option>School facilities</option><option>Suggestions</option></select></div>
-          <div><label class="fb-label">Your house</label><select class="fb-input" id="fb-select-house"><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option></select></div>
-        </div>
+        <label class="fb-label">Category</label>
+        <select class="fb-input" id="fb-select-category" style="margin-bottom:12px;">
+          <option>Class activity</option>
+          <option>Teacher feedback</option>
+          <option>School facilities</option>
+          <option>Suggestions</option>
+        </select>
         <label class="fb-label">Your feedback</label>
         <textarea class="fb-input" id="fb-textarea" placeholder="Share what's on your mind..." maxlength="1000"></textarea>
-        <label class="fb-label">Rating</label>
-        <div class="star-row" id="stars"><span class="star" onclick="rateStar(1)">★</span><span class="star" onclick="rateStar(2)">★</span><span class="star" onclick="rateStar(3)">★</span><span class="star" onclick="rateStar(4)">★</span><span class="star" onclick="rateStar(5)">★</span></div>
         <button class="btn-primary" id="fb-submit-btn" onclick="submitFb(this)">Submit feedback</button>
       </div>
     </div>
@@ -3643,7 +3643,7 @@ async function castVoteDB(pollId, optionIndex, userEmail, el) {
   toast('Vote submitted! ✓');
 }
 
-function rateStar(n) { document.querySelectorAll('#stars .star').forEach((s, i) => s.classList.toggle('on', i < n)); }
+// rateStar — removed. The feedback form no longer has a rating UI.
 
 // ── MANAGER FUNCTIONS ──
 function postAnnouncement() {
@@ -5080,7 +5080,10 @@ function loadFeedbacksToMgr() {
       const card = document.createElement('div');
       card.className = 'card';
       card.style.cssText = 'margin-bottom:10px;padding:1.25rem 1.5rem;';
-      const stars = '★'.repeat(fb.rating||0) + '☆'.repeat(5-(fb.rating||0));
+      // Legacy feedbacks may still have a `rating` field; show stars only when present (>0).
+      const starsHtml = fb.rating > 0
+        ? `<div class="fb-stars">${'★'.repeat(fb.rating) + '☆'.repeat(5 - fb.rating)}</div>`
+        : '';
       const date = fb.createdAt?.toDate?.()?.toLocaleDateString()||'Recent';
       const studentLabel = fb.studentName
         ? `<span style="font-size:13px;font-weight:500;color:var(--air-deep);">${fb.studentName}</span> · <span style="font-size:11px;color:var(--muted);">${fb.studentEmail||''}</span>`
@@ -5098,7 +5101,7 @@ function loadFeedbacksToMgr() {
           <div>
             <div style="font-size:12px;font-weight:500;color:var(--text);">${fb.category||'General'} · House ${fb.house||'?'}</div>
             <div style="margin:4px 0;">${studentLabel}</div>
-            <div class="fb-stars">${stars}</div>
+            ${starsHtml}
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:11px;color:var(--muted);">${date}</span>
@@ -5191,8 +5194,11 @@ function renderMyFeedbackCards(feedbacks) {
     'Suggestions':       { bg:'var(--fire)',  color:'var(--fire-text)',  border:'rgba(232,135,74,0.3)'  },
   };
   container.innerHTML = feedbacks.map(fb => {
-    const starsHtml = [1,2,3,4,5].map(i =>
-      `<span style="color:${i<=(fb.rating||0)?'#F5C747':'#DDD'};font-size:14px;">★</span>`).join('');
+    // Show stars only for legacy feedbacks that have a rating field (>0).
+    const starsHtml = fb.rating > 0
+      ? [1,2,3,4,5].map(i =>
+          `<span style="color:${i<=fb.rating?'#F5C747':'#DDD'};font-size:14px;">★</span>`).join('')
+      : '';
     const date = fb.createdAt?.toDate?.()
       ? fb.createdAt.toDate().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})
       : 'Recent';
@@ -5214,7 +5220,7 @@ function renderMyFeedbackCards(feedbacks) {
           ${statusHtml}
           <span style="font-size:11px;color:var(--muted);margin-left:auto;">${date}</span>
         </div>
-        <div style="margin-bottom:8px;">${starsHtml}</div>
+        ${starsHtml ? `<div style="margin-bottom:8px;">${starsHtml}</div>` : ''}
         <div style="font-size:13px;color:var(--text);line-height:1.6;">${esc(fb.text||'')}</div>
         ${replyHtml}
       </div>`;
@@ -5321,22 +5327,21 @@ async function loadPrizeSettingsLog() {
 
 function submitFb(btn) {
   const category = document.getElementById('fb-select-category')?.value || 'General';
-  const house = document.getElementById('fb-select-house')?.value || 'Unassigned';
+  // House is no longer picked manually — auto-fill from the student's profile.
+  const house = window.currentUserHouse || 'Unassigned';
   const textarea = document.getElementById('fb-textarea');
   const text = (textarea?.value?.trim() || '').slice(0, 1000);
-  const rating = document.querySelectorAll('#stars .star.on').length;
   if (!text) { toast('Please write your feedback first.'); return; }
   if (text.length < 3) { toast('Please write a bit more.'); return; }
   const email = (window.currentUserEmail || '').toLowerCase();
   const studentName = window.currentUserName || email.split('@')[0] || 'Student';
   btn.disabled = true;
   btn.textContent = 'Submitting...';
-  saveFeedback({ category, house, text, rating, studentEmail: email, studentName })
+  saveFeedback({ category, house, text, studentEmail: email, studentName })
     .then(() => {
       btn.disabled = false;
       btn.textContent = 'Submit feedback';
       if (textarea) textarea.value = '';
-      document.querySelectorAll('#stars .star').forEach(s => s.classList.remove('on'));
       toast('Feedback submitted! ✓');
       switchFbTab('mine');
     });
@@ -6472,7 +6477,7 @@ function _tryInit() {
 //   The client should then call YOUR endpoint, never lingshi/Anthropic directly.
 
 // ▼▼▼ PUT YOUR CLAUDE API KEY HERE ▼▼▼
-const CLAUDE_API_KEY = 'sk-wzSPkBJbq859zdYqTRh4GlQP5b4UvEsI9VmDCIrEh8TjGd37ss';
+const CLAUDE_API_KEY = 'sk-wzSPkBJbq859zdYqTRh4GlQP5b4UvEsI9VmDCIrEh8TjGd37';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 // Loud console warning if a real-looking key ever lands in this file.
