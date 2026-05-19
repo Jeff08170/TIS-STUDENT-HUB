@@ -1165,6 +1165,9 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <button class="nav-item" onclick="showPage('dashboard',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
       </button>
+      <button class="nav-item" id="nav-teacher-board-btn" onclick="showPage('board',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
+      </button>
     </div>
     <div class="nav-section" id="nav-section-ai-teacher">
       <div class="nav-label">AI</div>
@@ -1209,6 +1212,9 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="nav-label">Preview</div>
       <button class="nav-item" onclick="showPage('dashboard',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
+      </button>
+      <button class="nav-item" id="nav-admin-board-btn" onclick="showPage('board',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
       </button>
     </div>
     <div class="nav-section" id="nav-section-ai-admin">
@@ -6834,6 +6840,10 @@ let _aiAnnouncements = [];   // aiOnly — hidden from students, shown to AI
 let _visibleAnnouncements = []; // regular announcements (also fed to AI as context)
 // Scraped content from tiseagles.com
 let _schoolScrapedData = '';
+// Recent Community Board posts (so AI can answer "what are students talking about?")
+let _communityPosts = [];
+const COMMUNITY_FETCH_LIMIT = 10;          // most-recent N posts fed to AI
+const COMMUNITY_POST_MAX_CHARS = 200;      // truncate each post — limits token spend & injection blast radius
 
 // ── Fetch tiseagles.com in background ────────────────────────────────────
 async function fetchSchoolData() {
@@ -6854,13 +6864,18 @@ async function fetchSchoolData() {
   }
 }
 
-// ── Load AI info from Firebase + pull all announcements ───────────────────
+// ── Load AI info from Firebase + announcements + recent community posts ──
 async function loadAiConfig() {
   if (!db) return;
   try {
-    const [doc, anns] = await Promise.all([
+    const [doc, anns, communitySnap] = await Promise.all([
       db.collection('settings').doc('aiConfig').get(),
-      loadAnnouncements()
+      loadAnnouncements(),
+      db.collection('communityBoard')
+        .orderBy('createdAt', 'desc')
+        .limit(COMMUNITY_FETCH_LIMIT)
+        .get()
+        .catch(e => { console.warn('community fetch failed:', e); return { docs: [] }; })
     ]);
     if (doc.exists) {
       const d = doc.data();
@@ -6872,6 +6887,18 @@ async function loadAiConfig() {
     }
     _aiAnnouncements    = anns.filter(a => a.aiOnly);
     _visibleAnnouncements = anns.filter(a => !a.aiOnly);
+
+    // Map and truncate each community post so the system prompt stays small
+    _communityPosts = communitySnap.docs.map(d => {
+      const p = d.data();
+      return {
+        name:  (p.name || 'Anonymous').toString().slice(0, 40),
+        level: p.levelName ? `${p.levelName} Lv${p.levelNum || 1}` : '',
+        text:  (p.text || '').toString().slice(0, COMMUNITY_POST_MAX_CHARS),
+        likes: Array.isArray(p.likes) ? p.likes.length : 0,
+        ts:    p.createdAt?.toDate?.() || null,
+      };
+    });
 
     const taAnn   = document.getElementById('ai-info-announcements');
     const taLunch = document.getElementById('ai-info-lunch');
