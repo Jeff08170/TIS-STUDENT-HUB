@@ -3063,14 +3063,18 @@ function isAuthorized(pageId) {
   if (!currentUserRole) return false;
   if (currentUserRole === 'manager') return true; // managers access everything
   if (currentUserRole === 'teacher') {
+    // Teachers can view all student pages too (for "Student View") plus
+    // their moderation pages + AI.
     if (TEACHER_PAGES.includes(pageId)) return true;
     showSecurityAlert(); return false;
   }
   if (currentUserRole === 'student') {
-    if (MANAGER_PAGES.includes(pageId) || TEACHER_PAGES.includes(pageId)) {
-      showSecurityAlert(); return false;
-    }
-    return true;
+    // Whitelist STUDENT_PAGES explicitly. Previously this was a blacklist
+    // against MANAGER_PAGES + TEACHER_PAGES, but now that TEACHER_PAGES
+    // overlaps with STUDENT_PAGES (so teachers can preview), the blacklist
+    // would also lock students out of their own pages.
+    if (STUDENT_PAGES.includes(pageId)) return true;
+    showSecurityAlert(); return false;
   }
   showSecurityAlert(); return false;
 }
