@@ -2605,7 +2605,7 @@ function isValidEmail(e) {
 const ALLOWED_DOMAINS = ['students.tiseagles.com', 'tiseagles.com'];
 const ALLOWED_EMAILS  = ['tisstudenthub@outlook.com', 'denisenovak2688@outlook.com'];
 const LOCAL_TEST_ACCOUNT = {
-  username: 'test.com',
+  usernames: ['test', 'test.com'],
   password: 'test1234',
   name: 'Test User'
 };
@@ -2617,7 +2617,8 @@ function isAllowedEmail(e) {
   return ALLOWED_DOMAINS.includes(domain);
 }
 function isLocalTestAccount(username, password) {
-  return (username || '').trim().toLowerCase() === LOCAL_TEST_ACCOUNT.username
+  const login = (username || '').trim().toLowerCase();
+  return LOCAL_TEST_ACCOUNT.usernames.includes(login)
     && password === LOCAL_TEST_ACCOUNT.password;
 }
 let MANAGER_EMAILS = [SUPER_ADMIN]; // always start with owner only; populated from Firestore on login
@@ -2808,7 +2809,7 @@ async function signInWithEmail() {
     window._loginHandled = true;
     if (auth?.currentUser) await auth.signOut().catch(() => {});
     sessionStorage.removeItem('signin_fails');
-    handleLogin({ username: LOCAL_TEST_ACCOUNT.username, name: LOCAL_TEST_ACCOUNT.name });
+    handleLogin({ username: 'test.com', name: LOCAL_TEST_ACCOUNT.name });
     return;
   }
   // Allowlist gate — any non-allowed email gets a single generic "Failed."
