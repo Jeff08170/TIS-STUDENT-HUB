@@ -1466,12 +1466,7 @@ textarea.fb-input{resize:vertical;min-height:90px;}
       <div class="section-label" style="margin-bottom:4px;">House announcements</div>
       <div id="house-ann-list"><div style="color:var(--muted);font-size:13px;padding:1rem;">Loading...</div></div>
     </div>
-    <!-- Student's personal points card -->
-    <div class="card" style="margin-top:14px;" id="my-points-card">
-      <div class="section-label" style="margin-bottom:8px;">My points</div>
-      <div id="my-points-display" style="font-size:32px;font-weight:300;color:var(--air-deep);">—</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Individual points awarded by admins</div>
-    </div>
+    <!-- Student's personal points card (hidden) -->
   </div>
 
   <!-- Student: Ranking -->
@@ -3048,7 +3043,7 @@ function handleLogin(account) {
 
 // ── SECURITY ──
 const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
-const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards','ranking','board'];
+const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards','ranking','board','ai'];
 // Teachers get the manager subset they're allowed to moderate PLUS the AI tab
 // PLUS the full student preview (so the "Student View" button actually works
 // and they can navigate around the student-facing pages).
