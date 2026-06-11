@@ -2604,12 +2604,21 @@ function isValidEmail(e) {
 // don't leak whether an email exists, is malformed, or is simply not allowed.
 const ALLOWED_DOMAINS = ['students.tiseagles.com', 'tiseagles.com'];
 const ALLOWED_EMAILS  = ['tisstudenthub@outlook.com', 'denisenovak2688@outlook.com'];
+const LOCAL_TEST_ACCOUNT = {
+  username: 'test.com',
+  password: 'test1234',
+  name: 'Test User'
+};
 function isAllowedEmail(e) {
   if (!isValidEmail(e)) return false;
   const lc = e.trim().toLowerCase();
   if (ALLOWED_EMAILS.includes(lc)) return true;
   const domain = lc.slice(lc.lastIndexOf('@') + 1);
   return ALLOWED_DOMAINS.includes(domain);
+}
+function isLocalTestAccount(username, password) {
+  return (username || '').trim().toLowerCase() === LOCAL_TEST_ACCOUNT.username
+    && password === LOCAL_TEST_ACCOUNT.password;
 }
 let MANAGER_EMAILS = [SUPER_ADMIN]; // always start with owner only; populated from Firestore on login
 if (!MANAGER_EMAILS.map(e=>e.toLowerCase()).includes(SUPER_ADMIN.toLowerCase())) { MANAGER_EMAILS = [SUPER_ADMIN, ...MANAGER_EMAILS]; }
@@ -2795,6 +2804,13 @@ async function signInWithEmail() {
   const pw = document.getElementById('signin-password').value;
   hideLoginError();
   if (!email || !pw) { showLoginError('Please enter your email and password.'); return; }
+  if (isLocalTestAccount(email, pw)) {
+    window._loginHandled = true;
+    if (auth?.currentUser) await auth.signOut().catch(() => {});
+    sessionStorage.removeItem('signin_fails');
+    handleLogin({ username: LOCAL_TEST_ACCOUNT.username, name: LOCAL_TEST_ACCOUNT.name });
+    return;
+  }
   // Allowlist gate — any non-allowed email gets a single generic "Failed."
   if (!isAllowedEmail(email)) { showLoginError('Failed.'); return; }
   // Client-side rate limiting
