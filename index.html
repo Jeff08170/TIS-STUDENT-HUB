@@ -4906,9 +4906,16 @@ async function saveHouseLeader(house, email) {
 let _lunchMenu = { menu: '', notes: '', updatedAt: null, updatedBy: '' };
 async function loadLunchMenu() {
   try {
-    const doc = await db.collection('settings').doc('lunchMenu').get();
+    const doc = await db.collection('settings').doc('aiConfig').get();
     if (doc.exists) {
-      _lunchMenu = { menu: '', notes: '', updatedAt: null, updatedBy: '', ...doc.data() };
+      const data = doc.data();
+      _lunchMenu = {
+        menu: data.lunch || '',
+        days: Array.isArray(data.lunchDays) ? data.lunchDays : undefined,
+        notes: data.lunchNotes || '',
+        updatedAt: data.lunchUpdatedAt || null,
+        updatedBy: data.lunchUpdatedBy || ''
+      };
     }
     return _lunchMenu;
   } catch(e) {
@@ -4917,13 +4924,13 @@ async function loadLunchMenu() {
   }
 }
 async function saveLunchMenuDB(data) {
-  await db.collection('settings').doc('lunchMenu').set({
-    ...data,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    updatedBy: window.currentUserName || window.currentUserEmail || 'Admin'
+  await db.collection('settings').doc('aiConfig').set({
+    lunch: data.menu || '',
+    lunchDays: data.days || parseLunchMenuDays(data.menu || ''),
+    lunchNotes: data.notes || '',
+    lunchUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    lunchUpdatedBy: window.currentUserName || window.currentUserEmail || 'Admin'
   }, { merge:true });
-  // Keep Eagles AI in sync with the student-facing lunch page.
-  await db.collection('settings').doc('aiConfig').set({ lunch: data.menu || '' }, { merge:true });
 }
 
 // ── OWNER (hardcoded; matches firestore.rules) ──
@@ -5959,7 +5966,10 @@ async function saveLunchMenu() {
     setTimeout(() => { if (status) status.textContent = ''; }, 2500);
   } catch(e) {
     console.error('saveLunchMenu:', e);
-    if (status) status.textContent = e.message || 'Could not save lunch menu.';
+    const msg = e.code === 'permission-denied'
+      ? 'Missing permission: Firestore rules must allow Admin+ to update settings/aiConfig.'
+      : (e.message || 'Could not save lunch menu.');
+    if (status) status.textContent = msg;
     toast('Could not save lunch menu.');
   }
 }
@@ -9854,7 +9864,7 @@ async function saveAiConfig() {
   const statusEl = document.getElementById('ai-config-status');
   if (statusEl) statusEl.textContent = 'Saving...';
   try {
-    await db.collection('settings').doc('aiConfig').set(_aiInfo);
+    await db.collection('settings').doc('aiConfig').set(_aiInfo, { merge:true });
     if (statusEl) {
       statusEl.textContent = '✅ Saved! Eagle AI will use this info in future replies.';
       setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 4000);
