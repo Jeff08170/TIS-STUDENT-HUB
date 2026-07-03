@@ -3236,6 +3236,9 @@ body::before{
       <button class="nav-item" onclick="showPage('announcements',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
       </button>
+      <button class="nav-item" onclick="showPage('voting',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls
+      </button>
       <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
@@ -3265,6 +3268,9 @@ body::before{
       </button>
       <button class="nav-item" onclick="showPage('announcements',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
+      </button>
+      <button class="nav-item" onclick="showPage('voting',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls
       </button>
       <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
@@ -3296,7 +3302,10 @@ body::before{
       <button class="nav-item" onclick="showPage('announcements',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
       </button>
-      <button class="nav-item" onclick="showPage('feedbacks',this)">
+      <button class="nav-item" onclick="showPage('mgr-voting',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
       <button class="nav-item" onclick="showPage('ai',this)">
@@ -3307,7 +3316,7 @@ body::before{
       </button>
     </div>
     <div class="nav-section" id="owner-controls-nav" style="display:none;">
-      <div class="nav-label">Owner Controls</div>
+      <div class="nav-label">Admin Controls</div>
       <button class="nav-item" onclick="showPage('mgr-students',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Student Settings
       </button>
@@ -3516,10 +3525,29 @@ empathy - understanding another person's feelings</textarea>
   <div id="page-lunch" class="page">
     <div class="page-header">
       <div><h1 class="page-title">Lunch</h1><p class="page-sub">School lunch information</p></div>
+      <span class="hdr-badge" id="lunch-updated-badge">Loading...</span>
     </div>
     <div class="simple-section-grid">
-      <div class="simple-panel"><div class="simple-panel-title">Today</div><div class="simple-panel-copy">Lunch details can be placed here when the menu is ready.</div></div>
-      <div class="simple-panel"><div class="simple-panel-title">Notes</div><div class="simple-panel-copy">Lunch notes and reminders can be added here next.</div></div>
+      <div class="simple-panel">
+        <div class="simple-panel-title">Today</div>
+        <div class="simple-panel-copy" id="lunch-menu-display">Loading lunch menu...</div>
+      </div>
+      <div class="simple-panel">
+        <div class="simple-panel-title">Notes</div>
+        <div class="simple-panel-copy" id="lunch-notes-display">Loading notes...</div>
+      </div>
+    </div>
+    <div class="mgr-section" id="lunch-edit-panel" style="display:none;margin-top:18px;">
+      <div class="mgr-section-title">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-edit"/></svg>
+        Modify lunch menu
+      </div>
+      <label class="fb-label">Lunch menu</label>
+      <textarea class="fb-input" id="lunch-menu-input" rows="5" placeholder="e.g. Monday: Fried rice, soup, fruit&#10;Tuesday: Pasta, salad, juice..." style="resize:vertical;"></textarea>
+      <label class="fb-label">Notes</label>
+      <textarea class="fb-input" id="lunch-notes-input" rows="3" placeholder="Allergy reminders, serving notes, or special lunch updates..." style="resize:vertical;"></textarea>
+      <button class="btn-primary" onclick="saveLunchMenu()">Save lunch menu</button>
+      <div id="lunch-edit-status" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px;"></div>
     </div>
   </div>
 
@@ -3546,9 +3574,9 @@ empathy - understanding another person's feelings</textarea>
     <div id="ann-list"><div style="text-align:center;padding:2rem;color:var(--muted);font-size:13px;">Loading...</div></div>
   </div>
 
-  <!-- Student: Voting -->
+  <!-- Student: Polls -->
   <div id="page-voting" class="page">
-    <div class="page-header"><div><h1 class="page-title">Voting</h1><p class="page-sub">Have your say</p></div><span class="hdr-badge">1 active</span></div>
+    <div class="page-header"><div><h1 class="page-title">Polls</h1><p class="page-sub">Have your say</p></div><span class="hdr-badge">1 active</span></div>
     <div class="poll-card">
       <div class="poll-status open">● Active · Closes May 7</div>
       <div class="poll-q">What should be the theme for the end-of-year party?</div>
@@ -3623,9 +3651,15 @@ empathy - understanding another person's feelings</textarea>
     <!-- Post house announcement (house leaders + admins only) -->
     <div class="mgr-section" id="house-post-section" style="display:none;">
       <div class="mgr-section-title">Post house announcement</div>
+      <select class="fb-input" id="house-ann-target" style="display:none;" onchange="loadHouseAnnouncementsForView(this.value)">
+        <option value="earth">Earth House</option>
+        <option value="water">Water House</option>
+        <option value="air">Air House</option>
+        <option value="fire">Fire House</option>
+      </select>
       <input class="fb-input" id="house-ann-title" type="text" placeholder="Announcement title" />
       <textarea class="fb-input" id="house-ann-body" placeholder="Write the announcement..." style="min-height:80px;" maxlength="1000"></textarea>
-      <button class="btn-primary" onclick="postHouseAnnouncement()">Post to my house</button>
+      <button class="btn-primary" onclick="postHouseAnnouncement()">Post announcement</button>
     </div>
     <!-- House announcements feed -->
     <div class="card">
@@ -3792,9 +3826,9 @@ empathy - understanding another person's feelings</textarea>
     </div>
   </div>
 
-  <!-- Manager: Voting -->
+  <!-- Manager: Polls -->
   <div id="page-mgr-voting" class="page">
-    <div class="page-header"><div><h1 class="page-title">Polls & Voting</h1><p class="page-sub">Create, manage and vote on polls</p></div></div>
+    <div class="page-header"><div><h1 class="page-title">Polls</h1><p class="page-sub">Create, manage and vote on polls</p></div></div>
 
     <!-- Tabs -->
     <div style="display:flex;gap:8px;margin-bottom:20px;">
@@ -4171,7 +4205,7 @@ empathy - understanding another person's feelings</textarea>
     <div class="page-header"><div><h1 class="page-title">Student Settings</h1><p class="page-sub">Owner controls for student accounts</p></div><span class="hdr-badge">Loading...</span></div>
     <div class="mgr-section">
       <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-        Owner can edit the student registry email/name/house, send password reset emails, and remove student records. Directly setting another user's Firebase password needs a server Admin SDK, so this page uses secure reset emails.
+        Head Admin+ can modify permissions. Owner can edit student registry email/name/house, send password reset emails, and remove student records. Directly setting another user's Firebase password needs a server Admin SDK, so this page uses secure reset emails.
       </div>
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
         <input class="fb-input" style="flex:1;margin-bottom:0;min-width:200px;" placeholder="Search by name or email..." oninput="filterStudents(this.value)" />
@@ -4196,7 +4230,7 @@ empathy - understanding another person's feelings</textarea>
   <div id="page-mgr-admins" class="page">
     <div class="page-header">
       <div><h1 class="page-title">Manage Roles</h1><p class="page-sub">Add or remove manager accounts</p></div>
-      <span class="hdr-badge" style="background:var(--fire);color:var(--fire-text);border-color:rgba(232,135,74,0.3);">Head Admin only</span>
+      <span class="hdr-badge" style="background:var(--fire);color:var(--fire-text);border-color:rgba(232,135,74,0.3);">Head Admin+</span>
     </div>
 
     <div class="mgr-section">
@@ -4390,7 +4424,7 @@ empathy - understanding another person's feelings</textarea>
         Teachers
         <span style="font-size:10px;font-weight:400;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--water);color:var(--water-text);">Below Admin</span>
       </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Teachers can access Announcements, Polls & Voting, Feedbacks, and the Student Points + Draw History sections of Rewards.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Teachers use the student-facing hub pages. Admin-only tools are reserved for Admin, Head Admin, and Owner roles.</p>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;">
         <div style="flex:1;min-width:220px;">
           <label class="fb-label">Email address</label>
@@ -4466,16 +4500,18 @@ empathy - understanding another person's feelings</textarea>
   <!-- Warm Languages -->
   <div id="page-warm-languages" class="page">
     <div class="page-header">
-      <div><h1 class="page-title">Warm Languages</h1><p class="page-sub">Kind phrases and helpful wording</p></div>
+      <div><h1 class="page-title">Warm Languages</h1><p class="page-sub">A new encouragement quote every day</p></div>
+      <span class="hdr-badge" id="warm-quote-date">Today</span>
     </div>
     <div class="simple-section-grid">
       <div class="simple-panel">
-        <div class="simple-panel-title">Sentence starters</div>
-        <div class="simple-panel-copy">This can become a bank of warm, respectful sentence starters for feedback, messages, and classroom conversations.</div>
+        <div class="simple-panel-title">Daily encouragement</div>
+        <div class="simple-panel-copy" id="warm-quote-text">Loading today's quote...</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:12px;" id="warm-quote-source"></div>
       </div>
       <div class="simple-panel">
-        <div class="simple-panel-title">Tone practice</div>
-        <div class="simple-panel-copy">A future version can turn rough wording into clearer and kinder language.</div>
+        <div class="simple-panel-title">Warm reminder</div>
+        <div class="simple-panel-copy" id="warm-quote-action">Use today's quote as a tiny push before class, homework, or a hard conversation.</div>
       </div>
     </div>
   </div>
@@ -4711,7 +4747,7 @@ async function savePoll(poll) {
   try {
     const ref = await db.collection('polls').add({...poll, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
     return ref.id;
-  } catch(e) { console.error('savePoll:', e); }
+  } catch(e) { console.error('savePoll:', e); throw e; }
 }
 // castVote is used by the hardcoded demo poll on the dashboard — delegates to active poll if available
 function castVote(optionIndex) {
@@ -4750,18 +4786,20 @@ async function saveFeedback(fb) {
   } catch(e) { console.error('saveFeedback:', e); }
 }
 async function saveFeedbackReply(fbId, reply, replyBy) {
+  if (!requireAdminPlus('saveFeedbackReply')) throw new Error('Admin only.');
   try {
     await db.collection('feedbacks').doc(fbId).update({
       reply,
       replyBy,
       replyAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-  } catch(e) { console.error('saveFeedbackReply:', e); }
+  } catch(e) { console.error('saveFeedbackReply:', e); throw e; }
 }
 async function deleteFeedbackFirestore(id) {
+  if (!requireAdminPlus('deleteFeedback')) throw new Error('Admin only.');
   try {
     await db.collection('feedbacks').doc(id).delete();
-  } catch(e) { console.error('deleteFeedback:', e); }
+  } catch(e) { console.error('deleteFeedback:', e); throw e; }
 }
 
 // Managers list
@@ -4855,6 +4893,30 @@ async function saveHouseLeader(house, email) {
   } catch(e) { console.error('saveHouseLeader:', e); }
 }
 
+// Lunch menu
+let _lunchMenu = { menu: '', notes: '', updatedAt: null, updatedBy: '' };
+async function loadLunchMenu() {
+  try {
+    const doc = await db.collection('settings').doc('lunchMenu').get();
+    if (doc.exists) {
+      _lunchMenu = { menu: '', notes: '', updatedAt: null, updatedBy: '', ...doc.data() };
+    }
+    return _lunchMenu;
+  } catch(e) {
+    console.warn('loadLunchMenu:', e);
+    return _lunchMenu;
+  }
+}
+async function saveLunchMenuDB(data) {
+  await db.collection('settings').doc('lunchMenu').set({
+    ...data,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedBy: window.currentUserName || window.currentUserEmail || 'Admin'
+  }, { merge:true });
+  // Keep Eagles AI in sync with the student-facing lunch page.
+  await db.collection('settings').doc('aiConfig').set({ lunch: data.menu || '' }, { merge:true });
+}
+
 // ── OWNER (hardcoded; matches firestore.rules) ──
 const SUPER_ADMIN = 'TisStudentHub@outlook.com';
 
@@ -4896,6 +4958,31 @@ let TEACHER_EMAILS = []; // populated from Firestore on login
 
 function isManager(email) { return MANAGER_EMAILS.map(e=>e.toLowerCase()).includes((email||'').toLowerCase()); }
 function isTeacher(email) { return TEACHER_EMAILS.map(e=>e.toLowerCase()).includes((email||'').toLowerCase()); }
+function isOwnerEmail(email) {
+  return (email || '').toLowerCase() === SUPER_ADMIN.toLowerCase();
+}
+function isHeadAdminEmail(email) {
+  const lc = (email || '').toLowerCase();
+  return isOwnerEmail(lc) || (window._headAdmins || []).map(e => e.toLowerCase()).includes(lc);
+}
+function isAdminOrAbove(email) {
+  return isManager(email);
+}
+function isHeadAdminOrAbove(email) {
+  return isHeadAdminEmail(email);
+}
+function roleRank(role) {
+  return ({ student:0, teacher:1, admin:2, headadmin:3, owner:4 })[role] ?? 0;
+}
+function canChangeUserRole(targetRole, nextRole) {
+  const actor = (window.currentUserEmail || '').toLowerCase();
+  if (targetRole === 'owner' || nextRole === 'owner') return false;
+  if (isOwnerEmail(actor)) return true;
+  if (isHeadAdminEmail(actor)) {
+    return roleRank(targetRole) < roleRank('headadmin') && roleRank(nextRole) < roleRank('headadmin');
+  }
+  return false;
+}
 
 // House leaders state
 let HOUSE_LEADERS = { earth:'', water:'', air:'', fire:'' };
@@ -5218,7 +5305,7 @@ function handleLogin(account) {
     document.getElementById('nav-manager').style.display = '';
     document.getElementById('nav-teacher').style.display = 'none';
     const ownerControlsNav = document.getElementById('owner-controls-nav');
-    if (ownerControlsNav) ownerControlsNav.style.display = isOwner ? '' : 'none';
+    if (ownerControlsNav) ownerControlsNav.style.display = isHead ? '' : 'none';
     document.getElementById('user-role').textContent = (isOwner ? 'Owner' : isHead ? 'Head Admin' : 'Admin') + ' · TIS Eagles';
     document.getElementById('user-avatar').style.background = isOwner ? '#7c3aed' : '#C04A10';
     document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
@@ -5231,10 +5318,10 @@ function handleLogin(account) {
       const logSection = document.getElementById('log-mgmt-section');
       if (logSection) logSection.style.display = '';
     }
-    showPage(isOwner ? 'mgr-students' : 'flashcards', document.querySelector(isOwner ? '#owner-controls-nav .nav-item' : '#nav-manager .nav-item'));
+    showPage(isHead ? 'mgr-students' : 'flashcards', document.querySelector(isHead ? '#owner-controls-nav .nav-item' : '#nav-manager .nav-item'));
     // Load all data fresh from Firebase on login
     updateMgrDashboard();
-    renderStudents();
+    if (isHead) renderStudents();
     loadAnnouncementsToMgr();
     loadPollsToMgr();
     loadFeedbacksToMgr();
@@ -5330,12 +5417,9 @@ function handleLogin(account) {
 
 // ── SECURITY ──
 const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
-const STUDENT_PAGES = ['flashcards','lunch','calendar','houses','announcements','feedbacks','ai','warm-languages'];
-// Teachers get the manager subset they're allowed to moderate PLUS the AI tab
-// PLUS the full student preview (so the "Student View" button actually works
-// and they can navigate around the student-facing pages).
+const STUDENT_PAGES = ['flashcards','lunch','calendar','houses','announcements','voting','feedbacks','ai','warm-languages'];
+// Teachers use the student-facing pages. Admin-only tools stay with Admin+.
 const TEACHER_PAGES = [
-  'mgr-announcements','mgr-voting','mgr-feedbacks','mgr-rewards',
   'ai',
   ...STUDENT_PAGES,
 ];
@@ -5378,8 +5462,16 @@ function requireManagerOnly(action) {
   }
   return true;
 }
+function requireAdminPlus(action) {
+  if (!window.currentUserEmail || !isAdminOrAbove(window.currentUserEmail)) {
+    console.warn(`[SECURITY] Admin-only action blocked: ${action} by ${window.currentUserEmail||'unknown'}`);
+    toast('Admin only.');
+    return false;
+  }
+  return true;
+}
 function requireOwner(action) {
-  if ((window.currentUserEmail||'').toLowerCase() !== SUPER_ADMIN.toLowerCase()) {
+  if (!isOwnerEmail(window.currentUserEmail)) {
     console.warn(`[SECURITY] Owner-only action blocked: ${action} by ${window.currentUserEmail||'unknown'}`);
     toast('Owner only.');
     return false;
@@ -5387,11 +5479,8 @@ function requireOwner(action) {
   return true;
 }
 function requireHeadAdmin(action) {
-  const email = (window.currentUserEmail||'').toLowerCase();
-  const isOwner = email === SUPER_ADMIN.toLowerCase();
-  const isHead = isOwner || (window._headAdmins||[]).includes(email);
-  if (!isHead) {
-    console.warn(`[SECURITY] Head-admin-only action blocked: ${action} by ${email}`);
+  if (!isHeadAdminOrAbove(window.currentUserEmail)) {
+    console.warn(`[SECURITY] Head-admin-only action blocked: ${action} by ${window.currentUserEmail||'unknown'}`);
     toast('Head admin only.');
     return false;
   }
@@ -5414,7 +5503,7 @@ function showSecurityAlert() {
 // ── NAV ──
 function showPage(id, btn) {
   if (!isAuthorized(id)) return;
-  if (id === 'mgr-students' && (window.currentUserEmail || '').toLowerCase() !== SUPER_ADMIN.toLowerCase()) {
+  if (id === 'mgr-students' && !isHeadAdminOrAbove(window.currentUserEmail)) {
     showSecurityAlert();
     return;
   }
@@ -5443,11 +5532,13 @@ function showPage(id, btn) {
       loadAnnouncementsToMgr();
       break;
     case 'mgr-voting':
+      if (!requireAdminPlus('openPollManager')) return;
       loadPollsToMgr();
       // Reset to manage tab
       switchVoteTab('manage', document.getElementById('vote-tab-manage'));
       break;
     case 'mgr-feedbacks':
+      if (!requireAdminPlus('openFeedbackReplies')) return;
       loadFeedbacksToMgr();
       break;
     case 'mgr-houses':
@@ -5493,8 +5584,9 @@ function showPage(id, btn) {
       // Show XP grant section for Head Admin+
       const xpSection = document.getElementById('xp-grant-section');
       if (xpSection) {
-        const isHead = MANAGER_EMAILS.includes(email) && (window._headAdmins||[]).includes(email.toLowerCase());
-        const isOwner = email.toLowerCase() === (SUPER_ADMIN||'').toLowerCase();
+        const email = (window.currentUserEmail || '').toLowerCase();
+        const isHead = isManager(email) && (window._headAdmins||[]).includes(email);
+        const isOwner = isOwnerEmail(email);
         xpSection.style.display = (isHead || isOwner) ? '' : 'none';
       }
       // Feature flags section visible to Head Admin+
@@ -5532,6 +5624,9 @@ function showPage(id, btn) {
     case 'announcements':
       loadAnnouncementsToStudent();
       break;
+    case 'lunch':
+      loadLunchPage();
+      break;
     case 'voting':
       if (window.currentUserEmail) loadStudentPolls(window.currentUserEmail);
       break;
@@ -5544,6 +5639,9 @@ function showPage(id, btn) {
         Object.assign(HOUSE_LEADERS, l);
         loadStudentHousePoints();
       });
+      break;
+    case 'warm-languages':
+      renderWarmLanguageQuote();
       break;
   }
 }
@@ -5757,7 +5855,88 @@ function selectMatchOption(btn) {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('flash-input')) buildFlashcards({ silent: true });
+  renderWarmLanguageQuote();
 });
+
+// ── LUNCH PAGE ───────────────────────────────────────────────────────────
+function lunchText(value, emptyText) {
+  const clean = (value || '').trim();
+  return clean ? esc(clean).replace(/\n/g, '<br>') : emptyText;
+}
+
+function renderLunchMenu(data = _lunchMenu) {
+  const display = document.getElementById('lunch-menu-display');
+  const notes = document.getElementById('lunch-notes-display');
+  const badge = document.getElementById('lunch-updated-badge');
+  const menuInput = document.getElementById('lunch-menu-input');
+  const notesInput = document.getElementById('lunch-notes-input');
+  const panel = document.getElementById('lunch-edit-panel');
+  if (display) display.innerHTML = lunchText(data.menu, 'Lunch menu has not been posted yet.');
+  if (notes) notes.innerHTML = lunchText(data.notes, 'No lunch notes right now.');
+  if (menuInput) menuInput.value = data.menu || '';
+  if (notesInput) notesInput.value = data.notes || '';
+  if (panel) panel.style.display = isAdminOrAbove(window.currentUserEmail) ? '' : 'none';
+  if (badge) {
+    const date = data.updatedAt?.toDate?.();
+    badge.textContent = date ? `Updated ${date.toLocaleDateString()}` : 'Lunch';
+  }
+}
+
+async function loadLunchPage() {
+  if (!db) return renderLunchMenu(_lunchMenu);
+  renderLunchMenu(await loadLunchMenu());
+}
+
+async function saveLunchMenu() {
+  if (!requireAdminPlus('saveLunchMenu')) return;
+  const menu = (document.getElementById('lunch-menu-input')?.value || '').trim();
+  const notes = (document.getElementById('lunch-notes-input')?.value || '').trim();
+  const status = document.getElementById('lunch-edit-status');
+  if (status) status.textContent = 'Saving...';
+  try {
+    await saveLunchMenuDB({ menu, notes });
+    _lunchMenu = { menu, notes, updatedAt: { toDate: () => new Date() }, updatedBy: window.currentUserName || window.currentUserEmail || 'Admin' };
+    renderLunchMenu(_lunchMenu);
+    if (status) status.textContent = 'Saved.';
+    toast('Lunch menu updated.');
+    setTimeout(() => { if (status) status.textContent = ''; }, 2500);
+  } catch(e) {
+    console.error('saveLunchMenu:', e);
+    if (status) status.textContent = e.message || 'Could not save lunch menu.';
+    toast('Could not save lunch menu.');
+  }
+}
+
+// ── WARM LANGUAGES ───────────────────────────────────────────────────────
+const WARM_LANGUAGE_QUOTES = [
+  { quote: 'Small steps still move you forward.', source: 'Daily reminder' },
+  { quote: 'You do not have to be perfect to make progress today.', source: 'Study encouragement' },
+  { quote: 'Ask one brave question. That is how understanding starts.', source: 'Classroom courage' },
+  { quote: 'Your effort is evidence that you are growing.', source: 'Growth mindset' },
+  { quote: 'A hard page is not a stop sign; it is a place to slow down.', source: 'Learning note' },
+  { quote: 'Be kind to your future self: start with five focused minutes.', source: 'Focus reminder' },
+  { quote: 'Mistakes are not labels. They are directions for the next try.', source: 'Practice note' },
+  { quote: 'You can be nervous and still be ready.', source: 'Confidence note' },
+  { quote: 'Today, choose progress over pressure.', source: 'Daily encouragement' },
+  { quote: 'The way you speak to yourself matters. Make it warm.', source: 'Warm language' },
+  { quote: 'One careful revision can change the whole answer.', source: 'Writing encouragement' },
+  { quote: 'You belong in the room, even while you are still learning.', source: 'Student encouragement' },
+  { quote: 'A good teammate makes the next person feel more possible.', source: 'Community note' },
+  { quote: 'Start where you are. Use what you know. Build the next piece.', source: 'Study reminder' }
+];
+
+function renderWarmLanguageQuote() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const day = Math.floor((now - start) / 86400000);
+  const item = WARM_LANGUAGE_QUOTES[day % WARM_LANGUAGE_QUOTES.length];
+  const quoteEl = document.getElementById('warm-quote-text');
+  const sourceEl = document.getElementById('warm-quote-source');
+  const dateEl = document.getElementById('warm-quote-date');
+  if (quoteEl) quoteEl.textContent = item.quote;
+  if (sourceEl) sourceEl.textContent = item.source;
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
 
 // ── STUDENT HOUSE POINTS LOADER ──
 // ── GAMIFICATION HELPERS ──
@@ -5931,17 +6110,29 @@ function renderMyHousePage() {
   const card = document.getElementById('my-house-card');
   if (!card) return;
   const myHouse = (window.currentUserHouse || '').toLowerCase();
+  const myEmail = (window.currentUserEmail || '').toLowerCase();
+  const adminCanPost = isAdminOrAbove(myEmail);
+  const postSection = document.getElementById('house-post-section');
+  const targetSelect = document.getElementById('house-ann-target');
   if (!myHouse || myHouse === 'unassigned' || !HOUSE_INFO[myHouse]) {
     card.innerHTML = `
       <div class="card" style="text-align:center;padding:2rem;">
         <div style="display:flex;justify-content:center;margin-bottom:8px;color:var(--muted);">${getHouseIconSvg('Air',32,'var(--muted)')}</div>
-        <div style="font-size:15px;font-weight:500;margin-bottom:4px;">No house assigned yet</div>
-        <div style="font-size:13px;color:var(--muted);">Ask an admin to assign you to a house.</div>
+        <div style="font-size:15px;font-weight:500;margin-bottom:4px;">${adminCanPost ? 'House announcements' : 'No house assigned yet'}</div>
+        <div style="font-size:13px;color:var(--muted);">${adminCanPost ? 'Choose a house below to post or review announcements.' : 'Ask an admin to assign you to a house.'}</div>
       </div>`;
-    document.getElementById('my-house-title').textContent = 'My House';
-    document.getElementById('my-house-sub').textContent = 'Waiting for assignment';
-    document.getElementById('my-house-badge').textContent = 'Unassigned';
-    document.getElementById('house-ann-list').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem;">No house announcements yet.</div>';
+    document.getElementById('my-house-title').textContent = adminCanPost ? 'House' : 'My House';
+    document.getElementById('my-house-sub').textContent = adminCanPost ? 'Post announcements by house' : 'Waiting for assignment';
+    document.getElementById('my-house-badge').textContent = adminCanPost ? 'Admin' : 'Unassigned';
+    if (postSection) postSection.style.display = adminCanPost ? '' : 'none';
+    if (targetSelect) targetSelect.style.display = adminCanPost ? '' : 'none';
+    if (adminCanPost) {
+      const selected = targetSelect?.value || 'earth';
+      if (targetSelect && !targetSelect.value) targetSelect.value = selected;
+      loadHouseAnnouncementsForView(selected);
+    } else {
+      document.getElementById('house-ann-list').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:1rem;">No house announcements yet.</div>';
+    }
     return;
   }
   const h = HOUSE_INFO[myHouse];
@@ -5968,9 +6159,12 @@ function renderMyHousePage() {
     </div>`;
 
   // Show post section if user is admin or this house's leader
-  const myEmail = (window.currentUserEmail||'').toLowerCase();
-  const canPost = isManager(myEmail) || (HOUSE_LEADERS[myHouse]||'').toLowerCase() === myEmail;
-  document.getElementById('house-post-section').style.display = canPost ? '' : 'none';
+  const canPost = adminCanPost || (HOUSE_LEADERS[myHouse]||'').toLowerCase() === myEmail;
+  if (postSection) postSection.style.display = canPost ? '' : 'none';
+  if (targetSelect) {
+    targetSelect.style.display = adminCanPost ? '' : 'none';
+    targetSelect.value = myHouse;
+  }
 
   // Load house announcements
   loadHouseAnnouncementsForView(myHouse);
@@ -6002,7 +6196,7 @@ function loadHouseAnnouncementsForView(house) {
       return;
     }
     const myEmail = (window.currentUserEmail||'').toLowerCase();
-    const canDelete = isManager(myEmail) || (HOUSE_LEADERS[house]||'').toLowerCase() === myEmail;
+    const canDelete = isAdminOrAbove(myEmail) || (HOUSE_LEADERS[house]||'').toLowerCase() === myEmail;
     list.innerHTML = anns.map(a => `
       <div style="border-bottom:1px solid var(--border);padding:14px 0;">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;">
@@ -6042,16 +6236,19 @@ async function postHouseAnnouncement() {
   if (!title) { toast('Please enter a title!'); return; }
   if (title.length > 150) { toast('Title is too long (max 150 chars).'); return; }
   if (body.length > 1000) { toast('Body is too long (max 1000 chars).'); return; }
-  const myHouse = (window.currentUserHouse || '').toLowerCase();
+  const myEmail = (window.currentUserEmail || '').toLowerCase();
+  const selectedHouse = (document.getElementById('house-ann-target')?.value || '').toLowerCase();
+  const myHouse = isAdminOrAbove(myEmail)
+    ? (selectedHouse || (window.currentUserHouse || '').toLowerCase())
+    : (window.currentUserHouse || '').toLowerCase();
   if (!myHouse || !HOUSE_INFO[myHouse]) { toast('You must be in a house to post.'); return; }
 
   // Permission check up front so the user gets a clear message
   // instead of waiting for Firestore to reject.
-  const myEmail = (window.currentUserEmail || '').toLowerCase();
-  const isAdmin = isManager(myEmail) || isTeacher(myEmail);
+  const isAdmin = isAdminOrAbove(myEmail);
   const isLeader = (HOUSE_LEADERS[myHouse] || '').toLowerCase() === myEmail;
   if (!isAdmin && !isLeader) {
-    toast('Only admins/teachers or this house\'s leader can post.');
+    toast('Only admins or this house\'s leader can post.');
     return;
   }
 
@@ -6075,7 +6272,7 @@ async function postHouseAnnouncement() {
       : `Failed to post (${e.code || e.message || 'unknown'}).`;
     toast(why);
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Post to my house'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Post announcement'; }
   }
 }
 
@@ -6123,7 +6320,7 @@ function loadStudentPolls(userEmail) {
     const active = polls.filter(p => p.status !== 'closed');
     const votingPage = document.getElementById('page-voting');
     if (!votingPage) return;
-    votingPage.innerHTML = `<div class="page-header"><div><h1 class="page-title">Voting</h1><p class="page-sub">Have your say</p></div><span class="hdr-badge">${active.length} active</span></div>`;
+    votingPage.innerHTML = `<div class="page-header"><div><h1 class="page-title">Polls</h1><p class="page-sub">Have your say</p></div><span class="hdr-badge">${active.length} active</span></div>`;
     if (active.length === 0) {
       votingPage.innerHTML += '<div class="card" style="text-align:center;padding:2rem;color:var(--muted);">No active polls right now.</div>';
       return;
@@ -6252,6 +6449,7 @@ function removeOpt(btn) {
   if (wrap && wrap.children.length > 2) btn.parentElement.remove();
 }
 function createPoll() {
+  if (!requireAdminPlus('createPoll')) return;
   const q = document.getElementById('poll-q-input').value.trim();
   if (!q) { toast('Please enter a question!'); return; }
   const options = [...document.querySelectorAll('#poll-options-wrap .poll-opt-input')]
@@ -6274,7 +6472,7 @@ function createPoll() {
     if (document.getElementById('results-everyone')) document.getElementById('results-everyone').checked = true;
     loadPollsToMgr();
     toast('Poll created! ✓');
-  });
+  }).catch(e => toast(e.message || 'Could not create poll.'));
 }
 
 const housePts = { earth:0, water:0, air:0, fire:0 };
@@ -7196,6 +7394,20 @@ function renderStudents() {
       return `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:${b.bg};color:${b.color};white-space:nowrap;">${b.label}</span>`;
     }
 
+    const currentEmail = (window.currentUserEmail || '').toLowerCase();
+    const canManageRoles = isHeadAdminOrAbove(currentEmail);
+    const canEditStudentAccount = isOwnerEmail(currentEmail);
+
+    function roleSelect(rowUser) {
+      if (!canManageRoles || !canChangeUserRole(rowUser.roleKey, 'student')) return '';
+      const allowed = isOwnerEmail(currentEmail)
+        ? ['student','teacher','admin','headadmin']
+        : ['student','teacher','admin'];
+      return `<select class="fb-input permission-select" data-role-select style="margin:6px 0 0;font-size:11px;padding:5px 8px;">
+        ${allowed.map(role => `<option value="${role}" ${rowUser.roleKey===role?'selected':''}>${roleBadge[role]?.label || role}</option>`).join('')}
+      </select>`;
+    }
+
     // Build full user list: admins + teachers + students
     const headAdmins = (window._headAdmins || []).map(e => e.toLowerCase());
     const ownerEmail = (SUPER_ADMIN || '').toLowerCase();
@@ -7212,7 +7424,7 @@ function renderStudents() {
     (TEACHER_EMAILS || []).forEach(email => {
       const lc = email.toLowerCase();
       if (!allRows.find(r => r.email === lc)) {
-        allRows.push({ email: lc, name: lc.split('@')[0], house: '—', roleKey: 'teacher', isAdmin: true });
+        allRows.push({ email: lc, name: teacherNames?.[lc] || lc.split('@')[0], house: '—', roleKey: 'teacher', isAdmin: true });
       }
     });
 
@@ -7255,34 +7467,39 @@ function renderStudents() {
              <option ${s.house==='Unassigned'?'selected':''}>Unassigned</option>
            </select></td>`;
 
+      const roleCell = `<td>${badge(s.roleKey)}${roleSelect(s)}</td>`;
+
       const settingsCell = s.isAdmin
-        ? `<td><span style="font-size:11px;color:var(--muted);">Owner controls are for student records.</span></td>`
+        ? `<td><span style="font-size:11px;color:var(--muted);">Permission changes are available in the Role column.</span></td>`
         : `<td>
             <div class="owner-edit-grid">
-              <input class="fb-input owner-student-name" value="${esc(s.name||'')}" placeholder="Student name" style="margin-bottom:0;font-size:12px;" />
-              <input class="fb-input owner-student-email" value="${esc(s.email)}" placeholder="Student email" style="margin-bottom:0;font-size:12px;" />
+              <input class="fb-input owner-student-name" value="${esc(s.name||'')}" placeholder="Student name" style="margin-bottom:0;font-size:12px;" ${canEditStudentAccount?'':'disabled'} />
+              <input class="fb-input owner-student-email" value="${esc(s.email)}" placeholder="Student email" style="margin-bottom:0;font-size:12px;" ${canEditStudentAccount?'':'disabled'} />
             </div>
             <div class="owner-action-row" style="margin-top:8px;">
-              <button class="btn-outline" data-owner-save="${esc(s.email)}" style="font-size:11px;padding:5px 10px;">Save</button>
-              <button class="btn-outline" data-owner-reset="${esc(s.email)}" style="font-size:11px;padding:5px 10px;">Send password reset</button>
+              ${canEditStudentAccount ? `<button class="btn-outline" data-owner-save="${esc(s.email)}" style="font-size:11px;padding:5px 10px;">Save</button>
+              <button class="btn-outline" data-owner-reset="${esc(s.email)}" style="font-size:11px;padding:5px 10px;">Send password reset</button>` : `<span style="font-size:11px;color:var(--muted);">Owner only account controls.</span>`}
             </div>
             <div class="owner-mini-note">Email edits update Student Hub data. Auth email/password changes need reset email or server admin tools.</div>
           </td>`;
 
       const actionCell = s.isAdmin
         ? `<td><span style="font-size:11px;color:var(--muted);">Manage in Roles</span></td>`
-        : `<td><button class="btn-danger" data-owner-remove="${esc(s.email)}">Remove student</button></td>`;
+        : `<td>${canEditStudentAccount ? `<button class="btn-danger" data-owner-remove="${esc(s.email)}">Remove student</button>` : `<span style="font-size:11px;color:var(--muted);">Owner only</span>`}</td>`;
 
       const joinedDate = s.isAdmin ? '' : `<div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt?.toDate?.()?.toLocaleDateString() || s.joinedAt || 'Recently')}</div>`;
 
       row.innerHTML = `
         <td><div style="font-size:13px;font-weight:500;">${esc(s.name||'Unknown')}</div>${joinedDate}</td>
         <td style="color:var(--muted);font-size:12px;">${esc(s.email)}</td>
-        <td>${badge(s.roleKey)}</td>
+        ${roleCell}
         ${houseCell}
         ${settingsCell}
         ${actionCell}`;
 
+      row.querySelector('[data-role-select]')?.addEventListener('change', event => {
+        changeUserRole(s.email, s.roleKey, event.target.value, s.name, s.house, event.target);
+      });
       if (!s.isAdmin) {
         row.querySelector('[data-owner-save]')?.addEventListener('click', () => ownerSaveStudent(row, s.email));
         row.querySelector('[data-owner-reset]')?.addEventListener('click', () => ownerSendPasswordReset(row));
@@ -7297,6 +7514,79 @@ function renderStudents() {
     const sc = document.getElementById('dash-student-count');
     if (sc) sc.textContent = studentCount;
   });
+}
+
+async function saveHeadAdminsToFirestore() {
+  await db.collection('settings').doc('headAdmins').set({ emails: window._headAdmins || [] });
+}
+
+async function changeUserRole(email, oldRole, newRole, name, house, selectEl) {
+  const lc = (email || '').toLowerCase();
+  if (!isValidEmail(lc)) { toast('Invalid email.'); return; }
+  if (oldRole === newRole) return;
+  if (!canChangeUserRole(oldRole, newRole)) {
+    if (selectEl) selectEl.value = oldRole;
+    toast('You cannot set that permission.');
+    return;
+  }
+  if (!confirm(`Change ${lc} from ${oldRole} to ${newRole}?`)) {
+    if (selectEl) selectEl.value = oldRole;
+    return;
+  }
+
+  const displayName = name || lc.split('@')[0];
+  const removeFromManagers = () => {
+    MANAGER_EMAILS = MANAGER_EMAILS.filter(e => e.toLowerCase() !== lc);
+    delete adminNames[lc];
+    window._headAdmins = (window._headAdmins || []).filter(e => e.toLowerCase() !== lc);
+  };
+  const removeFromTeachers = () => {
+    TEACHER_EMAILS = TEACHER_EMAILS.filter(e => e.toLowerCase() !== lc);
+    delete teacherNames[lc];
+  };
+
+  try {
+    if (newRole === 'headadmin') {
+      if (!isOwnerEmail(window.currentUserEmail)) throw new Error('Only owner can set Head Admin.');
+      if (!MANAGER_EMAILS.map(e => e.toLowerCase()).includes(lc)) MANAGER_EMAILS.push(lc);
+      if (!(window._headAdmins || []).map(e => e.toLowerCase()).includes(lc)) window._headAdmins = [...(window._headAdmins || []), lc];
+      adminNames[lc] = displayName;
+      removeFromTeachers();
+    } else if (newRole === 'admin') {
+      if (!MANAGER_EMAILS.map(e => e.toLowerCase()).includes(lc)) MANAGER_EMAILS.push(lc);
+      window._headAdmins = (window._headAdmins || []).filter(e => e.toLowerCase() !== lc);
+      adminNames[lc] = displayName;
+      removeFromTeachers();
+    } else if (newRole === 'teacher') {
+      removeFromManagers();
+      if (!TEACHER_EMAILS.map(e => e.toLowerCase()).includes(lc)) TEACHER_EMAILS.push(lc);
+      teacherNames[lc] = displayName;
+    } else {
+      removeFromManagers();
+      removeFromTeachers();
+      await saveStudent({
+        email: lc,
+        name: displayName,
+        house: house && house !== '—' ? house : 'Unassigned',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    await Promise.all([
+      saveManagerEmailsToFirestore(),
+      saveHeadAdminsToFirestore(),
+      saveTeacherEmailsToFirestore(),
+      saveAdminNamesToFirestore()
+    ]);
+    renderStudents();
+    renderAdminList();
+    renderTeacherList();
+    toast(`${displayName} is now ${newRole === 'headadmin' ? 'Head Admin' : newRole}.`);
+  } catch(e) {
+    console.error('changeUserRole:', e);
+    if (selectEl) selectEl.value = oldRole;
+    toast(e.message || 'Could not change permission.');
+  }
 }
 
 function assignHouse(sel, email) {
@@ -7763,6 +8053,8 @@ function loadFeedbacksToMgr() {
           loadFeedbacksToMgr();
           updateMgrDashboard();
           toast('Feedback deleted.');
+        }).catch(e => {
+          toast(e.message || 'Could not delete feedback.');
         });
       });
       const replyBtn = card.querySelector('[data-reply]');
@@ -7776,6 +8068,10 @@ function loadFeedbacksToMgr() {
           saveFeedbackReply(fb.id, reply, window.currentUserName||'Manager').then(() => {
             loadFeedbacksToMgr();
             toast('Reply sent! ✓');
+          }).catch(e => {
+            replyBtn.textContent = 'Send reply';
+            replyBtn.disabled = false;
+            toast(e.message || 'Could not send reply.');
           });
         });
       }
@@ -7787,7 +8083,7 @@ function loadFeedbacksToMgr() {
             saveFeedbackReply(fb.id, newReply.trim(), window.currentUserName||'Manager').then(() => {
               loadFeedbacksToMgr();
               toast('Reply updated.');
-            });
+            }).catch(e => toast(e.message || 'Could not update reply.'));
           }
         });
       }
@@ -8740,7 +9036,7 @@ function renderAdminList() {
     const currentEmail = (window.currentUserEmail || '').toLowerCase();
     const currentIsHead = currentIsOwner || (window._headAdmins||[]).includes(currentEmail);
     const isSelf = email.toLowerCase() === currentEmail;
-    const promoteBtn = currentIsHead && !isSelf
+    const promoteBtn = currentIsOwner && !isSelf
       ? `<button class="btn-outline" style="font-size:11px;padding:4px 10px;white-space:nowrap;" data-action="promote">${isHead ? '↓ Demote' : '↑ Make Head'}</button>`
       : '';
     row.innerHTML = `
@@ -8763,6 +9059,10 @@ function renderAdminList() {
 
 async function toggleHeadAdmin(email, name) {
   if (!requireHeadAdmin('toggleHeadAdmin')) return;
+  if (!isOwnerEmail(window.currentUserEmail)) {
+    toast('Only owner can set Head Admin.');
+    return;
+  }
   const headAdmins = window._headAdmins || [];
   const lc = email.toLowerCase();
   if (headAdmins.includes(lc)) {
@@ -8806,8 +9106,11 @@ function addAdmin() {
 
   MANAGER_EMAILS.push(email);
   if (name) adminNames[email.toLowerCase()] = name;
+  TEACHER_EMAILS = TEACHER_EMAILS.filter(e => e.toLowerCase() !== email.toLowerCase());
+  delete teacherNames[email.toLowerCase()];
   saveManagers();
   saveAdminNamesToFirestore();
+  saveTeacherEmailsToFirestore();
 
   emailInput.value = '';
   nameInput.value = '';
