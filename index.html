@@ -2745,200 +2745,40 @@ body::before{
 }
 
 /* Flash Cards / Resources */
-.flash-builder-grid{
-  display:grid;
-  grid-template-columns:minmax(280px,0.95fr) minmax(320px,1.05fr);
-  gap:18px;
-  align-items:start;
-}
-.flash-toolbar{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-  margin-top:4px;
-}
-.flash-hint{
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.55;
-  margin:8px 0 14px;
-}
-.flash-summary{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-  margin:14px 0 0;
-}
-.flash-summary-item{
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--surface2);
-  padding:10px;
-}
-.flash-summary-num{
-  font-size:20px;
-  font-weight:850;
-  color:var(--text);
-}
-.flash-summary-label{
-  font-size:10px;
-  color:var(--muted);
-  font-weight:800;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-}
-.flash-card-stage{
-  min-height:320px;
-  display:flex;
-  align-items:stretch;
-  justify-content:center;
-}
-.study-card{
-  width:min(100%,520px);
-  min-height:300px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--surface2);
-  cursor:pointer;
-  perspective:1200px;
-}
-.study-card-inner{
-  position:relative;
-  width:100%;
-  height:100%;
-  min-height:300px;
-  transition:transform 0.38s ease;
-  transform-style:preserve-3d;
-}
+.flash-builder-grid{display:grid;grid-template-columns:minmax(280px,0.95fr) minmax(320px,1.05fr);gap:18px;align-items:start;}
+.flash-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;}
+.flash-hint{font-size:12px;color:var(--muted);line-height:1.55;margin:8px 0 14px;}
+.flash-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 0;}
+.flash-summary-item{border:1px solid var(--border);border-radius:8px;background:var(--surface2);padding:10px;}
+.flash-summary-num{font-size:20px;font-weight:850;color:var(--text);}
+.flash-summary-label{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:0.08em;text-transform:uppercase;}
+.flash-card-stage{min-height:320px;display:flex;align-items:stretch;justify-content:center;}
+.study-card{width:min(100%,520px);min-height:300px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);cursor:pointer;perspective:1200px;}
+.study-card-inner{position:relative;width:100%;height:100%;min-height:300px;transition:transform 0.38s ease;transform-style:preserve-3d;}
 .study-card.flipped .study-card-inner{transform:rotateY(180deg);}
-.study-card-face{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  gap:24px;
-  padding:24px;
-  backface-visibility:hidden;
-}
+.study-card-face{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;gap:24px;padding:24px;backface-visibility:hidden;}
 .study-card-back{transform:rotateY(180deg);}
-.study-card-kicker{
-  font-size:11px;
-  color:var(--muted);
-  font-weight:850;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-}
-.study-card-term{
-  font-size:34px;
-  line-height:1.08;
-  font-weight:900;
-  color:var(--text);
-  overflow-wrap:anywhere;
-}
-.study-card-definition{
-  font-size:22px;
-  line-height:1.25;
-  font-weight:800;
-  color:var(--text);
-  overflow-wrap:anywhere;
-}
-.study-card-note{
-  font-size:12px;
-  color:var(--muted);
-}
-.flash-deck-controls{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-  margin-top:12px;
-}
-.flash-progress{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:700;
-}
-.match-board{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin-top:14px;
-}
-.match-option{
-  min-height:58px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--surface2);
-  color:var(--text);
-  font:inherit;
-  font-size:13px;
-  font-weight:750;
-  cursor:pointer;
-  transition:background 0.15s,border-color 0.15s,transform 0.15s;
-  overflow-wrap:anywhere;
-}
-.match-option:hover{
-  transform:translateY(-1px);
-  border-color:var(--primary);
-}
-.match-option.selected{
-  background:var(--primary-soft);
-  border-color:var(--primary);
-}
-.match-option.matched{
-  background:var(--earth);
-  border-color:var(--earth-deep);
-  color:var(--earth-text);
-  cursor:default;
-}
-.match-option.miss{
-  background:var(--fire);
-  border-color:var(--fire-deep);
-  color:var(--fire-text);
-}
-.simple-section-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-}
-.simple-panel{
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--surface);
-  padding:18px;
-}
-.simple-panel-title{
-  font-size:15px;
-  font-weight:850;
-  margin-bottom:6px;
-}
-.simple-panel-copy{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.6;
-}
-@media (max-width: 920px){
-  .flash-builder-grid,
-  .simple-section-grid{
-    grid-template-columns:1fr;
-  }
-}
-@media (max-width: 560px){
-  .flash-summary,
-  .match-board{
-    grid-template-columns:1fr;
-  }
-  .study-card-term{font-size:28px;}
-  .study-card-definition{font-size:20px;}
-  .flash-deck-controls{flex-wrap:wrap;}
-}
+.study-card-kicker{font-size:11px;color:var(--muted);font-weight:850;letter-spacing:0.08em;text-transform:uppercase;}
+.study-card-term{font-size:34px;line-height:1.08;font-weight:900;color:var(--text);overflow-wrap:anywhere;}
+.study-card-definition{font-size:22px;line-height:1.25;font-weight:800;color:var(--text);overflow-wrap:anywhere;}
+.study-card-note{font-size:12px;color:var(--muted);}
+.flash-deck-controls{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:12px;}
+.flash-progress{font-size:12px;color:var(--muted);font-weight:700;}
+.match-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px;}
+.match-option{min-height:58px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.15s;overflow-wrap:anywhere;}
+.match-option:hover{transform:translateY(-1px);border-color:var(--primary);}
+.match-option.selected{background:var(--primary-soft);border-color:var(--primary);}
+.match-option.matched{background:var(--earth);border-color:var(--earth-deep);color:var(--earth-text);cursor:default;}
+.match-option.miss{background:var(--fire);border-color:var(--fire-deep);color:var(--fire-text);}
+.simple-section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.simple-panel{border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:18px;}
+.simple-panel-title{font-size:15px;font-weight:850;margin-bottom:6px;}
+.simple-panel-copy{color:var(--muted);font-size:13px;line-height:1.6;}
+.owner-edit-grid{display:grid;grid-template-columns:minmax(150px,1fr) minmax(180px,1.1fr);gap:8px;margin-top:8px;}
+.owner-action-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.owner-mini-note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:6px;}
+@media (max-width: 920px){.flash-builder-grid,.simple-section-grid{grid-template-columns:1fr;}}
+@media (max-width: 560px){.flash-summary,.match-board,.owner-edit-grid{grid-template-columns:1fr;}.study-card-term{font-size:28px;}.study-card-definition{font-size:20px;}.flash-deck-controls{flex-wrap:wrap;}}
 </style>
 </head>
 <body>
@@ -3466,6 +3306,12 @@ body::before{
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
+    <div class="nav-section" id="owner-controls-nav" style="display:none;">
+      <div class="nav-label">Owner Controls</div>
+      <button class="nav-item" onclick="showPage('mgr-students',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Student Settings
+      </button>
+    </div>
   </div>
 
   <div class="sidebar-bottom">
@@ -3635,39 +3481,15 @@ empathy - understanding another person's feelings</textarea>
           <button class="btn-outline" onclick="clearFlashcards()">Clear</button>
         </div>
         <div class="flash-summary">
-          <div class="flash-summary-item">
-            <div class="flash-summary-num" id="flash-total">0</div>
-            <div class="flash-summary-label">Cards</div>
-          </div>
-          <div class="flash-summary-item">
-            <div class="flash-summary-num" id="flash-match-total">0</div>
-            <div class="flash-summary-label">Matches</div>
-          </div>
-          <div class="flash-summary-item">
-            <div class="flash-summary-num" id="flash-current">0</div>
-            <div class="flash-summary-label">Current</div>
-          </div>
+          <div class="flash-summary-item"><div class="flash-summary-num" id="flash-total">0</div><div class="flash-summary-label">Cards</div></div>
+          <div class="flash-summary-item"><div class="flash-summary-num" id="flash-match-total">0</div><div class="flash-summary-label">Matches</div></div>
+          <div class="flash-summary-item"><div class="flash-summary-num" id="flash-current">0</div><div class="flash-summary-label">Current</div></div>
         </div>
       </div>
 
       <div class="card">
         <div class="section-label">Flashcard deck</div>
-        <div class="flash-card-stage" id="flash-card-stage">
-          <div class="study-card" onclick="flipFlashcard()">
-            <div class="study-card-inner">
-              <div class="study-card-face study-card-front">
-                <div class="study-card-kicker">Front</div>
-                <div class="study-card-term">Add vocab</div>
-                <div class="study-card-note">Build your deck to start studying.</div>
-              </div>
-              <div class="study-card-face study-card-back">
-                <div class="study-card-kicker">Back</div>
-                <div class="study-card-definition">Meanings will appear here.</div>
-                <div class="study-card-note">Tap the card to flip.</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="flash-card-stage" id="flash-card-stage"></div>
         <div class="flash-deck-controls">
           <button class="btn-outline" onclick="prevFlashcard()">Previous</button>
           <div class="flash-progress" id="flash-progress">No deck yet</div>
@@ -3696,14 +3518,8 @@ empathy - understanding another person's feelings</textarea>
       <div><h1 class="page-title">Lunch</h1><p class="page-sub">School lunch information</p></div>
     </div>
     <div class="simple-section-grid">
-      <div class="simple-panel">
-        <div class="simple-panel-title">Today</div>
-        <div class="simple-panel-copy">Lunch details can be placed here when the menu is ready.</div>
-      </div>
-      <div class="simple-panel">
-        <div class="simple-panel-title">Notes</div>
-        <div class="simple-panel-copy">Lunch notes and reminders can be added here next.</div>
-      </div>
+      <div class="simple-panel"><div class="simple-panel-title">Today</div><div class="simple-panel-copy">Lunch details can be placed here when the menu is ready.</div></div>
+      <div class="simple-panel"><div class="simple-panel-title">Notes</div><div class="simple-panel-copy">Lunch notes and reminders can be added here next.</div></div>
     </div>
   </div>
 
@@ -3713,14 +3529,8 @@ empathy - understanding another person's feelings</textarea>
       <div><h1 class="page-title">Calendar</h1><p class="page-sub">Upcoming school dates</p></div>
     </div>
     <div class="simple-section-grid">
-      <div class="simple-panel">
-        <div class="simple-panel-title">This week</div>
-        <div class="simple-panel-copy">Calendar items can be added here next.</div>
-      </div>
-      <div class="simple-panel">
-        <div class="simple-panel-title">Important dates</div>
-        <div class="simple-panel-copy">A simple event list or month view can be built into this space.</div>
-      </div>
+      <div class="simple-panel"><div class="simple-panel-title">This week</div><div class="simple-panel-copy">Calendar items can be added here next.</div></div>
+      <div class="simple-panel"><div class="simple-panel-title">Important dates</div><div class="simple-panel-copy">A simple event list or month view can be built into this space.</div></div>
     </div>
   </div>
 
@@ -4358,8 +4168,11 @@ empathy - understanding another person's feelings</textarea>
 
   <!-- Manager: Students -->
   <div id="page-mgr-students" class="page">
-    <div class="page-header"><div><h1 class="page-title">All Users</h1><p class="page-sub">Students, teachers, and admins</p></div><span class="hdr-badge">Loading...</span></div>
+    <div class="page-header"><div><h1 class="page-title">Student Settings</h1><p class="page-sub">Owner controls for student accounts</p></div><span class="hdr-badge">Loading...</span></div>
     <div class="mgr-section">
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
+        Owner can edit the student registry email/name/house, send password reset emails, and remove student records. Directly setting another user's Firebase password needs a server Admin SDK, so this page uses secure reset emails.
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
         <input class="fb-input" style="flex:1;margin-bottom:0;min-width:200px;" placeholder="Search by name or email..." oninput="filterStudents(this.value)" />
         <select class="fb-input" style="width:140px;margin-bottom:0;" onchange="filterByHouse(this.value)"><option value="">All houses</option><option>Air</option><option>Earth</option><option>Water</option><option>Fire</option><option>Unassigned</option></select>
@@ -4373,7 +4186,7 @@ empathy - understanding another person's feelings</textarea>
         </select>
       </div>
       <table class="mgr-table">
-        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>House</th><th>Assign</th><th>Action</th></tr></thead>
+        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>House</th><th>Student Settings</th><th>Action</th></tr></thead>
         <tbody id="student-tbody"></tbody>
       </table>
     </div>
@@ -4747,15 +4560,112 @@ async function loadStudents() {
     return snap.docs.map(d => ({id: d.id, ...d.data()}));
   } catch(e) { console.error('loadStudents:', e); return []; }
 }
-async function saveStudent(student) {
+async function saveStudent(student, oldEmail) {
   try {
-    await db.collection('students').doc(student.email.toLowerCase()).set(student, {merge:true});
-  } catch(e) { console.error('saveStudent:', e); }
+    const nextEmail = (student.email || '').toLowerCase().trim();
+    const prevEmail = (oldEmail || nextEmail).toLowerCase().trim();
+    if (!isValidEmail(nextEmail)) throw new Error('Enter a valid student email.');
+    const cleanStudent = {...student, email: nextEmail};
+    if (prevEmail && prevEmail !== nextEmail) {
+      await db.collection('students').doc(nextEmail).set(cleanStudent, {merge:true});
+      await db.collection('students').doc(prevEmail).delete();
+      await migrateStudentEmailReferences(prevEmail, nextEmail);
+    } else {
+      await db.collection('students').doc(nextEmail).set(cleanStudent, {merge:true});
+    }
+  } catch(e) { console.error('saveStudent:', e); throw e; }
 }
 async function deleteStudent(email) {
   try {
-    await db.collection('students').doc(email.toLowerCase()).delete();
-  } catch(e) { console.error('deleteStudent:', e); }
+    return await deleteStudentData(email);
+  } catch(e) { console.error('deleteStudent:', e); throw e; }
+}
+
+async function updateDocsByEmail(collectionName, field, oldEmail, newEmail) {
+  const snap = await db.collection(collectionName).where(field, '==', oldEmail).get();
+  const batch = db.batch();
+  snap.docs.forEach(doc => batch.update(doc.ref, { [field]: newEmail }));
+  if (!snap.empty) await batch.commit();
+  return snap.size;
+}
+
+async function migrateStudentEmailReferences(oldEmail, newEmail) {
+  const oldLc = oldEmail.toLowerCase();
+  const newLc = newEmail.toLowerCase();
+  await Promise.allSettled([
+    moveDocByEmail('studentPoints', oldLc, newLc),
+    moveDocByEmail('studentXP', oldLc, newLc),
+    moveDocByEmail('userProfiles', oldLc, newLc),
+    updateDocsByEmail('studentPointsLog', 'email', oldLc, newLc),
+    updateDocsByEmail('studentXPLog', 'email', oldLc, newLc),
+    updateDocsByEmail('feedbacks', 'studentEmail', oldLc, newLc),
+    updateDocsByEmail('drawResults', 'studentEmail', oldLc, newLc),
+    updateDocsByEmail('communityBoard', 'email', oldLc, newLc),
+    migratePollVotesByEmail(oldLc, newLc)
+  ]);
+}
+
+async function moveDocByEmail(collectionName, oldEmail, newEmail) {
+  const oldRef = db.collection(collectionName).doc(oldEmail);
+  const snap = await oldRef.get();
+  if (!snap.exists) return;
+  await db.collection(collectionName).doc(newEmail).set({ ...snap.data(), email: newEmail }, { merge:true });
+  await oldRef.delete();
+}
+
+async function deleteDocsByEmail(collectionName, field, email) {
+  const snap = await db.collection(collectionName).where(field, '==', email).get();
+  if (snap.empty) return 0;
+  const batch = db.batch();
+  snap.docs.forEach(doc => batch.delete(doc.ref));
+  await batch.commit();
+  return snap.size;
+}
+
+async function migratePollVotesByEmail(oldEmail, newEmail) {
+  const polls = await db.collection('polls').get();
+  const moves = polls.docs.map(async pollDoc => {
+    const oldRef = pollDoc.ref.collection('votes').doc(oldEmail);
+    const vote = await oldRef.get();
+    if (!vote.exists) return;
+    const data = vote.data() || {};
+    ['email','userEmail','studentEmail'].forEach(field => {
+      if ((data[field] || '').toLowerCase?.() === oldEmail) data[field] = newEmail;
+    });
+    await pollDoc.ref.collection('votes').doc(newEmail).set(data, { merge:true });
+    await oldRef.delete();
+  });
+  await Promise.all(moves);
+}
+
+async function deletePollVotesByEmail(email) {
+  const polls = await db.collection('polls').get();
+  const deletes = polls.docs.map(pollDoc => pollDoc.ref.collection('votes').doc(email).delete());
+  await Promise.all(deletes);
+  return deletes.length;
+}
+
+async function deleteStudentData(email) {
+  const lc = (email || '').toLowerCase().trim();
+  if (!isValidEmail(lc)) throw new Error('Invalid student email.');
+  await db.collection('students').doc(lc).delete();
+  const cleanup = [
+    db.collection('studentPoints').doc(lc).delete(),
+    db.collection('studentXP').doc(lc).delete(),
+    db.collection('userProfiles').doc(lc).delete(),
+    deleteDocsByEmail('studentPointsLog', 'email', lc),
+    deleteDocsByEmail('studentXPLog', 'email', lc),
+    deleteDocsByEmail('feedbacks', 'studentEmail', lc),
+    deleteDocsByEmail('drawResults', 'studentEmail', lc),
+    deleteDocsByEmail('communityBoard', 'email', lc),
+    deletePollVotesByEmail(lc)
+  ];
+  const results = await Promise.allSettled(cleanup);
+  const failed = results.filter(r => r.status === 'rejected');
+  if (failed.length) {
+    console.warn('Some related student data could not be deleted:', failed.map(f => f.reason?.code || f.reason?.message || f.reason));
+  }
+  return { total: cleanup.length, failed: failed.length };
 }
 
 // House points
@@ -5307,6 +5217,8 @@ function handleLogin(account) {
     document.getElementById('nav-student').style.display = 'none';
     document.getElementById('nav-manager').style.display = '';
     document.getElementById('nav-teacher').style.display = 'none';
+    const ownerControlsNav = document.getElementById('owner-controls-nav');
+    if (ownerControlsNav) ownerControlsNav.style.display = isOwner ? '' : 'none';
     document.getElementById('user-role').textContent = (isOwner ? 'Owner' : isHead ? 'Head Admin' : 'Admin') + ' · TIS Eagles';
     document.getElementById('user-avatar').style.background = isOwner ? '#7c3aed' : '#C04A10';
     document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
@@ -5319,7 +5231,7 @@ function handleLogin(account) {
       const logSection = document.getElementById('log-mgmt-section');
       if (logSection) logSection.style.display = '';
     }
-    showPage('flashcards', document.querySelector('#nav-manager .nav-item'));
+    showPage(isOwner ? 'mgr-students' : 'flashcards', document.querySelector(isOwner ? '#owner-controls-nav .nav-item' : '#nav-manager .nav-item'));
     // Load all data fresh from Firebase on login
     updateMgrDashboard();
     renderStudents();
@@ -5502,15 +5414,17 @@ function showSecurityAlert() {
 // ── NAV ──
 function showPage(id, btn) {
   if (!isAuthorized(id)) return;
+  if (id === 'mgr-students' && (window.currentUserEmail || '').toLowerCase() !== SUPER_ADMIN.toLowerCase()) {
+    showSecurityAlert();
+    return;
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
-  if (id === 'flashcards') {
-    ensureFlashcardsReady();
-  }
+  if (id === 'flashcards') ensureFlashcardsReady();
 
   // Reload Firebase data when switching to each page
   if (!db) return;
@@ -5644,34 +5558,14 @@ let matchedPairs = new Set();
 function parseFlashcardLine(line) {
   const trimmed = (line || '').trim();
   if (!trimmed) return null;
-
   const spaced = trimmed.match(/^(.+?)\s+[-:=]\s+(.+)$/);
   if (spaced) return { term: spaced[1].trim(), definition: spaced[2].trim() };
-
   const tabIndex = trimmed.indexOf('\t');
-  if (tabIndex > 0) {
-    return {
-      term: trimmed.slice(0, tabIndex).trim(),
-      definition: trimmed.slice(tabIndex + 1).trim()
-    };
-  }
-
+  if (tabIndex > 0) return { term: trimmed.slice(0, tabIndex).trim(), definition: trimmed.slice(tabIndex + 1).trim() };
   const colonIndex = trimmed.indexOf(':');
-  if (colonIndex > 0) {
-    return {
-      term: trimmed.slice(0, colonIndex).trim(),
-      definition: trimmed.slice(colonIndex + 1).trim()
-    };
-  }
-
+  if (colonIndex > 0) return { term: trimmed.slice(0, colonIndex).trim(), definition: trimmed.slice(colonIndex + 1).trim() };
   const equalIndex = trimmed.indexOf('=');
-  if (equalIndex > 0) {
-    return {
-      term: trimmed.slice(0, equalIndex).trim(),
-      definition: trimmed.slice(equalIndex + 1).trim()
-    };
-  }
-
+  if (equalIndex > 0) return { term: trimmed.slice(0, equalIndex).trim(), definition: trimmed.slice(equalIndex + 1).trim() };
   return null;
 }
 
@@ -5697,10 +5591,7 @@ function buildFlashcards(options = {}) {
   renderFlashcardDeck();
   resetMatchingGame();
   renderFlashcardStats();
-
-  if (!options.silent) {
-    toast(flashcards.length ? `Built ${flashcards.length} flashcards.` : 'Add vocab pairs first.');
-  }
+  if (!options.silent) toast(flashcards.length ? `Built ${flashcards.length} flashcards.` : 'Add vocab pairs first.');
 }
 
 function clearFlashcards() {
@@ -5732,7 +5623,6 @@ function renderFlashcardDeck() {
   const stage = document.getElementById('flash-card-stage');
   const progress = document.getElementById('flash-progress');
   if (!stage) return;
-
   if (flashcards.length === 0) {
     stage.innerHTML = `
       <div class="study-card">
@@ -5752,7 +5642,6 @@ function renderFlashcardDeck() {
     if (progress) progress.textContent = 'No deck yet';
     return;
   }
-
   const card = flashcards[flashIndex];
   stage.innerHTML = `
     <div class="study-card ${flashFlipped ? 'flipped' : ''}" onclick="flipFlashcard()">
@@ -5813,20 +5702,17 @@ function resetMatchingGame() {
   if (!board) return;
   matchSelection = null;
   matchedPairs = new Set();
-
   if (flashcards.length === 0) {
     renderMatchingEmpty('Build flashcards to create a matching game.');
     renderFlashcardStats();
     return;
   }
-
   const pairs = flashcards.slice(0, 8);
   const options = [];
   pairs.forEach((card, pairIndex) => {
     options.push({ pair: pairIndex, kind: 'term', text: card.term });
     options.push({ pair: pairIndex, kind: 'definition', text: card.definition });
   });
-
   board.innerHTML = shuffleFlashItems(options).map((item, index) => `
     <button class="match-option" data-match-id="${index}" data-pair="${item.pair}" data-kind="${item.kind}" onclick="selectMatchOption(this)">
       ${esc(item.text)}
@@ -5837,19 +5723,16 @@ function resetMatchingGame() {
 
 function selectMatchOption(btn) {
   if (!btn || btn.classList.contains('matched')) return;
-
   if (matchSelection === btn) {
     btn.classList.remove('selected');
     matchSelection = null;
     return;
   }
-
   if (!matchSelection) {
     btn.classList.add('selected');
     matchSelection = btn;
     return;
   }
-
   const first = matchSelection;
   const isMatch = first.dataset.pair === btn.dataset.pair && first.dataset.kind !== btn.dataset.kind;
   if (isMatch) {
@@ -5859,12 +5742,9 @@ function selectMatchOption(btn) {
     btn.classList.add('matched');
     matchedPairs.add(first.dataset.pair);
     matchSelection = null;
-    if (matchedPairs.size === Math.min(flashcards.length, 8)) {
-      toast('Matching complete.');
-    }
+    if (matchedPairs.size === Math.min(flashcards.length, 8)) toast('Matching complete.');
     return;
   }
-
   first.classList.remove('selected');
   first.classList.add('miss');
   btn.classList.add('miss');
@@ -7364,9 +7244,10 @@ function renderStudents() {
 
       const houseColor = hc[s.house] || 'var(--muted)';
       const houseCell  = s.isAdmin
-        ? `<td style="color:var(--muted);font-size:12px;">—</td><td>—</td>`
-        : `<td><span style="font-size:12px;font-weight:500;color:${houseColor};">${esc(s.house||'Unassigned')}</span></td>
-           <td><select class="house-select" onchange="assignHouse(this,'${esc(s.email)}')">
+        ? `<td style="color:var(--muted);font-size:12px;">—</td>`
+        : `<td>
+           <div style="font-size:12px;font-weight:500;color:${houseColor};margin-bottom:6px;">${esc(s.house||'Unassigned')}</div>
+           <select class="house-select" onchange="assignHouse(this,'${esc(s.email)}')">
              <option ${s.house==='Air'?'selected':''}>Air</option>
              <option ${s.house==='Earth'?'selected':''}>Earth</option>
              <option ${s.house==='Water'?'selected':''}>Water</option>
@@ -7374,9 +7255,23 @@ function renderStudents() {
              <option ${s.house==='Unassigned'?'selected':''}>Unassigned</option>
            </select></td>`;
 
+      const settingsCell = s.isAdmin
+        ? `<td><span style="font-size:11px;color:var(--muted);">Owner controls are for student records.</span></td>`
+        : `<td>
+            <div class="owner-edit-grid">
+              <input class="fb-input owner-student-name" value="${esc(s.name||'')}" placeholder="Student name" style="margin-bottom:0;font-size:12px;" />
+              <input class="fb-input owner-student-email" value="${esc(s.email)}" placeholder="Student email" style="margin-bottom:0;font-size:12px;" />
+            </div>
+            <div class="owner-action-row" style="margin-top:8px;">
+              <button class="btn-outline" data-owner-save="${esc(s.email)}" style="font-size:11px;padding:5px 10px;">Save</button>
+              <button class="btn-outline" data-owner-reset="${esc(s.email)}" style="font-size:11px;padding:5px 10px;">Send password reset</button>
+            </div>
+            <div class="owner-mini-note">Email edits update Student Hub data. Auth email/password changes need reset email or server admin tools.</div>
+          </td>`;
+
       const actionCell = s.isAdmin
         ? `<td><span style="font-size:11px;color:var(--muted);">Manage in Roles</span></td>`
-        : `<td><button class="btn-danger" data-email="${esc(s.email)}">Remove</button></td>`;
+        : `<td><button class="btn-danger" data-owner-remove="${esc(s.email)}">Remove student</button></td>`;
 
       const joinedDate = s.isAdmin ? '' : `<div style="font-size:11px;color:var(--muted);">Joined ${esc(s.joinedAt?.toDate?.()?.toLocaleDateString() || s.joinedAt || 'Recently')}</div>`;
 
@@ -7385,10 +7280,13 @@ function renderStudents() {
         <td style="color:var(--muted);font-size:12px;">${esc(s.email)}</td>
         <td>${badge(s.roleKey)}</td>
         ${houseCell}
+        ${settingsCell}
         ${actionCell}`;
 
       if (!s.isAdmin) {
-        row.querySelector('.btn-danger')?.addEventListener('click', () => removeStudent(s.email));
+        row.querySelector('[data-owner-save]')?.addEventListener('click', () => ownerSaveStudent(row, s.email));
+        row.querySelector('[data-owner-reset]')?.addEventListener('click', () => ownerSendPasswordReset(row));
+        row.querySelector('[data-owner-remove]')?.addEventListener('click', () => removeStudent(s.email));
       }
       tbody.appendChild(row);
     });
@@ -7402,17 +7300,61 @@ function renderStudents() {
 }
 
 function assignHouse(sel, email) {
+  if (!requireOwner('assignHouse')) {
+    sel.value = sel.dataset.previousValue || sel.value;
+    return;
+  }
+  sel.dataset.previousValue = sel.value;
   saveStudent({email: email.toLowerCase(), house: sel.value}).then(() => {
     renderStudents();
     toast(email.split('@')[0] + ' → ' + sel.value);
-  });
+  }).catch(e => toast(e.message || 'Could not update house.'));
+}
+
+function ownerReadStudentRow(row) {
+  const name = row.querySelector('.owner-student-name')?.value.trim() || '';
+  const email = row.querySelector('.owner-student-email')?.value.trim().toLowerCase() || '';
+  const house = row.querySelector('.house-select')?.value || row.dataset.house || 'Unassigned';
+  return { name, email, house };
+}
+
+function ownerSaveStudent(row, oldEmail) {
+  if (!requireOwner('ownerSaveStudent')) return;
+  const next = ownerReadStudentRow(row);
+  if (!next.name) { toast('Enter a student name.'); return; }
+  if (!isValidEmail(next.email)) { toast('Enter a valid email.'); return; }
+  saveStudent({
+    email: next.email,
+    name: next.name,
+    house: next.house,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, oldEmail).then(() => {
+    renderStudents();
+    toast('Student settings saved.');
+  }).catch(e => toast(e.message || 'Could not save student.'));
+}
+
+function ownerSendPasswordReset(row) {
+  if (!requireOwner('ownerSendPasswordReset')) return;
+  const { email } = ownerReadStudentRow(row);
+  if (!isValidEmail(email)) { toast('Enter a valid email first.'); return; }
+  auth.sendPasswordResetEmail(email)
+    .then(() => toast('Password reset email sent.'))
+    .catch(e => toast(e.message || 'Could not send reset email.'));
 }
 
 function removeStudent(email) {
-  deleteStudent(email).then(() => {
+  if (!requireOwner('removeStudent')) return;
+  if (!confirm(`Remove ${email} and delete related Student Hub data?`)) return;
+  deleteStudent(email).then(result => {
     renderStudents();
-    toast('Student removed.');
-  });
+    updateMgrDashboard();
+    if (result?.failed) {
+      toast(`Student removed. ${result.failed} related cleanup item(s) may need owner Firestore rules.`);
+    } else {
+      toast('Student removed and related data cleaned.');
+    }
+  }).catch(e => toast(e.message || 'Could not remove student.'));
 }
 
 function filterStudents(q) {
