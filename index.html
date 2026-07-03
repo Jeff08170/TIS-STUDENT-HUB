@@ -3529,7 +3529,7 @@ empathy - understanding another person's feelings</textarea>
     </div>
     <div class="simple-section-grid">
       <div class="simple-panel">
-        <div class="simple-panel-title">Today</div>
+        <div class="simple-panel-title">Weekly menu</div>
         <div class="simple-panel-copy" id="lunch-menu-display">Loading lunch menu...</div>
       </div>
       <div class="simple-panel">
@@ -3543,7 +3543,16 @@ empathy - understanding another person's feelings</textarea>
         Modify lunch menu
       </div>
       <label class="fb-label">Lunch menu</label>
-      <textarea class="fb-input" id="lunch-menu-input" rows="5" placeholder="e.g. Monday: Fried rice, soup, fruit&#10;Tuesday: Pasta, salad, juice..." style="resize:vertical;"></textarea>
+      <div id="lunch-day-inputs" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <div style="display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center;"><span style="font-size:12px;color:var(--muted);">1 Monday</span><input class="fb-input lunch-day-input" id="lunch-day-1" placeholder="Ex, Ex, Ex" style="margin-bottom:0;" /></div>
+        <div style="display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center;"><span style="font-size:12px;color:var(--muted);">2 Tuesday</span><input class="fb-input lunch-day-input" id="lunch-day-2" placeholder="Ex, Ex, Ex" style="margin-bottom:0;" /></div>
+        <div style="display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center;"><span style="font-size:12px;color:var(--muted);">3 Wednesday</span><input class="fb-input lunch-day-input" id="lunch-day-3" placeholder="Ex, Ex, Ex" style="margin-bottom:0;" /></div>
+        <div style="display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center;"><span style="font-size:12px;color:var(--muted);">4 Thursday</span><input class="fb-input lunch-day-input" id="lunch-day-4" placeholder="Ex, Ex, Ex" style="margin-bottom:0;" /></div>
+        <div style="display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center;"><span style="font-size:12px;color:var(--muted);">5 Friday</span><input class="fb-input lunch-day-input" id="lunch-day-5" placeholder="Ex, Ex, Ex" style="margin-bottom:0;" /></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;margin-bottom:12px;line-height:1.6;">
+        1=Monday &nbsp; 2=Tuesday &nbsp; 3=Wednesday &nbsp; 4=Thursday &nbsp; 5=Friday
+      </div>
       <label class="fb-label">Notes</label>
       <textarea class="fb-input" id="lunch-notes-input" rows="3" placeholder="Allergy reminders, serving notes, or special lunch updates..." style="resize:vertical;"></textarea>
       <button class="btn-primary" onclick="saveLunchMenu()">Save lunch menu</button>
@@ -5859,21 +5868,69 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── LUNCH PAGE ───────────────────────────────────────────────────────────
+const LUNCH_DAY_LABELS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+
 function lunchText(value, emptyText) {
   const clean = (value || '').trim();
   return clean ? esc(clean).replace(/\n/g, '<br>') : emptyText;
+}
+
+function parseLunchMenuDays(menu) {
+  const days = ['', '', '', '', ''];
+  const leftovers = [];
+  (menu || '').split(/\n+/).forEach(line => {
+    const clean = line.trim();
+    if (!clean) return;
+    const numbered = clean.match(/^([1-5])\s*[\.\):\-]\s*(.*)$/);
+    if (numbered) {
+      days[Number(numbered[1]) - 1] = numbered[2].trim();
+      return;
+    }
+    const named = clean.match(/^(monday|tuesday|wednesday|thursday|friday)\s*[:\-]\s*(.*)$/i);
+    if (named) {
+      const idx = LUNCH_DAY_LABELS.map(d => d.toLowerCase()).indexOf(named[1].toLowerCase());
+      if (idx >= 0) days[idx] = named[2].trim();
+      return;
+    }
+    leftovers.push(clean);
+  });
+  if (days.every(v => !v) && leftovers.length) days[0] = leftovers.join('\n');
+  return days;
+}
+
+function buildLunchMenuFromInputs() {
+  const days = LUNCH_DAY_LABELS.map((_, i) => (document.getElementById(`lunch-day-${i + 1}`)?.value || '').trim());
+  const hasMenu = days.some(Boolean);
+  return {
+    days,
+    menu: hasMenu ? days.map((value, index) => `${index + 1}. ${value || '-'}`).join('\n') : ''
+  };
+}
+
+function lunchDayKeyHtml() {
+  return '<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:10px;font-size:11px;color:var(--muted);line-height:1.7;">1=Monday<br>2=Tuesday<br>3=Wednesday<br>4=Thursday<br>5=Friday</div>';
+}
+
+function lunchMenuDisplayHtml(menu) {
+  const clean = (menu || '').trim();
+  return clean
+    ? `<div style="white-space:pre-wrap;">${esc(clean)}</div>${lunchDayKeyHtml()}`
+    : 'Lunch menu has not been posted yet.';
 }
 
 function renderLunchMenu(data = _lunchMenu) {
   const display = document.getElementById('lunch-menu-display');
   const notes = document.getElementById('lunch-notes-display');
   const badge = document.getElementById('lunch-updated-badge');
-  const menuInput = document.getElementById('lunch-menu-input');
   const notesInput = document.getElementById('lunch-notes-input');
   const panel = document.getElementById('lunch-edit-panel');
-  if (display) display.innerHTML = lunchText(data.menu, 'Lunch menu has not been posted yet.');
+  const dayValues = Array.isArray(data.days) && data.days.length === 5 ? data.days : parseLunchMenuDays(data.menu);
+  if (display) display.innerHTML = lunchMenuDisplayHtml(data.menu);
   if (notes) notes.innerHTML = lunchText(data.notes, 'No lunch notes right now.');
-  if (menuInput) menuInput.value = data.menu || '';
+  dayValues.forEach((value, index) => {
+    const input = document.getElementById(`lunch-day-${index + 1}`);
+    if (input) input.value = value || '';
+  });
   if (notesInput) notesInput.value = data.notes || '';
   if (panel) panel.style.display = isAdminOrAbove(window.currentUserEmail) ? '' : 'none';
   if (badge) {
@@ -5889,13 +5946,13 @@ async function loadLunchPage() {
 
 async function saveLunchMenu() {
   if (!requireAdminPlus('saveLunchMenu')) return;
-  const menu = (document.getElementById('lunch-menu-input')?.value || '').trim();
+  const { menu, days } = buildLunchMenuFromInputs();
   const notes = (document.getElementById('lunch-notes-input')?.value || '').trim();
   const status = document.getElementById('lunch-edit-status');
   if (status) status.textContent = 'Saving...';
   try {
-    await saveLunchMenuDB({ menu, notes });
-    _lunchMenu = { menu, notes, updatedAt: { toDate: () => new Date() }, updatedBy: window.currentUserName || window.currentUserEmail || 'Admin' };
+    await saveLunchMenuDB({ menu, days, notes });
+    _lunchMenu = { menu, days, notes, updatedAt: { toDate: () => new Date() }, updatedBy: window.currentUserName || window.currentUserEmail || 'Admin' };
     renderLunchMenu(_lunchMenu);
     if (status) status.textContent = 'Saved.';
     toast('Lunch menu updated.');
