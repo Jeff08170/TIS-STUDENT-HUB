@@ -2609,6 +2609,54 @@ body::before{
   border-radius:30px;
 }
 
+/* Student dashboard hero: simple utility header, no geometry or slogan. */
+.quest-hero{
+  min-height:0;
+  padding:30px;
+  margin:0 0 24px;
+  border:1px solid var(--border);
+  border-radius:30px;
+  background:var(--panel-bg)!important;
+  box-shadow:none!important;
+  overflow:hidden;
+}
+.quest-hero::before,
+.quest-hero::after{
+  display:none!important;
+  content:none!important;
+}
+.quest-hero-content{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:0;
+}
+.quest-hero-content > div:first-child{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:flex-start!important;
+  flex-wrap:wrap!important;
+  gap:16px!important;
+  margin-bottom:20px!important;
+}
+.quest-greeting,
+.quest-hero .quest-greeting{
+  font-size:clamp(34px,4vw,54px);
+  line-height:1.06;
+  text-transform:none;
+  margin:0 0 8px;
+}
+.quest-sub{
+  margin:0;
+  font-size:15px;
+}
+.level-badge{
+  margin-top:4px;
+}
+.quest-stats-row{
+  margin-top:0;
+}
+
 @media (max-width: 980px){
   .sidebar{
     height:auto;
@@ -2682,6 +2730,214 @@ body::before{
   .g4,
   .g4-stat,
   .g2-fb{grid-template-columns:1fr;}
+}
+
+@media (max-width: 980px){
+  .quest-hero{
+    min-height:0;
+    padding:24px;
+  }
+  .quest-hero-content{
+    width:100%;
+    margin:0;
+    padding:0;
+  }
+}
+
+/* Flash Cards / Resources */
+.flash-builder-grid{
+  display:grid;
+  grid-template-columns:minmax(280px,0.95fr) minmax(320px,1.05fr);
+  gap:18px;
+  align-items:start;
+}
+.flash-toolbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:4px;
+}
+.flash-hint{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.55;
+  margin:8px 0 14px;
+}
+.flash-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:14px 0 0;
+}
+.flash-summary-item{
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--surface2);
+  padding:10px;
+}
+.flash-summary-num{
+  font-size:20px;
+  font-weight:850;
+  color:var(--text);
+}
+.flash-summary-label{
+  font-size:10px;
+  color:var(--muted);
+  font-weight:800;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.flash-card-stage{
+  min-height:320px;
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+}
+.study-card{
+  width:min(100%,520px);
+  min-height:300px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--surface2);
+  cursor:pointer;
+  perspective:1200px;
+}
+.study-card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  min-height:300px;
+  transition:transform 0.38s ease;
+  transform-style:preserve-3d;
+}
+.study-card.flipped .study-card-inner{transform:rotateY(180deg);}
+.study-card-face{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:24px;
+  padding:24px;
+  backface-visibility:hidden;
+}
+.study-card-back{transform:rotateY(180deg);}
+.study-card-kicker{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:850;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.study-card-term{
+  font-size:34px;
+  line-height:1.08;
+  font-weight:900;
+  color:var(--text);
+  overflow-wrap:anywhere;
+}
+.study-card-definition{
+  font-size:22px;
+  line-height:1.25;
+  font-weight:800;
+  color:var(--text);
+  overflow-wrap:anywhere;
+}
+.study-card-note{
+  font-size:12px;
+  color:var(--muted);
+}
+.flash-deck-controls{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-top:12px;
+}
+.flash-progress{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+.match-board{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.match-option{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--surface2);
+  color:var(--text);
+  font:inherit;
+  font-size:13px;
+  font-weight:750;
+  cursor:pointer;
+  transition:background 0.15s,border-color 0.15s,transform 0.15s;
+  overflow-wrap:anywhere;
+}
+.match-option:hover{
+  transform:translateY(-1px);
+  border-color:var(--primary);
+}
+.match-option.selected{
+  background:var(--primary-soft);
+  border-color:var(--primary);
+}
+.match-option.matched{
+  background:var(--earth);
+  border-color:var(--earth-deep);
+  color:var(--earth-text);
+  cursor:default;
+}
+.match-option.miss{
+  background:var(--fire);
+  border-color:var(--fire-deep);
+  color:var(--fire-text);
+}
+.simple-section-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.simple-panel{
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--surface);
+  padding:18px;
+}
+.simple-panel-title{
+  font-size:15px;
+  font-weight:850;
+  margin-bottom:6px;
+}
+.simple-panel-copy{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+@media (max-width: 920px){
+  .flash-builder-grid,
+  .simple-section-grid{
+    grid-template-columns:1fr;
+  }
+}
+@media (max-width: 560px){
+  .flash-summary,
+  .match-board{
+    grid-template-columns:1fr;
+  }
+  .study-card-term{font-size:28px;}
+  .study-card-definition{font-size:20px;}
+  .flash-deck-controls{flex-wrap:wrap;}
 }
 </style>
 </head>
@@ -3124,126 +3380,90 @@ body::before{
 
   <div id="nav-student">
     <div class="nav-section">
-      <div class="nav-label">Menu</div>
-      <button class="nav-item active" onclick="showPage('dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-grid"/></svg>Dashboard
+      <div class="nav-label">Student Hub</div>
+      <button class="nav-item active" onclick="showPage('flashcards',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-list"/></svg>Flash Cards (Resources)
+      </button>
+      <button class="nav-item" onclick="showPage('lunch',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Lunch
+      </button>
+      <button class="nav-item" onclick="showPage('calendar',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-clock"/></svg>Calendar
+      </button>
+      <button class="nav-item" onclick="showPage('houses',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>House
       </button>
       <button class="nav-item" onclick="showPage('announcements',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
-        <span class="nav-badge">3</span>
-      </button>
-      <button class="nav-item" onclick="showPage('voting',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Voting
       </button>
       <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
-      <button class="nav-item" id="nav-ranking-btn" onclick="showPage('ranking',this)" style="display:none;">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-list"/></svg>Rankings
+      <button class="nav-item" onclick="showPage('ai',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagles AI
       </button>
-      <button class="nav-item" id="nav-board-btn" onclick="showPage('board',this)" style="display:none;">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
-      </button>
-    </div>
-    <div class="nav-section" id="nav-section-houses">
-      <div class="nav-label">My House</div>
-      <button class="nav-item" onclick="showPage('houses',this)"><svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>My House</button>
-    </div>
-    <div class="nav-section" id="nav-section-rewards">
-      <div class="nav-label">Rewards</div>
-      <button class="nav-item" onclick="showPage('rewards',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
-      </button>
-    </div>
-    <div class="nav-section" id="nav-section-ai-student">
-      <div class="nav-label">AI</div>
-      <button class="nav-item" id="nav-ai-btn" onclick="showPage('ai',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
+      <button class="nav-item" onclick="showPage('warm-languages',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
   </div>
 
-  <!-- Teacher nav (subset of manager nav) -->
   <div id="nav-teacher" style="display:none;">
     <div class="nav-section">
-      <div class="nav-label">Manage</div>
-      <button class="nav-item" onclick="showPage('mgr-announcements',this)">
+      <div class="nav-label">Student Hub</div>
+      <button class="nav-item active" onclick="showPage('flashcards',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-list"/></svg>Flash Cards (Resources)
+      </button>
+      <button class="nav-item" onclick="showPage('lunch',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Lunch
+      </button>
+      <button class="nav-item" onclick="showPage('calendar',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-clock"/></svg>Calendar
+      </button>
+      <button class="nav-item" onclick="showPage('houses',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>House
+      </button>
+      <button class="nav-item" onclick="showPage('announcements',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
       </button>
-      <button class="nav-item" onclick="showPage('mgr-voting',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls & Voting
-      </button>
-      <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
+      <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Rewards</div>
-      <button class="nav-item" id="nav-teacher-rewards-btn" onclick="showPage('mgr-rewards',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
-      </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Preview</div>
-      <button class="nav-item" onclick="showPage('dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
-      </button>
-      <button class="nav-item" id="nav-teacher-board-btn" onclick="showPage('board',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
-      </button>
-    </div>
-    <div class="nav-section" id="nav-section-ai-teacher">
-      <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
+        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagles AI
+      </button>
+      <button class="nav-item" onclick="showPage('warm-languages',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
   </div>
 
   <div id="nav-manager" style="display:none;">
     <div class="nav-section">
-      <div class="nav-label">Overview</div>
-      <button class="nav-item active" onclick="showPage('mgr-dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-grid"/></svg>Dashboard
+      <div class="nav-label">Student Hub</div>
+      <button class="nav-item active" onclick="showPage('flashcards',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-list"/></svg>Flash Cards (Resources)
       </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Manage</div>
-      <button class="nav-item" onclick="showPage('mgr-announcements',this)">
+      <button class="nav-item" onclick="showPage('lunch',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Lunch
+      </button>
+      <button class="nav-item" onclick="showPage('calendar',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-clock"/></svg>Calendar
+      </button>
+      <button class="nav-item" onclick="showPage('houses',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>House
+      </button>
+      <button class="nav-item" onclick="showPage('announcements',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-bell"/></svg>Announcements
       </button>
-      <button class="nav-item" onclick="showPage('mgr-voting',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-check"/></svg>Polls & Voting
-      </button>
-      <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
+      <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
-      <button class="nav-item" onclick="showPage('mgr-houses',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-star"/></svg>Houses & Points
-      </button>
-      <button class="nav-item" onclick="showPage('mgr-students',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Students
-      </button>
-      <button class="nav-item" onclick="showPage('mgr-rewards',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-gift"/></svg>Rewards
-      </button>
-      <button class="nav-item" id="nav-admins-btn" onclick="showPage('mgr-admins',this)" style="display:none;">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-shield"/></svg>Manage Roles
-      </button>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Preview</div>
-      <button class="nav-item" onclick="showPage('dashboard',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-eye"/></svg>Student View
-      </button>
-      <button class="nav-item" id="nav-admin-board-btn" onclick="showPage('board',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Community
-      </button>
-    </div>
-    <div class="nav-section" id="nav-section-ai-admin">
-      <div class="nav-label">AI</div>
       <button class="nav-item" onclick="showPage('ai',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagle AI
+        <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagles AI
+      </button>
+      <button class="nav-item" onclick="showPage('warm-languages',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
   </div>
@@ -3272,15 +3492,14 @@ body::before{
 <main class="main">
 
   <!-- Student: Dashboard -->
-  <div id="page-dashboard" class="page active">
+  <div id="page-dashboard" class="page">
     <!-- Quest Hero Banner -->
     <div class="quest-hero">
       <div class="quest-hero-content">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
           <div>
-            <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;opacity:0.8;margin-bottom:4px;">TIS Student Hub | Learn. Connect. Grow.</div>
-            <h1 class="quest-greeting" id="dash-greeting">Elevate your learning</h1>
-            <div class="quest-sub" id="dash-date">Announcements, house points, rewards, and Eagle AI in one place.</div>
+            <h1 class="quest-greeting" id="dash-greeting">Good morning!</h1>
+            <div class="quest-sub" id="dash-date"></div>
           </div>
           <div class="level-badge" id="dash-level-badge">
             <span class="level-badge-icon"><svg width="14" height="14" fill="currentColor"><use href="#px-star"/></svg></span>
@@ -3387,6 +3606,120 @@ body::before{
         <div class="team-name" style="color:#111;">Fire</div>
         <div class="team-pts" id="dash-pts-fire" style="color:#111;">—</div>
         <div class="team-pts-label" style="color:#222;">XP earned</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Cards / Resources -->
+  <div id="page-flashcards" class="page active">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Flash Cards (Resources)</h1>
+        <p class="page-sub">Build a study deck or matching game from vocab</p>
+      </div>
+      <span class="hdr-badge" id="flash-count-badge">0 cards</span>
+    </div>
+
+    <div class="flash-builder-grid">
+      <div class="card">
+        <div class="section-label">Vocab input</div>
+        <div class="flash-hint">Use one pair per line. Examples: word - meaning, word: meaning, or word = meaning.</div>
+        <textarea class="fb-input" id="flash-input" style="min-height:240px;" spellcheck="false">benevolent - kind and generous
+resilient - able to recover quickly
+meticulous - very careful and detailed
+ambiguous - having more than one meaning
+concise - short and clear
+empathy - understanding another person's feelings</textarea>
+        <div class="flash-toolbar">
+          <button class="btn-primary" onclick="buildFlashcards()">Build flashcards</button>
+          <button class="btn-outline" onclick="clearFlashcards()">Clear</button>
+        </div>
+        <div class="flash-summary">
+          <div class="flash-summary-item">
+            <div class="flash-summary-num" id="flash-total">0</div>
+            <div class="flash-summary-label">Cards</div>
+          </div>
+          <div class="flash-summary-item">
+            <div class="flash-summary-num" id="flash-match-total">0</div>
+            <div class="flash-summary-label">Matches</div>
+          </div>
+          <div class="flash-summary-item">
+            <div class="flash-summary-num" id="flash-current">0</div>
+            <div class="flash-summary-label">Current</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Flashcard deck</div>
+        <div class="flash-card-stage" id="flash-card-stage">
+          <div class="study-card" onclick="flipFlashcard()">
+            <div class="study-card-inner">
+              <div class="study-card-face study-card-front">
+                <div class="study-card-kicker">Front</div>
+                <div class="study-card-term">Add vocab</div>
+                <div class="study-card-note">Build your deck to start studying.</div>
+              </div>
+              <div class="study-card-face study-card-back">
+                <div class="study-card-kicker">Back</div>
+                <div class="study-card-definition">Meanings will appear here.</div>
+                <div class="study-card-note">Tap the card to flip.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flash-deck-controls">
+          <button class="btn-outline" onclick="prevFlashcard()">Previous</button>
+          <div class="flash-progress" id="flash-progress">No deck yet</div>
+          <button class="btn-outline" onclick="nextFlashcard()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div class="section-label">Matching system</div>
+          <div class="flash-hint" style="margin-bottom:0;">Match each word with its meaning using the same vocab set.</div>
+        </div>
+        <button class="btn-outline" onclick="resetMatchingGame()">Shuffle</button>
+      </div>
+      <div class="match-board" id="match-board">
+        <div class="simple-panel-copy">Build flashcards to create a matching game.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lunch -->
+  <div id="page-lunch" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Lunch</h1><p class="page-sub">School lunch information</p></div>
+    </div>
+    <div class="simple-section-grid">
+      <div class="simple-panel">
+        <div class="simple-panel-title">Today</div>
+        <div class="simple-panel-copy">Lunch details can be placed here when the menu is ready.</div>
+      </div>
+      <div class="simple-panel">
+        <div class="simple-panel-title">Notes</div>
+        <div class="simple-panel-copy">Lunch notes and reminders can be added here next.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar -->
+  <div id="page-calendar" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Calendar</h1><p class="page-sub">Upcoming school dates</p></div>
+    </div>
+    <div class="simple-section-grid">
+      <div class="simple-panel">
+        <div class="simple-panel-title">This week</div>
+        <div class="simple-panel-copy">Calendar items can be added here next.</div>
+      </div>
+      <div class="simple-panel">
+        <div class="simple-panel-title">Important dates</div>
+        <div class="simple-panel-copy">A simple event list or month view can be built into this space.</div>
       </div>
     </div>
   </div>
@@ -4274,8 +4607,8 @@ body::before{
   <div id="page-ai" class="page">
     <div class="page-header">
       <div>
-        <h1 class="page-title">Eagle AI</h1>
-        <p class="page-sub">Announcements · Lunch menu · Waimai recommendations</p>
+        <h1 class="page-title">Eagles AI</h1>
+        <p class="page-sub">Study help and school information</p>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <button class="ai-clear-btn" onclick="aiClearChat()">Clear chat</button>
@@ -4290,8 +4623,8 @@ body::before{
           <div class="ai-bubble-row">
             <div class="ai-avatar"><svg width="18" height="18" fill="white"><use href="#px-robot"/></svg></div>
             <div class="ai-bubble bot">
-              Hi! I'm <strong>Eagle AI</strong>, your TIS Eagles study assistant.<br>
-              Ask me anything — school info, lunch menu, tips, or general questions. I'm here to help!
+              Hi! I'm <strong>Eagles AI</strong>, your TIS Eagles study assistant.<br>
+              Ask me about school info, study ideas, or general questions.
             </div>
           </div>
         </div>
@@ -4305,7 +4638,7 @@ body::before{
             class="ai-input"
             id="ai-input"
             rows="1"
-            placeholder="Ask Eagle AI anything…"
+            placeholder="Ask Eagles AI anything..."
             onkeydown="aiHandleKey(event)"
             oninput="aiAutoResize(this)"
           ></textarea>
@@ -4313,6 +4646,23 @@ body::before{
             <svg width="18" height="18" fill="white"><use href="#px-send"/></svg>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warm Languages -->
+  <div id="page-warm-languages" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Warm Languages</h1><p class="page-sub">Kind phrases and helpful wording</p></div>
+    </div>
+    <div class="simple-section-grid">
+      <div class="simple-panel">
+        <div class="simple-panel-title">Sentence starters</div>
+        <div class="simple-panel-copy">This can become a bank of warm, respectful sentence starters for feedback, messages, and classroom conversations.</div>
+      </div>
+      <div class="simple-panel">
+        <div class="simple-panel-title">Tone practice</div>
+        <div class="simple-panel-copy">A future version can turn rough wording into clearer and kinder language.</div>
       </div>
     </div>
   </div>
@@ -4961,14 +5311,15 @@ function handleLogin(account) {
     document.getElementById('user-avatar').style.background = isOwner ? '#7c3aed' : '#C04A10';
     document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
     if (isHead) {
-      document.getElementById('nav-admins-btn').style.display = '';
+      const adminNavBtn = document.getElementById('nav-admins-btn');
+      if (adminNavBtn) adminNavBtn.style.display = '';
       renderAdminList();
       renderHouseLeaders();
       // Head admins get full control — show log section too
       const logSection = document.getElementById('log-mgmt-section');
       if (logSection) logSection.style.display = '';
     }
-    showPage('mgr-dashboard', null);
+    showPage('flashcards', document.querySelector('#nav-manager .nav-item'));
     // Load all data fresh from Firebase on login
     updateMgrDashboard();
     renderStudents();
@@ -4984,7 +5335,7 @@ function handleLogin(account) {
     document.getElementById('user-role').textContent = 'Teacher · TIS Eagles';
     document.getElementById('user-avatar').style.background = '#1E4F8C';
     document.getElementById('mgr-greeting').textContent = greeting + ', ' + firstName + '!';
-    showPage('mgr-announcements', null);
+    showPage('flashcards', document.querySelector('#nav-teacher .nav-item'));
     loadAnnouncementsToMgr();
     loadPollsToMgr();
     loadFeedbacksToMgr();
@@ -5000,9 +5351,9 @@ function handleLogin(account) {
     document.getElementById('nav-manager').style.display = 'none';
     document.getElementById('nav-teacher').style.display = 'none';
     document.getElementById('user-avatar').style.background = '#1A6FA8';
-    document.getElementById('dash-greeting').textContent = 'Elevate your learning';
-    document.getElementById('dash-date').textContent = `${greeting}, ${firstName}. ${dateStr}`;
-    showPage('dashboard', null);
+    document.getElementById('dash-greeting').textContent = greeting + ', ' + firstName + '!';
+    document.getElementById('dash-date').textContent = dateStr;
+    showPage('flashcards', document.querySelector('#nav-student .nav-item'));
     loadAnnouncementsToStudent();
     loadStudentHousePoints();
     loadDashboardPollPreview(email);
@@ -5067,7 +5418,7 @@ function handleLogin(account) {
 
 // ── SECURITY ──
 const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
-const STUDENT_PAGES = ['dashboard','announcements','voting','feedbacks','houses','rewards','ranking','board','ai'];
+const STUDENT_PAGES = ['flashcards','lunch','calendar','houses','announcements','feedbacks','ai','warm-languages'];
 // Teachers get the manager subset they're allowed to moderate PLUS the AI tab
 // PLUS the full student preview (so the "Student View" button actually works
 // and they can navigate around the student-facing pages).
@@ -5156,6 +5507,10 @@ function showPage(id, btn) {
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+
+  if (id === 'flashcards') {
+    ensureFlashcardsReady();
+  }
 
   // Reload Firebase data when switching to each page
   if (!db) return;
@@ -5278,6 +5633,251 @@ function showPage(id, btn) {
       break;
   }
 }
+
+// ── FLASH CARDS / RESOURCES ──────────────────────────────────────────────
+let flashcards = [];
+let flashIndex = 0;
+let flashFlipped = false;
+let matchSelection = null;
+let matchedPairs = new Set();
+
+function parseFlashcardLine(line) {
+  const trimmed = (line || '').trim();
+  if (!trimmed) return null;
+
+  const spaced = trimmed.match(/^(.+?)\s+[-:=]\s+(.+)$/);
+  if (spaced) return { term: spaced[1].trim(), definition: spaced[2].trim() };
+
+  const tabIndex = trimmed.indexOf('\t');
+  if (tabIndex > 0) {
+    return {
+      term: trimmed.slice(0, tabIndex).trim(),
+      definition: trimmed.slice(tabIndex + 1).trim()
+    };
+  }
+
+  const colonIndex = trimmed.indexOf(':');
+  if (colonIndex > 0) {
+    return {
+      term: trimmed.slice(0, colonIndex).trim(),
+      definition: trimmed.slice(colonIndex + 1).trim()
+    };
+  }
+
+  const equalIndex = trimmed.indexOf('=');
+  if (equalIndex > 0) {
+    return {
+      term: trimmed.slice(0, equalIndex).trim(),
+      definition: trimmed.slice(equalIndex + 1).trim()
+    };
+  }
+
+  return null;
+}
+
+function ensureFlashcardsReady() {
+  if (flashcards.length === 0) buildFlashcards({ silent: true });
+  else {
+    renderFlashcardDeck();
+    renderFlashcardStats();
+  }
+}
+
+function buildFlashcards(options = {}) {
+  const input = document.getElementById('flash-input');
+  if (!input) return;
+  const parsed = input.value
+    .split(/\r?\n/)
+    .map(parseFlashcardLine)
+    .filter(card => card && card.term && card.definition);
+
+  flashcards = parsed.map((card, index) => ({ ...card, id: index }));
+  flashIndex = 0;
+  flashFlipped = false;
+  renderFlashcardDeck();
+  resetMatchingGame();
+  renderFlashcardStats();
+
+  if (!options.silent) {
+    toast(flashcards.length ? `Built ${flashcards.length} flashcards.` : 'Add vocab pairs first.');
+  }
+}
+
+function clearFlashcards() {
+  const input = document.getElementById('flash-input');
+  if (input) input.value = '';
+  flashcards = [];
+  flashIndex = 0;
+  flashFlipped = false;
+  matchSelection = null;
+  matchedPairs = new Set();
+  renderFlashcardDeck();
+  renderMatchingEmpty('Build flashcards to create a matching game.');
+  renderFlashcardStats();
+}
+
+function renderFlashcardStats() {
+  const matchTotal = Math.min(flashcards.length, 8);
+  const totalEl = document.getElementById('flash-total');
+  const matchEl = document.getElementById('flash-match-total');
+  const currentEl = document.getElementById('flash-current');
+  const badge = document.getElementById('flash-count-badge');
+  if (totalEl) totalEl.textContent = flashcards.length;
+  if (matchEl) matchEl.textContent = matchTotal;
+  if (currentEl) currentEl.textContent = flashcards.length ? flashIndex + 1 : 0;
+  if (badge) badge.textContent = `${flashcards.length} ${flashcards.length === 1 ? 'card' : 'cards'}`;
+}
+
+function renderFlashcardDeck() {
+  const stage = document.getElementById('flash-card-stage');
+  const progress = document.getElementById('flash-progress');
+  if (!stage) return;
+
+  if (flashcards.length === 0) {
+    stage.innerHTML = `
+      <div class="study-card">
+        <div class="study-card-inner">
+          <div class="study-card-face study-card-front">
+            <div class="study-card-kicker">Front</div>
+            <div class="study-card-term">Add vocab</div>
+            <div class="study-card-note">Build your deck to start studying.</div>
+          </div>
+          <div class="study-card-face study-card-back">
+            <div class="study-card-kicker">Back</div>
+            <div class="study-card-definition">Meanings will appear here.</div>
+            <div class="study-card-note">Tap the card to flip.</div>
+          </div>
+        </div>
+      </div>`;
+    if (progress) progress.textContent = 'No deck yet';
+    return;
+  }
+
+  const card = flashcards[flashIndex];
+  stage.innerHTML = `
+    <div class="study-card ${flashFlipped ? 'flipped' : ''}" onclick="flipFlashcard()">
+      <div class="study-card-inner">
+        <div class="study-card-face study-card-front">
+          <div class="study-card-kicker">Front</div>
+          <div class="study-card-term">${esc(card.term)}</div>
+          <div class="study-card-note">Tap to reveal the meaning.</div>
+        </div>
+        <div class="study-card-face study-card-back">
+          <div class="study-card-kicker">Back</div>
+          <div class="study-card-definition">${esc(card.definition)}</div>
+          <div class="study-card-note">Tap to return to the word.</div>
+        </div>
+      </div>
+    </div>`;
+  if (progress) progress.textContent = `${flashIndex + 1} of ${flashcards.length}`;
+}
+
+function flipFlashcard() {
+  if (flashcards.length === 0) return;
+  flashFlipped = !flashFlipped;
+  renderFlashcardDeck();
+}
+
+function nextFlashcard() {
+  if (flashcards.length === 0) return;
+  flashIndex = (flashIndex + 1) % flashcards.length;
+  flashFlipped = false;
+  renderFlashcardDeck();
+  renderFlashcardStats();
+}
+
+function prevFlashcard() {
+  if (flashcards.length === 0) return;
+  flashIndex = (flashIndex - 1 + flashcards.length) % flashcards.length;
+  flashFlipped = false;
+  renderFlashcardDeck();
+  renderFlashcardStats();
+}
+
+function shuffleFlashItems(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function renderMatchingEmpty(message) {
+  const board = document.getElementById('match-board');
+  if (board) board.innerHTML = `<div class="simple-panel-copy">${esc(message)}</div>`;
+}
+
+function resetMatchingGame() {
+  const board = document.getElementById('match-board');
+  if (!board) return;
+  matchSelection = null;
+  matchedPairs = new Set();
+
+  if (flashcards.length === 0) {
+    renderMatchingEmpty('Build flashcards to create a matching game.');
+    renderFlashcardStats();
+    return;
+  }
+
+  const pairs = flashcards.slice(0, 8);
+  const options = [];
+  pairs.forEach((card, pairIndex) => {
+    options.push({ pair: pairIndex, kind: 'term', text: card.term });
+    options.push({ pair: pairIndex, kind: 'definition', text: card.definition });
+  });
+
+  board.innerHTML = shuffleFlashItems(options).map((item, index) => `
+    <button class="match-option" data-match-id="${index}" data-pair="${item.pair}" data-kind="${item.kind}" onclick="selectMatchOption(this)">
+      ${esc(item.text)}
+    </button>
+  `).join('');
+  renderFlashcardStats();
+}
+
+function selectMatchOption(btn) {
+  if (!btn || btn.classList.contains('matched')) return;
+
+  if (matchSelection === btn) {
+    btn.classList.remove('selected');
+    matchSelection = null;
+    return;
+  }
+
+  if (!matchSelection) {
+    btn.classList.add('selected');
+    matchSelection = btn;
+    return;
+  }
+
+  const first = matchSelection;
+  const isMatch = first.dataset.pair === btn.dataset.pair && first.dataset.kind !== btn.dataset.kind;
+  if (isMatch) {
+    first.classList.remove('selected');
+    btn.classList.remove('selected');
+    first.classList.add('matched');
+    btn.classList.add('matched');
+    matchedPairs.add(first.dataset.pair);
+    matchSelection = null;
+    if (matchedPairs.size === Math.min(flashcards.length, 8)) {
+      toast('Matching complete.');
+    }
+    return;
+  }
+
+  first.classList.remove('selected');
+  first.classList.add('miss');
+  btn.classList.add('miss');
+  matchSelection = null;
+  setTimeout(() => {
+    first.classList.remove('miss');
+    btn.classList.remove('miss');
+  }, 520);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('flash-input')) buildFlashcards({ silent: true });
+});
 
 // ── STUDENT HOUSE POINTS LOADER ──
 // ── GAMIFICATION HELPERS ──
@@ -6044,6 +6644,8 @@ async function loadFeatureFlags() {
     const doc = await db.collection('settings').doc('features').get();
     if (doc.exists) _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ...doc.data() };
   } catch(e) { console.warn('loadFeatureFlags:', e); }
+  _featureFlags.house = true;
+  _featureFlags.ai = true;
   applyFeatureFlags();
 }
 
@@ -6069,14 +6671,13 @@ function applyFeatureFlags() {
   // Community Board tab
   applyFlag('board', ['nav-board-btn'], 'ff-board');
 
-  // My House tab + nav section
-  applyFlag('house', ['nav-section-houses', 'page-houses'], 'ff-house');
+  // House and Eagles AI are fixed first-pass sidebar items.
+  applyFlag('house', [], 'ff-house');
 
   // Rewards tab + nav section + dashboard "Spin" shortcut card
   applyFlag('rewards', ['nav-section-rewards', 'page-rewards', 'dash-spin-shortcut'], 'ff-rewards');
 
-  // Eagle AI tab — all three nav sections (student / teacher / admin) + the page itself
-  applyFlag('ai', ['nav-section-ai-student', 'nav-section-ai-teacher', 'nav-section-ai-admin', 'page-ai'], 'ff-ai');
+  applyFlag('ai', [], 'ff-ai');
 
   // Levels & XP — topbar level, dashboard level badge, XP bar
   const levelsOn = !!_featureFlags.levels;
@@ -9154,8 +9755,8 @@ function aiClearChat() {
     <div class="ai-bubble-row">
       <div class="ai-avatar"><svg width="18" height="18" fill="white"><use href="#px-robot"/></svg></div>
       <div class="ai-bubble bot">
-        Hi! I'm <strong>Eagle AI</strong>, your TIS Eagles study assistant.<br>
-        Ask me anything — school info, lunch menu, tips, or general questions. I'm here to help!
+        Hi! I'm <strong>Eagles AI</strong>, your TIS Eagles study assistant.<br>
+        Ask me about school info, study ideas, or general questions.
       </div>
     </div>
   `;
