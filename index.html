@@ -617,28 +617,35 @@ textarea.fb-input{resize:vertical;min-height:90px;}
 .rank-bar{height:5px;background:var(--bg);border-radius:99px;overflow:hidden;}
 .rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary) 0%,#3B96E0 100%);border-radius:99px;}
 
-/* ── COMMUNITY BOARD ── */
-.board-composer{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.25rem;margin-bottom:1.25rem;}
-.board-composer-row{display:flex;gap:10px;align-items:flex-start;}
-.board-composer-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white;background:linear-gradient(135deg,var(--primary) 0%,#3B96E0 100%);}
-.board-composer-box{flex:1;border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);resize:vertical;min-height:70px;outline:none;transition:border-color 0.2s;width:100%;}
-.board-composer-box:focus{border-color:var(--primary);}
-.board-composer-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px;}
-.board-lvl-toggle{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;}
-.board-lvl-toggle input{accent-color:var(--primary);}
-.board-post{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.25rem;margin-bottom:10px;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;transition:box-shadow 0.2s;}
-.board-post:hover{box-shadow:0 4px 16px rgba(30,79,140,0.08);}
-.board-post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.board-post-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
-.board-post-meta{flex:1;min-width:0;}
-.board-post-name{font-size:13px;font-weight:600;color:var(--text);}
-.board-post-time{font-size:11px;color:var(--muted);}
-.board-post-body{font-size:13px;color:var(--text);line-height:1.6;word-break:break-word;}
-.board-post-footer{display:flex;align-items:center;gap:10px;margin-top:10px;}
-.board-like-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--border);transition:all 0.2s;}
-.board-like-btn:hover,.board-like-btn.liked{background:var(--primary-soft);color:var(--primary);border-color:var(--primary);}
-.board-delete-btn{margin-left:auto;font-size:11px;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:8px;border:none;background:transparent;transition:color 0.2s,background 0.2s;}
-.board-delete-btn:hover{color:var(--fire-deep);background:var(--fire);}
+/* ── DIRECT MESSAGES ── */
+.dm-shell{display:grid;grid-template-columns:minmax(230px,290px) 1fr;gap:14px;min-height:620px;}
+.dm-contacts,.dm-chat{background:var(--surface);border:1px solid var(--border);border-radius:8px;min-width:0;overflow:hidden;}
+.dm-contacts{display:flex;flex-direction:column;}
+.dm-search-wrap{padding:12px;border-bottom:1px solid var(--border);}
+.dm-contact-list{overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;}
+.dm-contact{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;background:transparent;color:var(--text);border-radius:8px;padding:10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s,border-color 0.15s;}
+.dm-contact:hover,.dm-contact.active{background:var(--bg);border-color:var(--border);}
+.dm-contact.active{box-shadow:inset 3px 0 0 var(--primary);}
+.dm-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0;}
+.dm-contact-main{flex:1;min-width:0;}
+.dm-contact-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dm-contact-meta,.dm-contact-last,.dm-chat-sub,.dm-bubble-meta{font-size:11px;color:var(--muted);}
+.dm-contact-last{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
+.dm-chat{display:flex;flex-direction:column;}
+.dm-chat-empty{height:100%;min-height:460px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:13px;padding:2rem;line-height:1.6;}
+.dm-chat-panel{height:100%;min-height:620px;display:flex;flex-direction:column;}
+.dm-chat-header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.dm-thread{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);}
+.dm-bubble-row{display:flex;justify-content:flex-start;}
+.dm-bubble-row.mine{justify-content:flex-end;}
+.dm-bubble{max-width:min(72%,520px);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:13px;line-height:1.5;color:var(--text);word-break:break-word;}
+.dm-bubble-row.mine .dm-bubble{background:var(--primary);border-color:var(--primary);color:white;}
+.dm-bubble-row.mine .dm-bubble-meta{color:rgba(255,255,255,0.76);}
+.dm-compose{display:flex;align-items:flex-end;gap:8px;padding:12px;border-top:1px solid var(--border);background:var(--surface);}
+.dm-input{flex:1;min-height:44px;max-height:120px;resize:vertical;margin-bottom:0;}
+.dm-count{font-size:11px;color:var(--muted);min-width:46px;text-align:right;}
+.dm-status{font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border);display:none;}
+.dm-status.is-visible{display:block;}
 
 /* ── EAGLE AI CHAT ─────────────────────────────────────────────────────── */
 .ai-chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:400px;}
@@ -855,13 +862,13 @@ body{
   color:var(--muted);
 }
 
-.card,.mgr-section,.ann-card,.poll-card,.board-composer,.board-post,.ach-card,.rank-row,.modal-box{
+.card,.mgr-section,.ann-card,.poll-card,.dm-contacts,.dm-chat,.ach-card,.rank-row,.modal-box{
   border-radius:8px;
   background:color-mix(in srgb,var(--surface) 96%,transparent);
   border:1px solid var(--border);
   box-shadow:var(--shadow-sm);
 }
-.card,.mgr-section,.poll-card,.board-composer,.board-post{padding:20px;}
+.card,.mgr-section,.poll-card{padding:20px;}
 .card-hover:hover,.ach-card:hover,.team-banner:hover{
   transform:translateY(-3px);
   box-shadow:var(--shadow-md);
@@ -1019,12 +1026,12 @@ body{
   border-color:color-mix(in srgb,var(--primary) 50%,var(--border));
   background:var(--primary-soft);
 }
-.fb-input,.poll-opt-input,.board-composer-box,.ai-input{
+.fb-input,.poll-opt-input,.dm-input,.ai-input{
   background:var(--surface2);
   border:1px solid var(--border);
   color:var(--text);
 }
-.fb-input:focus,.poll-opt-input:focus,.board-composer-box:focus,.ai-input:focus{
+.fb-input:focus,.poll-opt-input:focus,.dm-input:focus,.ai-input:focus{
   border-color:var(--primary);
   box-shadow:0 0 0 3px var(--primary-soft);
 }
@@ -1069,7 +1076,7 @@ body{
 .mgr-table tr:hover td{background:var(--primary-soft);}
 
 .rank-podium{gap:18px;}
-.podium-avatar,.rank-avatar,.avatar,.board-composer-avatar,.board-post-avatar,.ai-avatar{
+.podium-avatar,.rank-avatar,.avatar,.dm-avatar,.ai-avatar{
   box-shadow:0 8px 18px rgba(0,0,0,0.16);
 }
 .podium-block{border-radius:8px 8px 0 0;}
@@ -1088,11 +1095,6 @@ body{
 .rank-bar{background:var(--surface2);}
 .rank-bar-fill{background:linear-gradient(90deg,var(--primary),var(--earth-mid));}
 
-.board-composer,.board-post{border-radius:8px;}
-.board-like-btn{
-  border-radius:999px;
-  background:var(--surface2);
-}
 .ai-chat-wrap{height:calc(100vh - 230px);}
 .ai-messages{gap:16px;}
 .ai-bubble{
@@ -1156,7 +1158,9 @@ body{
   }
   .quest-hero{padding:22px;}
   .quest-stats-row{grid-template-columns:1fr;}
-  .board-composer-row{flex-direction:column;}
+  .dm-shell{grid-template-columns:1fr;}
+  .dm-contacts{max-height:280px;}
+  .dm-chat-panel{min-height:520px;}
   .ai-bubble{max-width:88%;}
   .mgr-table{display:block;overflow-x:auto;white-space:nowrap;}
 }
@@ -1426,14 +1430,14 @@ body::before{
   color:var(--text);
   text-shadow:0 18px 54px rgba(77,183,255,0.18);
 }
-.hdr-badge,.card,.mgr-section,.ann-card,.poll-card,.board-composer,.board-post,.ach-card,.rank-row,.modal-box{
+.hdr-badge,.card,.mgr-section,.ann-card,.poll-card,.dm-contacts,.dm-chat,.ach-card,.rank-row,.modal-box{
   background:linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.055)),var(--surface);
   border-color:var(--border);
   box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,0.16);
   backdrop-filter:blur(22px) saturate(1.45);
   -webkit-backdrop-filter:blur(22px) saturate(1.45);
 }
-.card,.mgr-section,.ann-card,.poll-card,.board-composer,.board-post,.ach-card,.rank-row{
+.card,.mgr-section,.ann-card,.poll-card,.dm-contacts,.dm-chat,.ach-card,.rank-row{
   border-radius:22px;
 }
 .quest-hero{
@@ -1460,15 +1464,15 @@ body::before{
   color:#89dcff;
   background:rgba(77,183,255,0.15);
 }
-.fb-input,.poll-opt-input,.board-composer-box,.ai-input{
+.fb-input,.poll-opt-input,.dm-input,.ai-input{
   background:rgba(255,255,255,0.07);
   border-color:rgba(255,255,255,0.14);
 }
-.fb-input:focus,.poll-opt-input:focus,.board-composer-box:focus,.ai-input:focus{
+.fb-input:focus,.poll-opt-input:focus,.dm-input:focus,.ai-input:focus{
   border-color:rgba(77,183,255,0.76);
   box-shadow:0 0 0 4px rgba(77,183,255,0.18);
 }
-.poll-opt,.board-like-btn,.rank-bar{
+.poll-opt,.rank-bar{
   background:rgba(255,255,255,0.075);
 }
 .ai-bubble.user{
@@ -1695,8 +1699,8 @@ body::before{
 [data-theme="light"] .mgr-section,
 [data-theme="light"] .ann-card,
 [data-theme="light"] .poll-card,
-[data-theme="light"] .board-composer,
-[data-theme="light"] .board-post,
+[data-theme="light"] .dm-contacts,
+[data-theme="light"] .dm-chat,
 [data-theme="light"] .ach-card,
 [data-theme="light"] .rank-row,
 [data-theme="light"] .modal-box{
@@ -2285,8 +2289,8 @@ body::before{
 .mgr-section,
 .ann-card,
 .poll-card,
-.board-composer,
-.board-post,
+.dm-contacts,
+.dm-chat,
 .ach-card,
 .rank-row,
 .modal-box,
@@ -2300,9 +2304,7 @@ body::before{
 }
 .card,
 .mgr-section,
-.poll-card,
-.board-composer,
-.board-post{padding:26px;}
+.poll-card{padding:26px;}
 .card-hover:hover,
 .ach-card:hover,
 .team-banner:hover,
@@ -2383,7 +2385,7 @@ body::before{
 }
 .fb-input,
 .poll-opt-input,
-.board-composer-box,
+.dm-input,
 .ai-input,
 .house-select,
 .poll-opt{
@@ -2394,7 +2396,7 @@ body::before{
 }
 .fb-input:focus,
 .poll-opt-input:focus,
-.board-composer-box:focus,
+.dm-input:focus,
 .ai-input:focus{
   border-color:var(--primary);
   box-shadow:0 0 0 3px var(--primary-soft);
@@ -2590,8 +2592,8 @@ body::before{
 .mgr-section,
 .ann-card,
 .poll-card,
-.board-composer,
-.board-post,
+.dm-contacts,
+.dm-chat,
 .ach-card,
 .rank-row,
 .modal-box{
@@ -2958,7 +2960,7 @@ body::before{
   <rect x="18" y="18" width="12" height="12"/>
 </symbol>
 
-<!-- USERS: community / students -->
+<!-- USERS: students and staff -->
 <symbol id="px-users" viewBox="0 0 32 32">
   <rect x="2" y="2" width="10" height="8"/>
   <rect x="0" y="12" width="14" height="10"/>
@@ -3722,29 +3724,44 @@ empathy - understanding another person's feelings</textarea>
   <!-- Student: Messages -->
   <div id="page-board" class="page">
     <div class="page-header">
-      <div><h1 class="page-title">Messages</h1><p class="page-sub">Send messages and share updates with everyone</p></div>
+      <div><h1 class="page-title">Messages</h1><p class="page-sub">1:1 chat with students, teachers, and admins</p></div>
     </div>
 
-    <!-- Composer -->
-    <div class="board-composer">
-      <div class="board-composer-row">
-        <div class="board-composer-avatar" id="board-my-avatar">?</div>
-        <textarea class="board-composer-box" id="board-input" placeholder="Write a message..." maxlength="500"></textarea>
-      </div>
-      <div class="board-composer-footer">
-        <label class="board-lvl-toggle">
-          <input type="checkbox" id="board-show-level" checked onchange="saveLevelVisibility(this.checked)">
-          Show my level badge on posts
-        </label>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:11px;color:var(--muted);" id="board-char-count">0/500</span>
-          <button class="btn-primary" onclick="postBoardMessage()" style="padding:8px 20px;">Send</button>
+    <div class="dm-shell">
+      <aside class="dm-contacts">
+        <div class="dm-search-wrap">
+          <input class="fb-input" id="dm-contact-search" placeholder="Search people..." style="margin-bottom:0;" oninput="filterMessageContacts(this.value)">
         </div>
-      </div>
-    </div>
+        <div class="dm-contact-list" id="dm-contact-list">
+          <div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem 1rem;">Loading people...</div>
+        </div>
+      </aside>
 
-    <!-- Feed -->
-    <div id="board-feed"><div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Loading posts...</div></div>
+      <section class="dm-chat">
+        <div class="dm-status" id="dm-status"></div>
+        <div class="dm-chat-empty" id="dm-empty">
+          Choose a person to start a private chat.
+        </div>
+        <div class="dm-chat-panel" id="dm-active-chat" style="display:none;">
+          <div class="dm-chat-header">
+            <div class="dm-avatar" id="dm-active-avatar">?</div>
+            <div style="flex:1;min-width:0;">
+              <div class="dm-contact-name" id="dm-active-name">Select a person</div>
+              <div class="dm-chat-sub" id="dm-active-sub"></div>
+            </div>
+            <button class="btn-outline" style="font-size:11px;padding:6px 12px;" onclick="refreshMessagesPage()">Refresh</button>
+          </div>
+          <div class="dm-thread" id="dm-thread">
+            <div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Select a conversation.</div>
+          </div>
+          <div class="dm-compose">
+            <textarea class="fb-input dm-input" id="dm-input" maxlength="800" placeholder="Write a message..." oninput="updateDirectMessageCount()" onkeydown="handleDirectMessageKey(event)"></textarea>
+            <div class="dm-count" id="dm-count">0/800</div>
+            <button class="btn-primary" id="dm-send-btn" onclick="sendDirectMessage()" style="padding:11px 18px;">Send</button>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <!-- Manager: Dashboard -->
@@ -4264,7 +4281,7 @@ empathy - understanding another person's feelings</textarea>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);gap:14px;">
           <div>
             <div style="font-size:13px;font-weight:600;">Enable Messages</div>
-            <div style="font-size:11px;color:var(--muted);">Students, teachers, and admins can send and read public messages when this is enabled.</div>
+            <div style="font-size:11px;color:var(--muted);">Students, teachers, and admins can use private 1:1 chats when this is enabled.</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:11px;color:var(--muted);white-space:nowrap;" id="settings-messages-label">Loading...</span>
@@ -4371,7 +4388,7 @@ empathy - understanding another person's feelings</textarea>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
             <div style="font-size:13px;font-weight:600;">Messages tab</div>
-            <div style="font-size:11px;color:var(--muted);">Public messages where students share updates</div>
+            <div style="font-size:11px;color:var(--muted);">Private 1:1 chats between people</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:11px;color:var(--muted);" id="ff-board-label">Loading...</span>
@@ -4657,7 +4674,7 @@ async function migrateStudentEmailReferences(oldEmail, newEmail) {
     updateDocsByEmail('studentXPLog', 'email', oldLc, newLc),
     updateDocsByEmail('feedbacks', 'studentEmail', oldLc, newLc),
     updateDocsByEmail('drawResults', 'studentEmail', oldLc, newLc),
-    updateDocsByEmail('communityBoard', 'email', oldLc, newLc),
+    migrateDirectChatsByParticipant(oldLc, newLc),
     migratePollVotesByEmail(oldLc, newLc)
   ]);
 }
@@ -4676,6 +4693,62 @@ async function deleteDocsByEmail(collectionName, field, email) {
   const batch = db.batch();
   snap.docs.forEach(doc => batch.delete(doc.ref));
   await batch.commit();
+  return snap.size;
+}
+
+async function migrateDirectChatsByParticipant(oldEmail, newEmail) {
+  const oldLc = (oldEmail || '').toLowerCase();
+  const newLc = (newEmail || '').toLowerCase();
+  const snap = await db.collection('directChats').where('participants', 'array-contains', oldLc).get();
+  for (const chatDoc of snap.docs) {
+    const chat = chatDoc.data() || {};
+    const participants = Array.from(new Set((chat.participants || []).map(email =>
+      (email || '').toLowerCase() === oldLc ? newLc : (email || '').toLowerCase()
+    ))).filter(Boolean).sort();
+    if (participants.length < 2) continue;
+
+    const newRef = db.collection('directChats').doc(directChatId(participants[0], participants[1]));
+    await newRef.set({
+      ...chat,
+      participants,
+      participantInfo: (chat.participantInfo || []).map(info => ({
+        ...info,
+        email: (info.email || '').toLowerCase() === oldLc ? newLc : info.email
+      })),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge:true });
+
+    const messageSnap = await chatDoc.ref.collection('messages').get();
+    for (const messageDoc of messageSnap.docs) {
+      const msg = messageDoc.data() || {};
+      await newRef.collection('messages').doc(messageDoc.id).set({
+        ...msg,
+        from: (msg.from || '').toLowerCase() === oldLc ? newLc : msg.from,
+        to: (msg.to || '').toLowerCase() === oldLc ? newLc : msg.to,
+        participants: (msg.participants || participants).map(email =>
+          (email || '').toLowerCase() === oldLc ? newLc : (email || '').toLowerCase()
+        ).sort(),
+        readBy: (msg.readBy || []).map(email =>
+          (email || '').toLowerCase() === oldLc ? newLc : (email || '').toLowerCase()
+        )
+      }, { merge:true });
+    }
+
+    if (newRef.id !== chatDoc.id) {
+      for (const messageDoc of messageSnap.docs) await messageDoc.ref.delete();
+      await chatDoc.ref.delete();
+    }
+  }
+}
+
+async function deleteDirectChatsByParticipant(email) {
+  const lc = (email || '').toLowerCase();
+  const snap = await db.collection('directChats').where('participants', 'array-contains', lc).get();
+  for (const chatDoc of snap.docs) {
+    const messageSnap = await chatDoc.ref.collection('messages').get();
+    for (const messageDoc of messageSnap.docs) await messageDoc.ref.delete();
+    await chatDoc.ref.delete();
+  }
   return snap.size;
 }
 
@@ -4714,7 +4787,7 @@ async function deleteStudentData(email) {
     deleteDocsByEmail('studentXPLog', 'email', lc),
     deleteDocsByEmail('feedbacks', 'studentEmail', lc),
     deleteDocsByEmail('drawResults', 'studentEmail', lc),
-    deleteDocsByEmail('communityBoard', 'email', lc),
+    deleteDirectChatsByParticipant(lc),
     deletePollVotesByEmail(lc)
   ];
   const results = await Promise.allSettled(cleanup);
@@ -5655,9 +5728,7 @@ function showPage(id, btn) {
       loadRankingPage();
       break;
     case 'board':
-      loadLevelVisibility();
-      updateBoardComposerAvatar();
-      loadBoardFeed();
+      loadMessagesPage();
       break;
     case 'ai':
       setTimeout(() => document.getElementById('ai-input')?.focus(), 100);
@@ -7072,164 +7143,331 @@ function renderRanking() {
   }
 }
 
-// ── COMMUNITY BOARD ──
-let _boardLevelVisible = true;
-const BOARD_PAGE_SIZE = 30;
+// ── DIRECT MESSAGES ──
+let _messageContacts = [];
+let _activeMessageContact = null;
+let _activeMessageUnsub = null;
+const DIRECT_MESSAGE_LIMIT = 80;
 
-function saveLevelVisibility(show) {
-  _boardLevelVisible = show;
-  try { localStorage.setItem('board_show_level', show ? '1' : '0'); } catch(e) {}
+function directChatId(emailA, emailB) {
+  return [emailA, emailB]
+    .map(e => encodeURIComponent((e || '').toLowerCase().trim()))
+    .sort()
+    .join('__');
 }
 
-function loadLevelVisibility() {
+function timestampMs(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === 'function') return value.toMillis();
+  if (typeof value.toDate === 'function') return value.toDate().getTime();
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatMessageTime(value) {
+  const ms = timestampMs(value);
+  if (!ms) return 'Just now';
+  return new Date(ms).toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function addMessageContact(map, email, name, roleKey, roleLabel, house, order) {
+  const lc = (email || '').toLowerCase().trim();
+  if (!isValidEmail(lc) || lc === (window.currentUserEmail || '').toLowerCase()) return;
+  const displayName = (name || '').trim() || lc.split('@')[0] || 'Unknown';
+  const existing = map.get(lc);
+  if (existing && existing.order <= order) return;
+  map.set(lc, {
+    email: lc,
+    name: displayName,
+    roleKey,
+    roleLabel,
+    house: house || '',
+    order,
+    lastMessage: '',
+    lastMessageAt: null
+  });
+}
+
+async function loadMessagesPage() {
+  const list = document.getElementById('dm-contact-list');
+  if (list) list.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem 1rem;">Loading people...</div>';
+  setMessageStatus('');
+  stopDirectMessageListener();
+
   try {
-    const v = localStorage.getItem('board_show_level');
-    _boardLevelVisible = (v === null) ? true : v === '1';
-  } catch(e) { _boardLevelVisible = true; }
-  const cb = document.getElementById('board-show-level');
-  if (cb) cb.checked = _boardLevelVisible;
-}
+    const me = (window.currentUserEmail || '').toLowerCase();
+    const students = await loadStudents();
+    const headAdmins = (window._headAdmins || []).map(e => e.toLowerCase());
+    const ownerEmail = (SUPER_ADMIN || '').toLowerCase();
+    const contactMap = new Map();
 
-function updateBoardComposerAvatar() {
-  const email = window.currentUserEmail || '';
-  const name  = window.currentUserName || email.split('@')[0];
-  const el = document.getElementById('board-my-avatar');
-  if (el) {
-    el.textContent = initials(name);
-    el.style.background = avatarColor(name);
-  }
-  // char counter
-  const box = document.getElementById('board-input');
-  const ctr = document.getElementById('board-char-count');
-  if (box && ctr) {
-    box.addEventListener('input', () => { ctr.textContent = `${box.value.length}/500`; });
-  }
-}
-
-async function postBoardMessage() {
-  const box = document.getElementById('board-input');
-  const text = box?.value.trim();
-  if (!text) { toast('Write something first!'); return; }
-  if (text.length > 500) { toast('Max 500 characters.'); return; }
-
-  const email = (window.currentUserEmail || '').toLowerCase();
-  const name  = window.currentUserName || email.split('@')[0];
-  const xp    = await getStudentXP(email);
-  const info  = getLevelInfo(xp);
-
-  const post = {
-    email,
-    name,
-    text,
-    showLevel: _boardLevelVisible,
-    levelName: info.current.name,
-    levelEmoji: info.current.emoji,
-    levelTier: info.current.tier,
-    levelNum: info.current.lvl,
-    xp,
-    likes: [],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  try {
-    await db.collection('communityBoard').add(post);
-    if (box) box.value = '';
-    const ctr = document.getElementById('board-char-count');
-    if (ctr) ctr.textContent = '0/500';
-    toast('Posted!');
-    loadBoardFeed();
-  } catch(e) {
-    console.error('postBoardMessage:', e);
-    toast('Failed to post. Try again.');
-  }
-}
-
-async function loadBoardFeed() {
-  const el = document.getElementById('board-feed');
-  if (!el) return;
-  el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Loading...</div>';
-  try {
-    const snap = await db.collection('communityBoard')
-      .orderBy('createdAt', 'desc')
-      .limit(BOARD_PAGE_SIZE)
-      .get();
-    if (snap.empty) {
-      el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem 0;">No posts yet. Be the first! 👋</div>';
-      return;
-    }
-    const myEmail = (window.currentUserEmail || '').toLowerCase();
-    el.innerHTML = snap.docs.map((doc, i) => {
-      const p = doc.data();
-      const id = doc.id;
-      const time = p.createdAt?.toDate?.()
-        ? p.createdAt.toDate().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
-        : 'Just now';
-      const col  = avatarColor(p.name);
-      const ini  = initials(p.name);
-      const isMe = p.email === myEmail;
-      const isAdmin = (window.MANAGER_EMAILS||[]).includes(myEmail) || myEmail === SUPER_ADMIN?.toLowerCase();
-      const likedByMe = (p.likes||[]).includes(myEmail);
-      const likeCount = (p.likes||[]).length;
-      const lvlBadge = p.showLevel
-        ? `<span class="tier-pip tier-${p.levelTier||'rookie'}">${p.levelName||'Rookie'} Lv${p.levelNum||1}</span>`
-        : '';
-      return `<div class="board-post" style="animation-delay:${Math.min(i*0.04,0.5)}s;">
-        <div class="board-post-header">
-          <div class="board-post-avatar" style="background:${col};">${ini}</div>
-          <div class="board-post-meta">
-            <div class="board-post-name">${esc(p.name)} ${isMe ? '<span style="font-size:10px;background:var(--primary);color:white;padding:1px 6px;border-radius:99px;">You</span>' : ''}</div>
-            <div style="display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap;">
-              ${lvlBadge}
-              <span class="board-post-time">${time}</span>
-            </div>
-          </div>
-        </div>
-        <div class="board-post-body">${esc(p.text)}</div>
-        <div class="board-post-footer">
-          <button class="board-like-btn ${likedByMe?'liked':''}" onclick="toggleBoardLike('${id}',this)">
-            ${likedByMe?'❤️':'🤍'} ${likeCount > 0 ? likeCount : 'Like'}
-          </button>
-          ${(isMe || isAdmin) ? `<button class="board-delete-btn" onclick="deleteBoardPost('${id}',this)">🗑 Delete</button>` : ''}
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    console.error('loadBoardFeed:', e);
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Failed to load posts.</div>';
-  }
-}
-
-async function toggleBoardLike(postId, btn) {
-  const myEmail = (window.currentUserEmail || '').toLowerCase();
-  if (!myEmail) return;
-  const ref = db.collection('communityBoard').doc(postId);
-  try {
-    await db.runTransaction(async tx => {
-      const doc = await tx.get(ref);
-      if (!doc.exists) return;
-      const likes = doc.data().likes || [];
-      const already = likes.includes(myEmail);
-      tx.update(ref, {
-        likes: already
-          ? firebase.firestore.FieldValue.arrayRemove(myEmail)
-          : firebase.firestore.FieldValue.arrayUnion(myEmail)
-      });
-      // Optimistic UI
-      const liked = !already;
-      btn.classList.toggle('liked', liked);
-      const newCount = likes.length + (liked ? 1 : -1);
-      btn.innerHTML = `${liked?'❤️':'🤍'} ${newCount > 0 ? newCount : 'Like'}`;
+    MANAGER_EMAILS.forEach(email => {
+      const lc = (email || '').toLowerCase();
+      const roleLabel = lc === ownerEmail ? 'Owner' : headAdmins.includes(lc) ? 'Head Admin' : 'Admin';
+      addMessageContact(contactMap, lc, adminNames?.[lc] || lc.split('@')[0], roleLabel.toLowerCase().replace(/\s+/g, ''), roleLabel, '', lc === ownerEmail ? 0 : headAdmins.includes(lc) ? 1 : 2);
     });
-  } catch(e) { console.error('toggleBoardLike:', e); toast('Failed to like. Try again.'); }
+    (TEACHER_EMAILS || []).forEach(email => {
+      const lc = (email || '').toLowerCase();
+      addMessageContact(contactMap, lc, teacherNames?.[lc] || lc.split('@')[0], 'teacher', 'Teacher', '', 3);
+    });
+    students.forEach(student => {
+      const lc = (student.email || '').toLowerCase();
+      const house = student.house && student.house !== 'Unassigned' ? `House ${student.house}` : 'Student';
+      addMessageContact(contactMap, lc, student.name || lc.split('@')[0], 'student', house, student.house || '', 4);
+    });
+
+    _messageContacts = Array.from(contactMap.values());
+
+    try {
+      const chats = await db.collection('directChats').where('participants', 'array-contains', me).get();
+      chats.docs.forEach(doc => {
+        const d = doc.data() || {};
+        const other = (d.participants || []).find(email => email !== me);
+        const contact = _messageContacts.find(c => c.email === other);
+        if (contact) {
+          contact.lastMessage = d.lastMessage || '';
+          contact.lastMessageAt = d.lastMessageAt || d.updatedAt || null;
+        }
+      });
+    } catch(e) {
+      console.warn('load direct chat previews:', e);
+      setMessageStatus('Private chat previews could not load. You can still select a person and try sending.');
+    }
+
+    sortMessageContacts();
+
+    const remembered = (() => {
+      try { return localStorage.getItem('last_direct_message_contact') || ''; } catch(e) { return ''; }
+    })();
+    const first = _messageContacts.find(c => c.email === remembered) || null;
+    if (first) selectMessageContact(first.email);
+    else {
+      showNoActiveMessageChat();
+      renderMessageContacts(document.getElementById('dm-contact-search')?.value || '');
+    }
+  } catch(e) {
+    console.error('loadMessagesPage:', e);
+    if (list) list.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem 1rem;">Could not load people.</div>';
+    setMessageStatus('Messages could not load. Check Firestore permissions for directChats.');
+  }
 }
 
-async function deleteBoardPost(postId, btn) {
-  if (!confirm('Delete this post?')) return;
+function refreshMessagesPage() {
+  const selected = _activeMessageContact?.email || '';
+  try { if (selected) localStorage.setItem('last_direct_message_contact', selected); } catch(e) {}
+  loadMessagesPage();
+}
+
+function sortMessageContacts() {
+  _messageContacts.sort((a, b) => {
+    const byRecent = timestampMs(b.lastMessageAt) - timestampMs(a.lastMessageAt);
+    if (byRecent) return byRecent;
+    if (a.order !== b.order) return a.order - b.order;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function renderMessageContacts(query = '') {
+  const list = document.getElementById('dm-contact-list');
+  if (!list) return;
+  const q = query.toLowerCase().trim();
+  const contacts = _messageContacts.filter(c =>
+    !q ||
+    c.name.toLowerCase().includes(q) ||
+    c.email.toLowerCase().includes(q) ||
+    c.roleLabel.toLowerCase().includes(q)
+  );
+  if (contacts.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem 1rem;">No people found.</div>';
+    return;
+  }
+  list.innerHTML = contacts.map(contact => {
+    const active = _activeMessageContact?.email === contact.email;
+    const last = contact.lastMessage ? esc(contact.lastMessage) : 'No messages yet';
+    return `<button class="dm-contact ${active ? 'active' : ''}" data-message-contact="${esc(contact.email)}">
+      <div class="dm-avatar" style="background:${avatarColor(contact.name)};">${esc(initials(contact.name))}</div>
+      <div class="dm-contact-main">
+        <div class="dm-contact-name">${esc(contact.name)}</div>
+        <div class="dm-contact-meta">${esc(contact.roleLabel)} · ${esc(contact.email)}</div>
+        <div class="dm-contact-last">${last}</div>
+      </div>
+    </button>`;
+  }).join('');
+  list.querySelectorAll('[data-message-contact]').forEach(btn => {
+    btn.addEventListener('click', () => selectMessageContact(btn.dataset.messageContact));
+  });
+}
+
+function filterMessageContacts(query) {
+  renderMessageContacts(query);
+}
+
+function showNoActiveMessageChat() {
+  _activeMessageContact = null;
+  const empty = document.getElementById('dm-empty');
+  const panel = document.getElementById('dm-active-chat');
+  if (empty) empty.style.display = '';
+  if (panel) panel.style.display = 'none';
+}
+
+function setMessageStatus(message, isError = false) {
+  const el = document.getElementById('dm-status');
+  if (!el) return;
+  el.textContent = message || '';
+  el.classList.toggle('is-visible', !!message);
+  el.style.color = isError ? 'var(--fire-deep)' : 'var(--muted)';
+}
+
+function stopDirectMessageListener() {
+  if (_activeMessageUnsub) {
+    try { _activeMessageUnsub(); } catch(e) {}
+    _activeMessageUnsub = null;
+  }
+}
+
+function selectMessageContact(email) {
+  const lc = (email || '').toLowerCase();
+  const contact = _messageContacts.find(c => c.email === lc);
+  if (!contact) return;
+  _activeMessageContact = contact;
+  try { localStorage.setItem('last_direct_message_contact', lc); } catch(e) {}
+
+  const empty = document.getElementById('dm-empty');
+  const panel = document.getElementById('dm-active-chat');
+  const avatar = document.getElementById('dm-active-avatar');
+  const name = document.getElementById('dm-active-name');
+  const sub = document.getElementById('dm-active-sub');
+  const input = document.getElementById('dm-input');
+  if (empty) empty.style.display = 'none';
+  if (panel) panel.style.display = '';
+  if (avatar) {
+    avatar.textContent = initials(contact.name);
+    avatar.style.background = avatarColor(contact.name);
+  }
+  if (name) name.textContent = contact.name;
+  if (sub) sub.textContent = `${contact.roleLabel} · ${contact.email}`;
+  if (input) input.focus();
+  updateDirectMessageCount();
+  renderMessageContacts(document.getElementById('dm-contact-search')?.value || '');
+  subscribeDirectMessages(contact);
+}
+
+function subscribeDirectMessages(contact) {
+  stopDirectMessageListener();
+  const thread = document.getElementById('dm-thread');
+  const me = (window.currentUserEmail || '').toLowerCase();
+  const chatId = directChatId(me, contact.email);
+  if (thread) thread.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">Loading chat...</div>';
+  setMessageStatus('');
+  _activeMessageUnsub = db.collection('directChats').doc(chatId)
+    .collection('messages')
+    .orderBy('createdAt', 'asc')
+    .limit(DIRECT_MESSAGE_LIMIT)
+    .onSnapshot(snap => {
+      renderDirectMessages(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })), contact);
+    }, err => {
+      console.error('direct message listener:', err);
+      if (thread) thread.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">This private chat could not load.</div>';
+      setMessageStatus('Private chat needs Firestore permission for directChats.', true);
+    });
+}
+
+function renderDirectMessages(messages, contact) {
+  const thread = document.getElementById('dm-thread');
+  if (!thread) return;
+  if (!messages.length) {
+    thread.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;">No messages with ${esc(contact.name)} yet.</div>`;
+    return;
+  }
+  const me = (window.currentUserEmail || '').toLowerCase();
+  thread.innerHTML = messages.map(message => {
+    const mine = (message.from || '').toLowerCase() === me;
+    const who = mine ? 'You' : contact.name;
+    const text = esc(message.text || '').replace(/\n/g, '<br>');
+    return `<div class="dm-bubble-row ${mine ? 'mine' : ''}">
+      <div class="dm-bubble">
+        <div>${text}</div>
+        <div class="dm-bubble-meta">${esc(who)} · ${formatMessageTime(message.createdAt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function updateDirectMessageCount() {
+  const input = document.getElementById('dm-input');
+  const count = document.getElementById('dm-count');
+  if (count) count.textContent = `${input?.value.length || 0}/800`;
+}
+
+function handleDirectMessageKey(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendDirectMessage();
+  }
+}
+
+async function sendDirectMessage() {
+  const input = document.getElementById('dm-input');
+  const text = (input?.value || '').trim();
+  if (!_activeMessageContact) { toast('Choose a person first.'); return; }
+  if (!text) { toast('Write a message first.'); return; }
+  if (text.length > 800) { toast('Max 800 characters.'); return; }
+
+  const me = (window.currentUserEmail || '').toLowerCase();
+  const myName = window.currentUserName || me.split('@')[0];
+  const to = _activeMessageContact.email;
+  const chatId = directChatId(me, to);
+  const chatRef = db.collection('directChats').doc(chatId);
+  const msgRef = chatRef.collection('messages').doc();
+  const participants = [me, to].sort();
+  const now = firebase.firestore.FieldValue.serverTimestamp();
+
+  const sendBtn = document.getElementById('dm-send-btn');
+  if (sendBtn) sendBtn.disabled = true;
   try {
-    await db.collection('communityBoard').doc(postId).delete();
-    const post = btn.closest('.board-post');
-    if (post) { post.style.opacity = '0'; post.style.transform = 'scale(0.95)'; post.style.transition = '0.3s'; setTimeout(() => post.remove(), 300); }
-    toast('Post deleted.');
-  } catch(e) { console.error('deleteBoardPost:', e); toast('Failed to delete.'); }
+    const batch = db.batch();
+    batch.set(chatRef, {
+      participants,
+      participantInfo: [
+        { email: me, name: myName },
+        { email: to, name: _activeMessageContact.name }
+      ],
+      lastMessage: text.slice(0, 160),
+      lastFrom: me,
+      lastMessageAt: now,
+      updatedAt: now
+    }, { merge: true });
+    batch.set(msgRef, {
+      from: me,
+      to,
+      text,
+      participants,
+      readBy: [me],
+      createdAt: now
+    });
+    await batch.commit();
+    if (input) input.value = '';
+    updateDirectMessageCount();
+    const contact = _messageContacts.find(c => c.email === to);
+    if (contact) {
+      contact.lastMessage = text.slice(0, 160);
+      contact.lastMessageAt = new Date().toISOString();
+      sortMessageContacts();
+      renderMessageContacts(document.getElementById('dm-contact-search')?.value || '');
+    }
+  } catch(e) {
+    console.error('sendDirectMessage:', e);
+    toast('Message failed. Check Firestore permissions.');
+    setMessageStatus('Message could not send. Firestore rules may need to allow directChats.', true);
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+  }
 }
 
 // Populate XP-grant student select (same pool as award points)
@@ -9815,11 +10053,6 @@ let _aiAnnouncements = [];   // aiOnly — hidden from students, shown to AI
 let _visibleAnnouncements = []; // regular announcements (also fed to AI as context)
 // Scraped content from tiseagles.com
 let _schoolScrapedData = '';
-// Recent Messages posts (so AI can answer "what are students talking about?")
-let _communityPosts = [];
-const COMMUNITY_FETCH_LIMIT = 10;          // most-recent N posts fed to AI
-const COMMUNITY_POST_MAX_CHARS = 200;      // truncate each post — limits token spend & injection blast radius
-
 // ── Fetch tiseagles.com in background ────────────────────────────────────
 async function fetchSchoolData() {
   try {
@@ -9839,18 +10072,13 @@ async function fetchSchoolData() {
   }
 }
 
-// ── Load AI info from Firebase + announcements + recent community posts ──
+// ── Load AI info from Firebase + announcements ──
 async function loadAiConfig() {
   if (!db) return;
   try {
-    const [doc, anns, communitySnap] = await Promise.all([
+    const [doc, anns] = await Promise.all([
       db.collection('settings').doc('aiConfig').get(),
-      loadAnnouncements(),
-      db.collection('communityBoard')
-        .orderBy('createdAt', 'desc')
-        .limit(COMMUNITY_FETCH_LIMIT)
-        .get()
-        .catch(e => { console.warn('community fetch failed:', e); return { docs: [] }; })
+      loadAnnouncements()
     ]);
     if (doc.exists) {
       const d = doc.data();
@@ -9862,18 +10090,6 @@ async function loadAiConfig() {
     }
     _aiAnnouncements    = anns.filter(a => a.aiOnly);
     _visibleAnnouncements = anns.filter(a => !a.aiOnly);
-
-    // Map and truncate each community post so the system prompt stays small
-    _communityPosts = communitySnap.docs.map(d => {
-      const p = d.data();
-      return {
-        name:  (p.name || 'Anonymous').toString().slice(0, 40),
-        level: p.levelName ? `${p.levelName} Lv${p.levelNum || 1}` : '',
-        text:  (p.text || '').toString().slice(0, COMMUNITY_POST_MAX_CHARS),
-        likes: Array.isArray(p.likes) ? p.likes.length : 0,
-        ts:    p.createdAt?.toDate?.() || null,
-      };
-    });
 
     const taAnn   = document.getElementById('ai-info-announcements');
     const taLunch = document.getElementById('ai-info-lunch');
