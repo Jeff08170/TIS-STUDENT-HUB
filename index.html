@@ -3242,11 +3242,11 @@ body::before{
       <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
+      <button class="nav-item" data-feature-nav="messages" onclick="showPage('board',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Messages
+      </button>
       <button class="nav-item" onclick="showPage('ai',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagles AI
-      </button>
-      <button class="nav-item" onclick="showPage('warm-languages',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
   </div>
@@ -3275,11 +3275,11 @@ body::before{
       <button class="nav-item" onclick="showPage('feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
+      <button class="nav-item" data-feature-nav="messages" onclick="showPage('board',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Messages
+      </button>
       <button class="nav-item" onclick="showPage('ai',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagles AI
-      </button>
-      <button class="nav-item" onclick="showPage('warm-languages',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
   </div>
@@ -3308,17 +3308,20 @@ body::before{
       <button class="nav-item" onclick="showPage('mgr-feedbacks',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Feedbacks
       </button>
+      <button class="nav-item" data-feature-nav="messages" onclick="showPage('board',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Messages
+      </button>
       <button class="nav-item" onclick="showPage('ai',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-robot"/></svg>Eagles AI
-      </button>
-      <button class="nav-item" onclick="showPage('warm-languages',this)">
-        <svg width="16" height="16" fill="currentColor"><use href="#px-chat"/></svg>Warm Languages
       </button>
     </div>
     <div class="nav-section" id="owner-controls-nav" style="display:none;">
       <div class="nav-label">Admin Controls</div>
       <button class="nav-item" onclick="showPage('mgr-students',this)">
         <svg width="16" height="16" fill="currentColor"><use href="#px-users"/></svg>Student Settings
+      </button>
+      <button class="nav-item" onclick="showPage('mgr-settings',this)">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-flag"/></svg>Settings
       </button>
     </div>
   </div>
@@ -3716,17 +3719,17 @@ empathy - understanding another person's feelings</textarea>
     </div>
   </div>
 
-  <!-- Student: Community Board -->
+  <!-- Student: Messages -->
   <div id="page-board" class="page">
     <div class="page-header">
-      <div><h1 class="page-title">Community Board</h1><p class="page-sub">Share your ideas with everyone</p></div>
+      <div><h1 class="page-title">Messages</h1><p class="page-sub">Send messages and share updates with everyone</p></div>
     </div>
 
     <!-- Composer -->
     <div class="board-composer">
       <div class="board-composer-row">
         <div class="board-composer-avatar" id="board-my-avatar">?</div>
-        <textarea class="board-composer-box" id="board-input" placeholder="Share an idea, question, or shout-out… 🎉" maxlength="500"></textarea>
+        <textarea class="board-composer-box" id="board-input" placeholder="Write a message..." maxlength="500"></textarea>
       </div>
       <div class="board-composer-footer">
         <label class="board-lvl-toggle">
@@ -3735,7 +3738,7 @@ empathy - understanding another person's feelings</textarea>
         </label>
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:11px;color:var(--muted);" id="board-char-count">0/500</span>
-          <button class="btn-primary" onclick="postBoardMessage()" style="padding:8px 20px;">Post</button>
+          <button class="btn-primary" onclick="postBoardMessage()" style="padding:8px 20px;">Send</button>
         </div>
       </div>
     </div>
@@ -4235,6 +4238,44 @@ empathy - understanding another person's feelings</textarea>
     </div>
   </div>
 
+  <!-- Manager: Settings -->
+  <div id="page-mgr-settings" class="page">
+    <div class="page-header">
+      <div><h1 class="page-title">Settings</h1><p class="page-sub">Control app features</p></div>
+      <span class="hdr-badge">Head Admin+</span>
+    </div>
+    <div class="mgr-section">
+      <div class="mgr-section-title">
+        <svg width="16" height="16" fill="currentColor"><use href="#px-flag"/></svg>
+        Feature Controls
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Turn student features on or off for everyone. Disabled features are hidden from the sidebar.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);gap:14px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;">Enable Eagles AI</div>
+            <div style="font-size:11px;color:var(--muted);">Students, teachers, and admins can open the AI chat when this is enabled.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);white-space:nowrap;" id="settings-ai-label">Loading...</span>
+            <input type="checkbox" id="settings-ai-toggle" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('ai',this.checked)">
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);gap:14px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;">Enable Messages</div>
+            <div style="font-size:11px;color:var(--muted);">Students, teachers, and admins can send and read public messages when this is enabled.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:11px;color:var(--muted);white-space:nowrap;" id="settings-messages-label">Loading...</span>
+            <input type="checkbox" id="settings-messages-toggle" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('board',this.checked)">
+          </div>
+        </label>
+      </div>
+      <div id="settings-status" style="font-size:12px;color:var(--earth-deep);margin-top:10px;min-height:16px;"></div>
+    </div>
+  </div>
+
   <!-- Manager: Admins -->
   <div id="page-mgr-admins" class="page">
     <div class="page-header">
@@ -4329,8 +4370,8 @@ empathy - understanding another person's feelings</textarea>
         </label>
         <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
           <div>
-            <div style="font-size:13px;font-weight:600;">Community Board tab</div>
-            <div style="font-size:11px;color:var(--muted);">Public message board where students share ideas</div>
+            <div style="font-size:13px;font-weight:600;">Messages tab</div>
+            <div style="font-size:11px;color:var(--muted);">Public messages where students share updates</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:11px;color:var(--muted);" id="ff-board-label">Loading...</span>
@@ -4375,16 +4416,6 @@ empathy - understanding another person's feelings</textarea>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:11px;color:var(--muted);" id="ff-points-label">Loading...</span>
             <input type="checkbox" id="ff-points" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('points',this.checked)">
-          </div>
-        </label>
-        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border);">
-          <div>
-            <div style="font-size:13px;font-weight:600;">Eagle AI</div>
-            <div style="font-size:11px;color:var(--muted);">Sidebar Eagle AI tab and the chat page for everyone</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:11px;color:var(--muted);" id="ff-ai-label">Loading...</span>
-            <input type="checkbox" id="ff-ai" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;" onchange="setFeatureFlag('ai',this.checked)">
           </div>
         </label>
       </div>
@@ -4502,25 +4533,6 @@ empathy - understanding another person's feelings</textarea>
             <svg width="18" height="18" fill="white"><use href="#px-send"/></svg>
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Warm Languages -->
-  <div id="page-warm-languages" class="page">
-    <div class="page-header">
-      <div><h1 class="page-title">Warm Languages</h1><p class="page-sub">A new encouragement quote every day</p></div>
-      <span class="hdr-badge" id="warm-quote-date">Today</span>
-    </div>
-    <div class="simple-section-grid">
-      <div class="simple-panel">
-        <div class="simple-panel-title">Daily encouragement</div>
-        <div class="simple-panel-copy" id="warm-quote-text">Loading today's quote...</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:12px;" id="warm-quote-source"></div>
-      </div>
-      <div class="simple-panel">
-        <div class="simple-panel-title">Warm reminder</div>
-        <div class="simple-panel-copy" id="warm-quote-action">Use today's quote as a tiny push before class, homework, or a hard conversation.</div>
       </div>
     </div>
   </div>
@@ -5432,8 +5444,8 @@ function handleLogin(account) {
 }
 
 // ── SECURITY ──
-const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-admins','mgr-rewards'];
-const STUDENT_PAGES = ['flashcards','lunch','calendar','houses','announcements','voting','feedbacks','ai','warm-languages'];
+const MANAGER_PAGES = ['mgr-dashboard','mgr-announcements','mgr-voting','mgr-feedbacks','mgr-houses','mgr-students','mgr-settings','mgr-admins','mgr-rewards'];
+const STUDENT_PAGES = ['flashcards','lunch','calendar','houses','announcements','voting','feedbacks','board','ai'];
 // Teachers use the student-facing pages. Admin-only tools stay with Admin+.
 const TEACHER_PAGES = [
   'ai',
@@ -5523,6 +5535,18 @@ function showPage(id, btn) {
     showSecurityAlert();
     return;
   }
+  if (id === 'mgr-settings' && !isHeadAdminOrAbove(window.currentUserEmail)) {
+    showSecurityAlert();
+    return;
+  }
+  if (id === 'ai' && _featureFlags.ai === false && !isHeadAdminOrAbove(window.currentUserEmail)) {
+    toast('Eagles AI is disabled.');
+    return;
+  }
+  if (id === 'board' && _featureFlags.board === false && !isHeadAdminOrAbove(window.currentUserEmail)) {
+    toast('Messages are disabled.');
+    return;
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
@@ -5570,6 +5594,9 @@ function showPage(id, btn) {
       break;
     case 'mgr-students':
       renderStudents();
+      break;
+    case 'mgr-settings':
+      loadFeatureFlags();
       break;
     case 'mgr-admins':
       renderAdminList();
@@ -5655,9 +5682,6 @@ function showPage(id, btn) {
         Object.assign(HOUSE_LEADERS, l);
         loadStudentHousePoints();
       });
-      break;
-    case 'warm-languages':
-      renderWarmLanguageQuote();
       break;
   }
 }
@@ -5871,7 +5895,6 @@ function selectMatchOption(btn) {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('flash-input')) buildFlashcards({ silent: true });
-  renderWarmLanguageQuote();
 });
 
 // ── LUNCH PAGE ───────────────────────────────────────────────────────────
@@ -5972,37 +5995,6 @@ async function saveLunchMenu() {
     if (status) status.textContent = msg;
     toast('Could not save lunch menu.');
   }
-}
-
-// ── WARM LANGUAGES ───────────────────────────────────────────────────────
-const WARM_LANGUAGE_QUOTES = [
-  { quote: 'Small steps still move you forward.', source: 'Daily reminder' },
-  { quote: 'You do not have to be perfect to make progress today.', source: 'Study encouragement' },
-  { quote: 'Ask one brave question. That is how understanding starts.', source: 'Classroom courage' },
-  { quote: 'Your effort is evidence that you are growing.', source: 'Growth mindset' },
-  { quote: 'A hard page is not a stop sign; it is a place to slow down.', source: 'Learning note' },
-  { quote: 'Be kind to your future self: start with five focused minutes.', source: 'Focus reminder' },
-  { quote: 'Mistakes are not labels. They are directions for the next try.', source: 'Practice note' },
-  { quote: 'You can be nervous and still be ready.', source: 'Confidence note' },
-  { quote: 'Today, choose progress over pressure.', source: 'Daily encouragement' },
-  { quote: 'The way you speak to yourself matters. Make it warm.', source: 'Warm language' },
-  { quote: 'One careful revision can change the whole answer.', source: 'Writing encouragement' },
-  { quote: 'You belong in the room, even while you are still learning.', source: 'Student encouragement' },
-  { quote: 'A good teammate makes the next person feel more possible.', source: 'Community note' },
-  { quote: 'Start where you are. Use what you know. Build the next piece.', source: 'Study reminder' }
-];
-
-function renderWarmLanguageQuote() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const day = Math.floor((now - start) / 86400000);
-  const item = WARM_LANGUAGE_QUOTES[day % WARM_LANGUAGE_QUOTES.length];
-  const quoteEl = document.getElementById('warm-quote-text');
-  const sourceEl = document.getElementById('warm-quote-source');
-  const dateEl = document.getElementById('warm-quote-date');
-  if (quoteEl) quoteEl.textContent = item.quote;
-  if (sourceEl) sourceEl.textContent = item.source;
-  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 }
 
 // ── STUDENT HOUSE POINTS LOADER ──
@@ -6781,16 +6773,15 @@ async function saveInviteCode() {
 }
 
 // ── FEATURE FLAGS ──
-// Stored in Firestore: settings/features = { ranking: bool, board: bool }
-let _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ai: true };
+// Stored in Firestore: settings/features = { ranking: bool, board: bool, ai: bool, ... }
+let _featureFlags = { ranking: false, board: true, house: true, rewards: true, levels: true, points: true, ai: true };
 
 async function loadFeatureFlags() {
   try {
     const doc = await db.collection('settings').doc('features').get();
-    if (doc.exists) _featureFlags = { ranking: false, board: false, house: true, rewards: true, levels: true, points: true, ...doc.data() };
+    if (doc.exists) _featureFlags = { ranking: false, board: true, house: true, rewards: true, levels: true, points: true, ai: true, ...doc.data() };
   } catch(e) { console.warn('loadFeatureFlags:', e); }
   _featureFlags.house = true;
-  _featureFlags.ai = true;
   applyFeatureFlags();
 }
 
@@ -6813,8 +6804,23 @@ function applyFeatureFlags() {
   // Rankings tab
   applyFlag('ranking', ['nav-ranking-btn'], 'ff-ranking');
 
-  // Community Board tab
-  applyFlag('board', ['nav-board-btn'], 'ff-board');
+  // Messages tab
+  const messagesOn = !!_featureFlags.board;
+  document.querySelectorAll('[data-feature-nav="messages"]').forEach(el => {
+    el.style.display = messagesOn ? '' : 'none';
+  });
+  const boardPage = document.getElementById('page-board');
+  if (boardPage && !messagesOn && boardPage.classList.contains('active')) {
+    showPage('flashcards', document.querySelector('.nav-item[onclick*="flashcards"]'));
+  }
+  ['settings-messages-toggle', 'ff-board'].forEach(id => {
+    const cb = document.getElementById(id);
+    if (cb) cb.checked = messagesOn;
+  });
+  ['settings-messages-label', 'ff-board-label'].forEach(id => {
+    const lbl = document.getElementById(id);
+    if (lbl) lbl.textContent = messagesOn ? 'Enabled' : 'Disabled';
+  });
 
   // House and Eagles AI are fixed first-pass sidebar items.
   applyFlag('house', [], 'ff-house');
@@ -6822,7 +6828,24 @@ function applyFeatureFlags() {
   // Rewards tab + nav section + dashboard "Spin" shortcut card
   applyFlag('rewards', ['nav-section-rewards', 'page-rewards', 'dash-spin-shortcut'], 'ff-rewards');
 
-  applyFlag('ai', [], 'ff-ai');
+  const aiOn = !!_featureFlags.ai;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    if ((el.getAttribute('onclick') || '').includes("showPage('ai'")) {
+      el.style.display = aiOn ? '' : 'none';
+    }
+  });
+  const aiPage = document.getElementById('page-ai');
+  if (aiPage && !aiOn && aiPage.classList.contains('active')) {
+    showPage('flashcards', document.querySelector('.nav-item[onclick*="flashcards"]'));
+  }
+  ['settings-ai-toggle', 'ff-ai'].forEach(id => {
+    const cb = document.getElementById(id);
+    if (cb) cb.checked = aiOn;
+  });
+  ['settings-ai-label', 'ff-ai-label'].forEach(id => {
+    const lbl = document.getElementById(id);
+    if (lbl) lbl.textContent = aiOn ? 'Enabled' : 'Disabled';
+  });
 
   // Levels & XP — topbar level, dashboard level badge, XP bar
   const levelsOn = !!_featureFlags.levels;
@@ -6853,19 +6876,27 @@ function applyFeatureFlags() {
 
 async function setFeatureFlag(flag, value) {
   if (!requireHeadAdmin('setFeatureFlag')) return;
+  const featureName = flag === 'ai' ? 'Eagles AI' : flag === 'board' ? 'Messages' : flag;
   _featureFlags[flag] = value;
   applyFeatureFlags();
   const statusEl = document.getElementById('ff-status');
+  const settingsStatusEl = document.getElementById('settings-status');
   if (statusEl) statusEl.textContent = 'Saving...';
+  if (settingsStatusEl) settingsStatusEl.textContent = 'Saving...';
   try {
     await db.collection('settings').doc('features').set(_featureFlags, { merge: true });
     if (statusEl) {
-      statusEl.textContent = `✅ "${flag}" ${value ? 'enabled' : 'disabled'} for all students.`;
+      statusEl.textContent = `✅ "${featureName}" ${value ? 'enabled' : 'disabled'} for all students.`;
       setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+    }
+    if (settingsStatusEl) {
+      settingsStatusEl.textContent = `${featureName} ${value ? 'enabled' : 'disabled'}.`;
+      setTimeout(() => { if (settingsStatusEl) settingsStatusEl.textContent = ''; }, 3000);
     }
   } catch(e) {
     console.error('setFeatureFlag:', e);
     if (statusEl) statusEl.textContent = `❌ Save failed (${e.code || e.message || 'unknown'}). See console.`;
+    if (settingsStatusEl) settingsStatusEl.textContent = `Save failed (${e.code || e.message || 'unknown'}).`;
     // Roll back the optimistic local change so UI matches Firestore.
     _featureFlags[flag] = !value;
     applyFeatureFlags();
@@ -9784,7 +9815,7 @@ let _aiAnnouncements = [];   // aiOnly — hidden from students, shown to AI
 let _visibleAnnouncements = []; // regular announcements (also fed to AI as context)
 // Scraped content from tiseagles.com
 let _schoolScrapedData = '';
-// Recent Community Board posts (so AI can answer "what are students talking about?")
+// Recent Messages posts (so AI can answer "what are students talking about?")
 let _communityPosts = [];
 const COMMUNITY_FETCH_LIMIT = 10;          // most-recent N posts fed to AI
 const COMMUNITY_POST_MAX_CHARS = 200;      // truncate each post — limits token spend & injection blast radius
